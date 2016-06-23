@@ -102,6 +102,8 @@ proguard_logs/
 com_crashlytics_export_strings.xml
 .idea/modules.xml
 .idea/gradle.xml
+<<<<<<< HEAD
+=======
 .idea/.name
 .idea/compiler.xml
 .idea/copyright/profiles_settings.xml
@@ -110,3 +112,5 @@ com_crashlytics_export_strings.xml
 .idea/vcs.xml
 gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper.properties
+gradlew.bat
+>>>>>>> e97b150bd53fc6729f95d5a83af9bc0ad509d811

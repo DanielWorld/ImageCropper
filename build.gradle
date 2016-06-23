@@ -9,7 +9,6 @@ buildscript {
     }
 }
 apply plugin: 'com.android.library'
-
 // http://sunghwanjo94.blogspot.kr/2015/07/jcenter.html
 // https://github.com/novoda/bintray-release
 // $ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
@@ -19,7 +18,7 @@ publish {
     groupId = 'com.danielworld'
     artifactId = 'image-crop-library'
     publishVersion = '1.0.0'
-    desc = 'A cropper for image that modifies all shape'
+    desc = 'A cropper library for image that modifies all shape'
     website = 'https://github.com/DanielWorld/ImageCropper'
     issueTracker = "${website}/issues"
     repository = "${website}.git"
@@ -27,13 +26,13 @@ publish {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 10
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
     buildTypes {
         debug {

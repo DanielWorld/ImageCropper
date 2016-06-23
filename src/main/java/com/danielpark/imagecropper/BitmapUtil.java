@@ -3,20 +3,8 @@ package com.danielpark.imagecropper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
-import android.os.Build;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.Display;
-import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -157,7 +145,6 @@ public class BitmapUtil {
 		BitmapFactory.decodeByteArray(dataArray, 0, dataArray.length, options);
 		options.inSampleSize = calculateInSampleSize(context, options, reqWidth, reqHeight);
 		options.inJustDecodeBounds = false;
-		// 끝
 
 		return BitmapFactory.decodeByteArray(dataArray, 0, dataArray.length, options);
 	}
