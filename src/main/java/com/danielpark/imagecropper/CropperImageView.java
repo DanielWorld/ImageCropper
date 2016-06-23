@@ -85,7 +85,40 @@ public class CropperImageView extends ImageView {
         setOnTouchListener(mTouchListener);
     }
 
+    /**
+     * Set Image bitmap to CropImageView
+     * @param bitmap
+     */
     public void setCustomImageBitmap(final Bitmap bitmap) {
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
+        setImageBitmap(null);
+        setImageBitmap(bitmap);
+
+        try {
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSuppMatrix.setRotate(0 % 360);
+                    resizeImageToFitScreen(true);
+                }
+            }, 300);
+
+            isTouch = false;
+            startCanvasDraw = true;
+            invalidate();
+        } catch (Exception e) {
+            isTouch = false;
+            startCanvasDraw = true;
+        }
+    }
+
+    /**
+     * Set Image bitmap to CropImageView with degree
+     * @param bitmap
+     * @param degree
+     */
+    public void setCustomImageBitmap(final Bitmap bitmap, int degree) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         setImageBitmap(null);
