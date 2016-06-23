@@ -17,7 +17,7 @@ public class DeviceUtil {
 	 * @param context
 	 * @return
 	 */
-	protected static Display getResolutionSize(Context context) throws Exception {
+	public static Display getResolutionSize(Context context) throws Exception {
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		return display;
@@ -29,7 +29,7 @@ public class DeviceUtil {
 	 * @param context
 	 * @return
 	 */
-	protected static int getResolutionWidth(Context context){
+	public static int getResolutionWidth(Context context){
 		try {
 			return getResolutionSize(context).getWidth();
 		} catch (Exception e) {
@@ -43,7 +43,7 @@ public class DeviceUtil {
 	 * @param context
 	 * @return
 	 */
-	protected static int getResolutionHeight(Context context){
+	public static int getResolutionHeight(Context context){
 		try{
 			return getResolutionSize(context).getHeight();
 		} catch (Exception e) {

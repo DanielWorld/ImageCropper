@@ -5,7 +5,7 @@
 
 -keepclasseswithmembers class * {
     native <methods>;
-    public *;
+#    public *;
 }
 -keepclasseswithmembers class * {
 	native <methods>;
@@ -19,3 +19,10 @@
 -keepclasseswithmembers class * {
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
+-keepclasseswithmembers interface com.danielpark.imagecropper.CropperInterface {
+    <methods>;
+}
+-keepclasseswithmembers class com.danielpark.imagecropper.CropperImageView {
+    public *;
+}
+

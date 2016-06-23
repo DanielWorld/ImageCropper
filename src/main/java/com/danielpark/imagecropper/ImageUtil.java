@@ -17,7 +17,7 @@ public class ImageUtil {
 	 * @param exifOrientation
 	 * @return
 	 */
-	protected static int exifToDegrees(int exifOrientation) {
+	public static int exifToDegrees(int exifOrientation) {
 		// http://stackoverflow.com/a/11081918/361100
 		if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
 			return 90;
@@ -33,7 +33,7 @@ public class ImageUtil {
 	 * Resize ImageView
 	 * @param iv
 	 */
-	protected static void resizeImageView(ImageView iv, int w, int h) {
+	public static void resizeImageView(ImageView iv, int w, int h) {
 		if (iv != null && w > 0 && h > 0) {
 			iv.requestLayout();
 			iv.getLayoutParams().width = w;
@@ -47,7 +47,7 @@ public class ImageUtil {
 	 * @param bitmapWidth
 	 * @param bitmapHeight
 	 */
-	protected static void resizeFitToScreen(ImageView iv, int bitmapWidth, int bitmapHeight){
+	public static void resizeFitToScreen(ImageView iv, int bitmapWidth, int bitmapHeight){
 		resizeFitToScreen(iv, bitmapWidth, bitmapHeight, null);
 	}
 
@@ -58,7 +58,7 @@ public class ImageUtil {
 	 * @param bitmapHeight
 	 * @param margin [top, left, right, bottom]
 	 */
-	protected static void resizeFitToScreen(ImageView iv, int bitmapWidth, int bitmapHeight, int[] margin) {
+	public static void resizeFitToScreen(ImageView iv, int bitmapWidth, int bitmapHeight, int[] margin) {
 		if (iv != null) {
 			int displayWidth;
 //			int displayHeight;

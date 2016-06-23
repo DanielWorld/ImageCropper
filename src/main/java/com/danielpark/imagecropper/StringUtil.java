@@ -13,7 +13,7 @@ public class StringUtil {
 	 * @param str
 	 * @return
 	 */
-	protected static boolean isNullorEmpty(String str){
+	public static boolean isNullorEmpty(String str){
 		try {
 			if (str == null || str.length() == 0)
 				return true;

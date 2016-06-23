@@ -13,6 +13,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,7 +31,7 @@ import java.io.OutputStream;
  * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-21.
  */
-public class CropperImageView extends ImageView {
+public class CropperImageView extends ImageView implements CropperInterface{
 
     private static String TAG = "OKAY";
     private Context mContext;
@@ -62,6 +63,8 @@ public class CropperImageView extends ImageView {
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
+    private boolean isStretchMode = true;  // If it is true, then when creating output file, crop image will be filled in rectangle.
+
     public CropperImageView(Context context) {
         this (context, null);
     }
@@ -85,10 +88,12 @@ public class CropperImageView extends ImageView {
         setOnTouchListener(mTouchListener);
     }
 
-    /**
-     * Set Image bitmap to CropImageView
-     * @param bitmap
-     */
+    @Override
+    public void setStretchMode(boolean result) {
+        this.isStretchMode = result;
+    }
+
+    @Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -96,13 +101,23 @@ public class CropperImageView extends ImageView {
         setImageBitmap(bitmap);
 
         try {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSuppMatrix.setRotate(0 % 360);
-                    resizeImageToFitScreen(true);
-                }
-            }, 300);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSuppMatrix.setRotate(0 % 360);
+                        resizeImageToFitScreen(true);
+                    }
+                });
+            } else {
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSuppMatrix.setRotate(0 % 360);
+                        resizeImageToFitScreen(true);
+                    }
+                }, 300);
+            }
 
             isTouch = false;
             startCanvasDraw = true;
@@ -113,11 +128,7 @@ public class CropperImageView extends ImageView {
         }
     }
 
-    /**
-     * Set Image bitmap to CropImageView with degree
-     * @param bitmap
-     * @param degree
-     */
+    @Override
     public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -125,13 +136,23 @@ public class CropperImageView extends ImageView {
         setImageBitmap(bitmap);
 
         try {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSuppMatrix.setRotate(degree % 360);
-                    resizeImageToFitScreen(true);
-                }
-            }, 300);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSuppMatrix.setRotate(degree % 360);
+                        resizeImageToFitScreen(true);
+                    }
+                });
+            } else {
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSuppMatrix.setRotate(degree % 360);
+                        resizeImageToFitScreen(true);
+                    }
+                }, 300);
+            }
 
             isTouch = false;
             startCanvasDraw = true;
@@ -142,10 +163,7 @@ public class CropperImageView extends ImageView {
         }
     }
 
-    /**
-     * Set degree
-     * @param degrees
-     */
+    @Override
     public synchronized void setRotationTo(float degrees) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -157,10 +175,7 @@ public class CropperImageView extends ImageView {
         invalidate();
     }
 
-    /**
-     * add degree
-     * @param degrees
-     */
+    @Override
     public synchronized void setRotationBy(float degrees) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -172,9 +187,7 @@ public class CropperImageView extends ImageView {
         invalidate();
     }
 
-    /**
-     * upside down
-     */
+    @Override
     public synchronized void setReverseUpsideDown() {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -186,9 +199,7 @@ public class CropperImageView extends ImageView {
         invalidate();
     }
 
-    /**
-     * change left to right and vice versa
-     */
+    @Override
     public synchronized void setReverseRightToLeft() {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
@@ -373,9 +384,7 @@ public class CropperImageView extends ImageView {
         }
     };
 
-    /**
-     * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
-     */
+    @Override
     public File getCropImage() {
         Bitmap originalBitmap = getOriginalBitmap();
         int oriWidth = 0;

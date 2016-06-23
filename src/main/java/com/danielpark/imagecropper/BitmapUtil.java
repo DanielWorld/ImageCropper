@@ -33,19 +33,19 @@ public class BitmapUtil {
 	 * @return Bitmap
 	 * @throws Exception when InputStream is null
 	 */
-	protected static Bitmap getBitmap(Context context, InputStream in) throws Exception{
+	public static Bitmap getBitmap(Context context, InputStream in) throws Exception{
 		if(in == null)
 			throw new Exception("InputStream is null..");
 		return getBitmap(context, in, 0, 0, null);
 	}
 
-	protected static Bitmap getBitmap(Context context, InputStream in, int reqWidth, int reqHeight) throws Exception{
+	public static Bitmap getBitmap(Context context, InputStream in, int reqWidth, int reqHeight) throws Exception{
 		if(in == null)
 			throw new Exception("InputStream is null..");
 		return getBitmap(context, in, reqWidth, reqHeight, null);
 	}
 
-	protected static Bitmap getBitmap(Context context, InputStream in, BitmapFactory.Options options) throws Exception{
+	public static Bitmap getBitmap(Context context, InputStream in, BitmapFactory.Options options) throws Exception{
 		if(in == null)
 			throw new Exception("InputStream is null..");
 		return getBitmap(context, in, 0, 0, options);
@@ -58,7 +58,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, int resId) throws Exception{
+	public static Bitmap getBitmap(Context context, int resId) throws Exception{
 		return getBitmap(context, resId, 0, 0, null);
 	}
 
@@ -71,7 +71,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, int resId, int reqWidth, int reqHeight) throws Exception{
+	public static Bitmap getBitmap(Context context, int resId, int reqWidth, int reqHeight) throws Exception{
 		return getBitmap(context, resId, reqWidth, reqHeight, null);
 	}
 
@@ -82,14 +82,14 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, File filePath) throws Exception {
+	public static Bitmap getBitmap(Context context, File filePath) throws Exception {
 		if(filePath == null || filePath.isDirectory() || !filePath.exists())
 			throw new Exception("File path is null or incorrect!");
 
 		return getBitmap(context, filePath.getAbsolutePath(), 0, 0, null);
 	}
 
-	protected static Bitmap getBitmap(Context context, File filePath, int reqWidth, int reqHeight) throws Exception {
+	public static Bitmap getBitmap(Context context, File filePath, int reqWidth, int reqHeight) throws Exception {
 		if(filePath == null || filePath.isDirectory() || !filePath.exists())
 			throw new Exception("File path is null or incorrect!");
 
@@ -104,7 +104,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, Bitmap bitmap, boolean isRecycle) throws Exception {
+	public static Bitmap getBitmap(Context context, Bitmap bitmap, boolean isRecycle) throws Exception {
 		int sampleSize = calculateInSampleSize(context, bitmap.getWidth(), bitmap.getHeight(), 0, 0);
 
 		if (sampleSize >= 2) {
@@ -132,7 +132,7 @@ public class BitmapUtil {
 	 * @param options {@link BitmapFactory.Options} (if it null, then create empty options)
 	 * @return Bitmap
 	 */
-	protected static Bitmap getBitmap(Context context, InputStream in, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception{
+	public static Bitmap getBitmap(Context context, InputStream in, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception{
 		if(in == null)
 			throw new Exception("InputStream is null..");
 
@@ -160,7 +160,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, byte[] dataArray, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception{
+	public static Bitmap getBitmap(Context context, byte[] dataArray, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception{
 		if(dataArray == null || dataArray.length == 0)
 			throw new Exception("No data for sampling Bitmap..");
 
@@ -186,7 +186,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, String filePath, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception {
+	public static Bitmap getBitmap(Context context, String filePath, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception {
 		if(StringUtil.isNullorEmpty(filePath))
 			throw new Exception("File path is null or empty..");
 
@@ -219,7 +219,7 @@ public class BitmapUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static Bitmap getBitmap(Context context, int resId, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception {
+	public static Bitmap getBitmap(Context context, int resId, int reqWidth, int reqHeight, BitmapFactory.Options options) throws Exception {
 		if(context == null)
 			throw new Exception("Context can't be null..");
 

@@ -16,7 +16,7 @@ public class ConvertUtil {
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    protected static int convertDpToPixel(float dp) {
+    public static int convertDpToPixel(float dp) {
         DisplayMetrics metrics;
         try {
             metrics = Resources.getSystem().getDisplayMetrics();
@@ -36,7 +36,7 @@ public class ConvertUtil {
      * @param pixel
      * @return
      */
-    protected static int convertPixelToDp(int pixel){
+    public static int convertPixelToDp(int pixel){
         DisplayMetrics metrics;
         try{
             metrics = Resources.getSystem().getDisplayMetrics();
