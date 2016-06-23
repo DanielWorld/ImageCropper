@@ -41,6 +41,7 @@ public class CropperImageView extends ImageView {
     int controlBtnSize = 50; // Daniel (2016-06-21 16:40:26): Radius of Control button
 
     boolean isTouch = false;
+    boolean startCanvasDraw = false;
 
     private Drawable[] cropButton = new Drawable[4];    // Daniel (2016-06-21 16:51:49): The drawable to represent Control icon
 
@@ -85,25 +86,26 @@ public class CropperImageView extends ImageView {
     }
 
     public void setCustomImageBitmap(final Bitmap bitmap) {
-        isTouch = false;    // Daniel (2016-06-22 12:15:19): initialize touch
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
+        setImageBitmap(null);
+        setImageBitmap(bitmap);
 
         try {
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSuppMatrix.setRotate(0 % 360);
+                    resizeImageToFitScreen(true);
+                }
+            }, 300);
 
-            if (getImageViewWidth() <= 0 || getImageViewHeight() <= 0) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setImageBitmap(bitmap);
-                        setRotationTo(0);
-                    }
-                });
-            } else {
-                setImageBitmap(bitmap);
-                setRotationTo(0);
-            }
-
+            isTouch = false;
+            startCanvasDraw = true;
+            invalidate();
         } catch (Exception e) {
-            e.printStackTrace();
+            isTouch = false;
+            startCanvasDraw = true;
         }
     }
 
@@ -112,8 +114,14 @@ public class CropperImageView extends ImageView {
      * @param degrees
      */
     public synchronized void setRotationTo(float degrees) {
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
         mSuppMatrix.setRotate(degrees % 360);
         resizeImageToFitScreen(true);
+
+        isTouch = false;
+        startCanvasDraw = true;
+        invalidate();
     }
 
     /**
@@ -121,32 +129,53 @@ public class CropperImageView extends ImageView {
      * @param degrees
      */
     public synchronized void setRotationBy(float degrees) {
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
         mSuppMatrix.postRotate(degrees % 360);
         resizeImageToFitScreen(true);
+
+        isTouch = false;
+        startCanvasDraw = true;
+        invalidate();
     }
 
     /**
      * upside down
      */
     public synchronized void setReverseUpsideDown() {
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
         mSuppMatrix.preScale(1, -1);
         checkAndDisplayMatrix();
+
+        isTouch = false;
+        startCanvasDraw = true;
+        invalidate();
     }
 
     /**
      * change left to right and vice versa
      */
     public synchronized void setReverseRightToLeft() {
+        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
+
         mSuppMatrix.preScale(-1, 1);
         checkAndDisplayMatrix();
+
+        isTouch = false;
+        startCanvasDraw = true;
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (canvas == null) return;
-
         canvas.save();
+
+        if (!startCanvasDraw) return;
+
+        Log.d("OKAY", "onDraw()");
 
         if (!isTouch) {
 //            Drawable drawable = getDrawable();
