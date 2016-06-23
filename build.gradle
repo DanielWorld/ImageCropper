@@ -19,7 +19,7 @@ publish {
     groupId = 'com.danielworld'
     artifactId = 'image-crop-library'
     publishVersion = '1.0.0'
-    desc = 'A cropper for image that modifies all shape'
+    desc = 'A cropper library for image that modifies all shape'
     website = 'https://github.com/DanielWorld/ImageCropper'
     issueTracker = "${website}/issues"
     repository = "${website}.git"
