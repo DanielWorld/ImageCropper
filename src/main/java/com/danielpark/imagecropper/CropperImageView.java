@@ -118,7 +118,7 @@ public class CropperImageView extends ImageView {
      * @param bitmap
      * @param degree
      */
-    public void setCustomImageBitmap(final Bitmap bitmap, int degree) {
+    public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
         startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         setImageBitmap(null);
@@ -128,7 +128,7 @@ public class CropperImageView extends ImageView {
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mSuppMatrix.setRotate(0 % 360);
+                    mSuppMatrix.setRotate(degree % 360);
                     resizeImageToFitScreen(true);
                 }
             }, 300);
@@ -867,7 +867,7 @@ public class CropperImageView extends ImageView {
     private float mMaxScale = 6.0f;
 
     private static boolean checkZoomLevels(float minZoom, float midZoom,
-                                           float maxZoom) throws IllegalArgumentException{
+                                           float maxZoom) throws IllegalArgumentException {
         if (minZoom >= midZoom) {
             throw new IllegalArgumentException(
                     "MinZoom has to be less than MidZoom");

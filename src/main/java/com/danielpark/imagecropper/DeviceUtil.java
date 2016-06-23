@@ -17,7 +17,7 @@ public class DeviceUtil {
 	 * @param context
 	 * @return
 	 */
-	protected static Display getResolutionSize(Context context) throws Exception{
+	protected static Display getResolutionSize(Context context) throws Exception {
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		return display;
