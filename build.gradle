@@ -4,11 +4,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'com.novoda:bintray-release:0.3.4'
     }
 }
 apply plugin: 'com.android.library'
+
 // http://sunghwanjo94.blogspot.kr/2015/07/jcenter.html
 // https://github.com/novoda/bintray-release
 // $ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
@@ -34,13 +35,27 @@ android {
         versionCode 1
         versionName "1.0.0"
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    // Daniel (2016-04-15 15:25:17): https://jitpack.io 에서 gradle build 시 오류가 발생..
+    // gradle은 참조된 라이브러리가 debug 모드로 빌드가 안되는 문제를 방지하는 설정. http://stackoverflow.com/a/30134955/361100
+//    defaultPublishConfig 'release'
+//    publishNonDefault true
+//    productFlavors {
+//        library {
+//        }
+//    }
+
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
