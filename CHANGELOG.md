@@ -1,3 +1,10 @@
+# 1.0.3
+2016-06-24
+
+- Improve crop-stretched image quality
+- create interface that users can choose whether control button should be inside of image or not
+(default is false)
+
 # 1.0.2
 2016-06-24
 
