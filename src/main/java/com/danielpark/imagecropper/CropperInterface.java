@@ -11,10 +11,18 @@ import java.io.File;
 public interface CropperInterface {
 
     /**
-     * If it is true, then when creating output file, crop image will be filled in rectangle.
+     * If it is true, then when creating output file, crop image will be filled in rectangle. <br>
+     *     defautl mode is {@link CropMode#CROP_STRETCH}
      * @param mode
      */
     void setStretchMode(CropMode mode);
+
+    /**
+     * Whether control button should be in image or not <br>
+     *     default is false
+     * @param result <code>true</code> control button should be inside of Image
+     */
+    void setControlInImage(boolean result);
 
     /**
      * Set Image bitmap to CropImageView
