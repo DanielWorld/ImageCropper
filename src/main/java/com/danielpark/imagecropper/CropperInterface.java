@@ -12,9 +12,9 @@ public interface CropperInterface {
 
     /**
      * If it is true, then when creating output file, crop image will be filled in rectangle.
-     * @param result
+     * @param mode
      */
-    void setStretchMode(boolean result);
+    void setStretchMode(CropMode mode);
 
     /**
      * Set Image bitmap to CropImageView

@@ -25,4 +25,6 @@
 -keepclasseswithmembers class com.danielpark.imagecropper.CropperImageView {
     public *;
 }
-
+-keepclasseswithmembers enum com.danielpark.imagecropper.CropMode {
+    *;
+}

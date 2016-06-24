@@ -42,7 +42,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
     int controlBtnSize = 50; // Daniel (2016-06-21 16:40:26): Radius of Control button
 
     boolean isTouch = false;
-    boolean startCanvasDraw = false;
 
     private Drawable[] cropButton = new Drawable[4];    // Daniel (2016-06-21 16:51:49): The drawable to represent Control icon
 
@@ -63,7 +62,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
-    private boolean isStretchMode = true;  // If it is true, then when creating output file, crop image will be filled in rectangle.
+    private CropMode isCropMode = CropMode.CROP;
 
     public CropperImageView(Context context) {
         this (context, null);
@@ -89,14 +88,13 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
-    public void setStretchMode(boolean result) {
-        this.isStretchMode = result;
+    public void setStretchMode(CropMode mode) {
+        if (mode != null)
+            this.isCropMode = mode;
     }
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
-
         setImageBitmap(null);
         setImageBitmap(bitmap);
 
@@ -107,6 +105,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     public void run() {
                         mSuppMatrix.setRotate(0 % 360);
                         resizeImageToFitScreen(true);
+
+                        isTouch = false;
+                        invalidate();
                     }
                 });
             } else {
@@ -115,23 +116,20 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     public void run() {
                         mSuppMatrix.setRotate(0 % 360);
                         resizeImageToFitScreen(true);
+
+                        isTouch = false;
+                        invalidate();
                     }
-                }, 300);
+                }, 400);
             }
 
-            isTouch = false;
-            startCanvasDraw = true;
-            invalidate();
         } catch (Exception e) {
             isTouch = false;
-            startCanvasDraw = true;
         }
     }
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
-
         setImageBitmap(null);
         setImageBitmap(bitmap);
 
@@ -142,6 +140,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     public void run() {
                         mSuppMatrix.setRotate(degree % 360);
                         resizeImageToFitScreen(true);
+
+                        isTouch = false;
+                        invalidate();
                     }
                 });
             } else {
@@ -150,64 +151,55 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     public void run() {
                         mSuppMatrix.setRotate(degree % 360);
                         resizeImageToFitScreen(true);
+
+                        isTouch = false;
+                        invalidate();
                     }
-                }, 300);
+                }, 400);
             }
 
-            isTouch = false;
-            startCanvasDraw = true;
-            invalidate();
         } catch (Exception e) {
             isTouch = false;
-            startCanvasDraw = true;
         }
     }
 
     @Override
     public synchronized void setRotationTo(float degrees) {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         mSuppMatrix.setRotate(degrees % 360);
         resizeImageToFitScreen(true);
 
         isTouch = false;
-        startCanvasDraw = true;
         invalidate();
     }
 
     @Override
     public synchronized void setRotationBy(float degrees) {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         mSuppMatrix.postRotate(degrees % 360);
         resizeImageToFitScreen(true);
 
         isTouch = false;
-        startCanvasDraw = true;
         invalidate();
     }
 
     @Override
     public synchronized void setReverseUpsideDown() {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         mSuppMatrix.preScale(1, -1);
         checkAndDisplayMatrix();
 
         isTouch = false;
-        startCanvasDraw = true;
         invalidate();
     }
 
     @Override
     public synchronized void setReverseRightToLeft() {
-        startCanvasDraw = false;    // Daniel (2016-06-23 16:02:13): Stop drawing on canvas
 
         mSuppMatrix.preScale(-1, 1);
         checkAndDisplayMatrix();
 
         isTouch = false;
-        startCanvasDraw = true;
         invalidate();
     }
 
@@ -216,8 +208,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
         super.onDraw(canvas);
         if (canvas == null) return;
         canvas.save();
-
-        if (!startCanvasDraw) return;
 
         Log.d("OKAY", "onDraw()");
 
@@ -399,58 +389,83 @@ public class CropperImageView extends ImageView implements CropperInterface{
             oriHeight = mDrawHeight;
         }
 
+        RectF displayRect = getDisplayRect();
+        Log.d("OKAY2", "left: " + displayRect.left);
+        Log.d("OKAY2", "top: " + displayRect.top);
+        Log.d("OKAY2", "right: " + displayRect.right);
+        Log.d("OKAY2", "bottom: " + displayRect.bottom);
+
         Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
         Bitmap templateBitmap = null;
 
-        if (matrixBitmap.getWidth() > matrixBitmap.getHeight()) {
-            // Daniel (2016-06-22 19:00:16): original image is landscape
-            templateBitmap = Bitmap.createBitmap(matrixBitmap.getWidth(), mDrawHeight, Bitmap.Config.ARGB_8888);
-
-        } else if (matrixBitmap.getWidth() < matrixBitmap.getHeight()) {
-            // Daniel (2016-06-22 19:00:32): original image is portrait
-            templateBitmap = Bitmap.createBitmap(mDrawWidth, matrixBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        } else {
-            // Daniel (2016-06-22 19:02:16): original image is square
-            templateBitmap = Bitmap.createBitmap(matrixBitmap.getWidth(), matrixBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-
-        Log.d("OKAY", "oriWidth width : " + oriWidth);
-        Log.e("OKAY", "oriHeight width : " + oriHeight);
-        Log.d("OKAY", "templateBitmap width : " + templateBitmap.getWidth());
-        Log.e("OKAY", "templateBitmap height : " + templateBitmap.getHeight());
-        Log.d("OKAY", "matrixBitmap width : " + matrixBitmap.getWidth());
-        Log.e("OKAY", "matrixBitmap height : " + matrixBitmap.getHeight());
-
+        templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
+//
         Canvas canvas = new Canvas(templateBitmap);
         canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
+//
+//        // Daniel (2016-06-23 23:37:23): is StretchMode?
+        if (isCropMode == CropMode.CROP_STRETCH) {
+            Bitmap extra = templateBitmap.copy(templateBitmap.getConfig(), true);
 
-        path.reset();
+            float[] src = new float[]{
+                    centerPoint.x, centerPoint.y,
+                    coordinatePoints[0].x, coordinatePoints[0].y,
+                    coordinatePoints[1].x, coordinatePoints[1].y,
+                    coordinatePoints[2].x, coordinatePoints[2].y
+            };
 
-        path.moveTo(centerPoint.x, centerPoint.y);
-        path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+            float[] dsc = new float[]{
+                    0, 0,
+                    templateBitmap.getWidth(), 0,
+                    templateBitmap.getWidth(), templateBitmap.getHeight(),
+                    0,  templateBitmap.getHeight()
+            };
 
-        path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
-        path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
-        path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+            Matrix matrix = new Matrix();
+            boolean transformResult = matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
-        canvas.clipPath(path, Region.Op.DIFFERENCE);
-        canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+            canvas.drawBitmap(extra, matrix, null);
 
-        Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
+            return saveFile(templateBitmap);
 
-        // Daniel (2016-06-22 14:50:28): recycle previous image
-        if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
-            templateBitmap.recycle();
-            templateBitmap = null;
+        } else {
+
+            path.reset();
+
+            path.moveTo(centerPoint.x, centerPoint.y);
+            path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+
+            path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
+            path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
+            path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+
+            canvas.clipPath(path, Region.Op.DIFFERENCE);
+            canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+
+            if (isCropMode == CropMode.CROP_SHRINK) {
+                Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
+
+                // Daniel (2016-06-22 14:50:28): recycle previous image
+                if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
+                    templateBitmap.recycle();
+                    templateBitmap = null;
+                }
+
+                if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
+                    matrixBitmap.recycle();
+                    matrixBitmap = null;
+                }
+                return saveFile(cropImageBitmap);
+            }
+            else {
+                if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
+                    matrixBitmap.recycle();
+                    matrixBitmap = null;
+                }
+
+                return saveFile(templateBitmap);
+            }
         }
-
-        if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()){
-            matrixBitmap.recycle();
-            matrixBitmap = null;
-        }
-
-        return saveFile(cropImageBitmap);
     }
 
     private File saveFile(Bitmap bitmap) {
@@ -675,10 +690,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
          * PhotoView's getScaleType() will just divert to this.getScaleType() so
          * only call if we're not attached to a PhotoView.
          */
-            if (!ScaleType.MATRIX.equals(getScaleType())) {
-                throw new IllegalStateException(
-                        "The ImageView's ScaleType has been changed since attaching a PhotoViewAttacher");
-            }
+        if (!ScaleType.MATRIX.equals(getScaleType())) {
+            throw new IllegalStateException(
+                    "The ImageView's ScaleType has been changed since attaching a PhotoViewAttacher");
+        }
     }
 
     private boolean checkMatrixBounds() {
@@ -807,6 +822,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private void resizeImageToFitScreen(boolean type){
         try {
             if (type) {
+
+                RectF drawableRect = getDisplayRect();
+                RectF viewRect = new RectF(0, 0, getImageViewWidth(), getImageViewHeight());
+
+                getDisplayMatrix().setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+
+                checkAndDisplayMatrix();
+
                 int up = 0;
                 int down = 0;
                 boolean flag = false;
