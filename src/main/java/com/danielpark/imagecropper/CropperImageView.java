@@ -456,7 +456,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
             int perfectWidth = (int) ((topWidth + bottomWidth) / 2);
             int perfectHeight = (int) ((leftHeight + rightHeight) / 2);
 
-            Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, perfectWidth, perfectHeight, true);
+            // Daniel (2016-06-24 14:03:23): Improve cropped image quality
+            Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), perfectHeight * templateBitmap.getWidth() / perfectWidth, true);
 
             if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
                 matrixBitmap.recycle();
