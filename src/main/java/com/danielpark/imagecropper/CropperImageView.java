@@ -426,7 +426,29 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             canvas.drawBitmap(extra, matrix, null);
 
-            return saveFile(templateBitmap);
+            // Daniel (2016-06-24 11:13:54): Okay, once you crop-stretch, you need to find perfect ratio width and height!
+            double topWidth = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[0].x), 2) + Math.pow((centerPoint.y - coordinatePoints[0].y), 2));
+            double bottomWidth = Math.sqrt(Math.pow((coordinatePoints[1].x - coordinatePoints[2].x), 2) + Math.pow((coordinatePoints[1].y - coordinatePoints[2].y), 2));
+
+            double leftHeight = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[2].x), 2) + Math.pow((centerPoint.y - coordinatePoints[2].y), 2));
+            double rightHeight = Math.sqrt(Math.pow((coordinatePoints[0].x - coordinatePoints[1].x), 2) + Math.pow((coordinatePoints[0].y - coordinatePoints[1].y), 2));
+
+            int perfectWidth = (int) ((topWidth + bottomWidth) / 2);
+            int perfectHeight = (int) ((leftHeight + rightHeight) / 2);
+
+            Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, perfectWidth, perfectHeight, true);
+
+            if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
+                matrixBitmap.recycle();
+                matrixBitmap = null;
+            }
+
+            if (templateBitmap != null && templateBitmap != perfectBitmap && !templateBitmap.isRecycled()) {
+                templateBitmap.recycle();
+                templateBitmap = null;
+            }
+
+            return saveFile(perfectBitmap);
 
         } else {
 
