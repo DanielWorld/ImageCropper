@@ -64,6 +64,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private CropMode isCropMode = CropMode.CROP;
 
+    private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
+
     public CropperImageView(Context context) {
         this (context, null);
     }
@@ -160,6 +162,24 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         } catch (Exception e) {
             isTouch = false;
+        }
+    }
+
+    @Override
+    public void setCustomImageFile(File file) {
+        try {
+            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setCustomImageFile(File file, int degree) {
+        try {
+            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file), degree);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -492,16 +512,24 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private File saveFile(Bitmap bitmap) {
         OutputStream output = null;
-        final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
 
-        if (!filePath.exists()) {
-            filePath.mkdirs();
+        // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
+        if (dstFile == null || !dstFile.exists() || !dstFile.isFile()) {
+            final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
+
+            if (!filePath.exists()) {
+                filePath.mkdirs();
+            }
+
+            dstFile = new File(filePath, "aaaaa.jpg");
+            try {
+                dstFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        File file = new File(filePath, "aaaaa.jpg");
         try {
-            file.createNewFile();
-            output = new FileOutputStream(file);
+            output = new FileOutputStream(dstFile);
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
 
@@ -514,7 +542,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 bitmap.recycle();
         }
 
-        return file;
+        return dstFile;
     }
 
     /**

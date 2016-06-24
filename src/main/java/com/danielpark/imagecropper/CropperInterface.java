@@ -30,6 +30,19 @@ public interface CropperInterface {
     void setCustomImageBitmap(Bitmap bitmap, int degree);
 
     /**
+     * Set Image File to CropImageView
+     * @param file
+     */
+    void setCustomImageFile(File file);
+
+    /**
+     * Set Image File to CropImageView with degree
+     * @param file
+     * @param degree
+     */
+    void setCustomImageFile(File file, int degree);
+
+    /**
      * Set degree
      * @param degrees
      */
