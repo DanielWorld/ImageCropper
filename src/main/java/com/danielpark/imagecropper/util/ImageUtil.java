@@ -1,7 +1,5 @@
-package com.danielpark.imagecropper;
+package com.danielpark.imagecropper.util;
 
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.widget.ImageView;
 

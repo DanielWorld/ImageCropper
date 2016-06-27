@@ -20,7 +20,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import com.danielpark.imagecropper.util.BitmapUtil;
+import com.danielpark.imagecropper.util.ConvertUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;

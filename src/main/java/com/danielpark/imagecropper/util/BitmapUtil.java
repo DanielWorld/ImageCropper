@@ -1,4 +1,4 @@
-package com.danielpark.imagecropper;
+package com.danielpark.imagecropper.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;

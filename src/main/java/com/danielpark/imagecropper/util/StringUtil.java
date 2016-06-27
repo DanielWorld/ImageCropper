@@ -1,4 +1,4 @@
-package com.danielpark.imagecropper;
+package com.danielpark.imagecropper.util;
 
 /**
  * Utility for String

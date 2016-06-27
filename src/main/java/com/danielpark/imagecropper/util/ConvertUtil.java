@@ -1,4 +1,4 @@
-package com.danielpark.imagecropper;
+package com.danielpark.imagecropper.util;
 
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
