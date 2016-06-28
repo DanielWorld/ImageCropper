@@ -18,6 +18,12 @@ public interface CropperInterface {
     void setStretchMode(CropMode mode);
 
     /**
+     * Only works when CropMode is {@link CropMode#NO_CROP}
+     * @param mode
+     */
+    void setUtilMode(UtilMode mode);
+
+    /**
      * Whether control button should be in image or not <br>
      *     default is false
      * @param result <code>true</code> control button should be inside of Image

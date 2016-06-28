@@ -28,3 +28,6 @@
 -keepclasseswithmembers enum com.danielpark.imagecropper.CropMode {
     *;
 }
+-keepclasseswithmembers enum com.danielpark.imagecropper.UtilMode {
+    *;
+}

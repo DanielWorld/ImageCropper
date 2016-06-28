@@ -7,5 +7,5 @@ package com.danielpark.imagecropper;
  */
 public enum CropMode {
 
-    CROP, CROP_SHRINK, CROP_STRETCH;
+    CROP, CROP_SHRINK, CROP_STRETCH, NO_CROP;
 }
