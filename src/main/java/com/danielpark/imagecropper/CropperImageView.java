@@ -16,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -235,7 +234,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         if (canvas == null) return;
         canvas.save();
 
-        Log.d("OKAY", "onDraw()");
+//        Log.d("OKAY", "onDraw()");
 
         if (!isTouch) {
 //            Drawable drawable = getDrawable();
@@ -479,11 +478,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
             oriHeight = mDrawHeight;
         }
 
-        RectF displayRect = getDisplayRect();
-        Log.d("OKAY2", "left: " + displayRect.left);
-        Log.d("OKAY2", "top: " + displayRect.top);
-        Log.d("OKAY2", "right: " + displayRect.right);
-        Log.d("OKAY2", "bottom: " + displayRect.bottom);
+//        RectF displayRect = getDisplayRect();
+//        Log.d("OKAY2", "left: " + displayRect.left);
+//        Log.d("OKAY2", "top: " + displayRect.top);
+//        Log.d("OKAY2", "right: " + displayRect.right);
+//        Log.d("OKAY2", "bottom: " + displayRect.bottom);
 
         Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
         Bitmap templateBitmap = null;
