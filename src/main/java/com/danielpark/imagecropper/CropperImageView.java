@@ -81,11 +81,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
 
         for (int i = 0; i < cropButton.length; i++) {
-            cropButton[i] = getResources().getDrawable(R.drawable.ic_image_edit_crop_a);
+            cropButton[i] = getResources().getDrawable(R.drawable.post_question_crop_ic_indicator);
         }
 
         controlBtnSize = ConvertUtil.convertDpToPixel(20);  // Daniel (2016-06-22 16:26:13): set Control button size
-        controlStrokeSize = ConvertUtil.convertDpToPixel(5);    // Daniel (2016-06-24 14:32:31): set Control stroke size
+        controlStrokeSize = ConvertUtil.convertDpToPixel(2);    // Daniel (2016-06-24 14:32:31): set Control stroke size
 
         setOnTouchListener(mTouchListener);
     }
