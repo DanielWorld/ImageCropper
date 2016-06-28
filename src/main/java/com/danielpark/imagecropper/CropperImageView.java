@@ -62,7 +62,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
-    private CropMode isCropMode = CropMode.CROP;
+    private CropMode isCropMode = CropMode.CROP_STRETCH;
     private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
