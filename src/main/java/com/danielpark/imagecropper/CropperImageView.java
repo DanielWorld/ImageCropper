@@ -114,7 +114,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             if (isUtilMode == UtilMode.PENCIL) {
                 setPenPaint(Color.BLUE, 5);
             } else {
-                setEraserPaint(Color.WHITE, 15);
+                setEraserPaint(Color.WHITE, 10);
             }
         }
     }
@@ -184,6 +184,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
+        initializeDrawSetting();
+
         setImageBitmap(null);
         setImageBitmap(bitmap);
 
@@ -219,6 +221,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
+        initializeDrawSetting();
+
         setImageBitmap(null);
         setImageBitmap(bitmap);
 
@@ -270,6 +274,16 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
     }
 
+    /**
+     * Initialize all draw settings
+     */
+    private void initializeDrawSetting() {
+        try {
+            arrayDrawInfo.clear();
+            arrayUndoneDrawInfo.clear();
+        } catch (Exception ignored){}
+    }
+
     @Override
     public synchronized void setRotationTo(float degrees) {
 
@@ -308,6 +322,24 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         isTouch = false;
         invalidate();
+    }
+
+    @Override
+    public synchronized void setUndo() {
+        if (arrayDrawInfo.size() > 0){
+            arrayUndoneDrawInfo.add(arrayDrawInfo.remove(arrayDrawInfo.size() - 1));
+
+            invalidate();
+        }
+    }
+
+    @Override
+    public synchronized void setRedo() {
+        if (arrayUndoneDrawInfo.size() > 0){
+            arrayDrawInfo.add(arrayUndoneDrawInfo.remove(arrayUndoneDrawInfo.size() - 1));
+
+            invalidate();
+        }
     }
 
     @Override
@@ -678,12 +710,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
             oriHeight = mDrawHeight;
         }
 
-//        RectF displayRect = getDisplayRect();
-//        Log.d("OKAY2", "left: " + displayRect.left);
-//        Log.d("OKAY2", "top: " + displayRect.top);
-//        Log.d("OKAY2", "right: " + displayRect.right);
-//        Log.d("OKAY2", "bottom: " + displayRect.bottom);
-
         Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
         Bitmap templateBitmap = null;
 
@@ -691,91 +717,122 @@ public class CropperImageView extends ImageView implements CropperInterface{
 //
         Canvas canvas = new Canvas(templateBitmap);
         canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
-//
-//        // Daniel (2016-06-23 23:37:23): is StretchMode?
-        if (isCropMode == CropMode.CROP_STRETCH) {
-            Bitmap extra = templateBitmap.copy(templateBitmap.getConfig(), true);
 
-            float[] src = new float[]{
-                    centerPoint.x, centerPoint.y,
-                    coordinatePoints[0].x, coordinatePoints[0].y,
-                    coordinatePoints[1].x, coordinatePoints[1].y,
-                    coordinatePoints[2].x, coordinatePoints[2].y
-            };
-
-            float[] dsc = new float[]{
-                    0, 0,
-                    templateBitmap.getWidth(), 0,
-                    templateBitmap.getWidth(), templateBitmap.getHeight(),
-                    0,  templateBitmap.getHeight()
-            };
-
-            Matrix matrix = new Matrix();
-            boolean transformResult = matrix.setPolyToPoly(src, 0, dsc, 0, 4);
-
-            canvas.drawBitmap(extra, matrix, null);
-
-            // Daniel (2016-06-24 11:13:54): Okay, once you crop-stretch, you need to find perfect ratio width and height!
-            double topWidth = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[0].x), 2) + Math.pow((centerPoint.y - coordinatePoints[0].y), 2));
-            double bottomWidth = Math.sqrt(Math.pow((coordinatePoints[1].x - coordinatePoints[2].x), 2) + Math.pow((coordinatePoints[1].y - coordinatePoints[2].y), 2));
-
-            double leftHeight = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[2].x), 2) + Math.pow((centerPoint.y - coordinatePoints[2].y), 2));
-            double rightHeight = Math.sqrt(Math.pow((coordinatePoints[0].x - coordinatePoints[1].x), 2) + Math.pow((coordinatePoints[0].y - coordinatePoints[1].y), 2));
-
-            int perfectWidth = (int) ((topWidth + bottomWidth) / 2);
-            int perfectHeight = (int) ((leftHeight + rightHeight) / 2);
-
-            // Daniel (2016-06-24 14:03:23): Improve cropped image quality
-            Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), perfectHeight * templateBitmap.getWidth() / perfectWidth, true);
-
-            if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
-                matrixBitmap.recycle();
-                matrixBitmap = null;
+        if (isCropMode == CropMode.NO_CROP) {
+            for (DrawInfo v : arrayDrawInfo) {
+                canvas.drawPath(v.getPath(), v.getPaint());
             }
 
-            if (templateBitmap != null && templateBitmap != perfectBitmap && !templateBitmap.isRecycled()) {
+            RectF rectF = getDisplayRect();
+
+            int width = (int) (rectF.right - rectF.left);
+            int height = (int) (rectF.bottom - rectF.top);
+            // Daniel (2016-06-29 11:58:18): Okay, To prevent IllegalArgumentException y + height must be <= bitmap.height() or x
+            if (width > templateBitmap.getWidth())
+                width = templateBitmap.getWidth();
+
+            if (height > templateBitmap.getHeight())
+                height = templateBitmap.getHeight();
+
+            Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) rectF.left, (int) rectF.top, width, height);
+
+            // Daniel (2016-06-22 14:50:28): recycle previous image
+            if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
                 templateBitmap.recycle();
                 templateBitmap = null;
             }
 
-            return saveFile(perfectBitmap);
-
-        } else {
-
-            path.reset();
-
-            path.moveTo(centerPoint.x, centerPoint.y);
-            path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
-
-            path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
-            path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
-            path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
-
-            canvas.clipPath(path, Region.Op.DIFFERENCE);
-            canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
-
-            if (isCropMode == CropMode.CROP_SHRINK) {
-                Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
-
-                // Daniel (2016-06-22 14:50:28): recycle previous image
-                if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
-                    templateBitmap.recycle();
-                    templateBitmap = null;
-                }
-
-                if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
-                    matrixBitmap.recycle();
-                    matrixBitmap = null;
-                }
-                return saveFile(cropImageBitmap);
+            if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
+                matrixBitmap.recycle();
+                matrixBitmap = null;
             }
-            else {
+            return saveFile(cropImageBitmap);
+        }
+        else {
+//        // Daniel (2016-06-23 23:37:23): is StretchMode?
+            if (isCropMode == CropMode.CROP_STRETCH) {
+                Bitmap extra = templateBitmap.copy(templateBitmap.getConfig(), true);
+
+                float[] src = new float[]{
+                        centerPoint.x, centerPoint.y,
+                        coordinatePoints[0].x, coordinatePoints[0].y,
+                        coordinatePoints[1].x, coordinatePoints[1].y,
+                        coordinatePoints[2].x, coordinatePoints[2].y
+                };
+
+                float[] dsc = new float[]{
+                        0, 0,
+                        templateBitmap.getWidth(), 0,
+                        templateBitmap.getWidth(), templateBitmap.getHeight(),
+                        0, templateBitmap.getHeight()
+                };
+
+                Matrix matrix = new Matrix();
+                boolean transformResult = matrix.setPolyToPoly(src, 0, dsc, 0, 4);
+
+                canvas.drawBitmap(extra, matrix, null);
+
+                // Daniel (2016-06-24 11:13:54): Okay, once you crop-stretch, you need to find perfect ratio width and height!
+                double topWidth = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[0].x), 2) + Math.pow((centerPoint.y - coordinatePoints[0].y), 2));
+                double bottomWidth = Math.sqrt(Math.pow((coordinatePoints[1].x - coordinatePoints[2].x), 2) + Math.pow((coordinatePoints[1].y - coordinatePoints[2].y), 2));
+
+                double leftHeight = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[2].x), 2) + Math.pow((centerPoint.y - coordinatePoints[2].y), 2));
+                double rightHeight = Math.sqrt(Math.pow((coordinatePoints[0].x - coordinatePoints[1].x), 2) + Math.pow((coordinatePoints[0].y - coordinatePoints[1].y), 2));
+
+                int perfectWidth = (int) ((topWidth + bottomWidth) / 2);
+                int perfectHeight = (int) ((leftHeight + rightHeight) / 2);
+
+                // Daniel (2016-06-24 14:03:23): Improve cropped image quality
+                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), perfectHeight * templateBitmap.getWidth() / perfectWidth, true);
+
                 if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
                     matrixBitmap.recycle();
                     matrixBitmap = null;
                 }
 
-                return saveFile(templateBitmap);
+                if (templateBitmap != null && templateBitmap != perfectBitmap && !templateBitmap.isRecycled()) {
+                    templateBitmap.recycle();
+                    templateBitmap = null;
+                }
+
+                return saveFile(perfectBitmap);
+
+            } else {
+
+                path.reset();
+
+                path.moveTo(centerPoint.x, centerPoint.y);
+                path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+
+                path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
+                path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
+                path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+
+                canvas.clipPath(path, Region.Op.DIFFERENCE);
+                canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+
+                if (isCropMode == CropMode.CROP_SHRINK) {
+                    Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
+
+                    // Daniel (2016-06-22 14:50:28): recycle previous image
+                    if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
+                        templateBitmap.recycle();
+                        templateBitmap = null;
+                    }
+
+                    if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
+                        matrixBitmap.recycle();
+                        matrixBitmap = null;
+                    }
+                    return saveFile(cropImageBitmap);
+                } else {
+                    if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
+                        matrixBitmap.recycle();
+                        matrixBitmap = null;
+                    }
+
+                    return saveFile(templateBitmap);
+                }
             }
         }
     }

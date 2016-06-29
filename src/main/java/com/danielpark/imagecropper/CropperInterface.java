@@ -79,6 +79,16 @@ public interface CropperInterface {
     void setReverseRightToLeft();
 
     /**
+     * Undo the path (It only works when Crop mode is NO_CROP)
+     */
+    void setUndo();
+
+    /**
+     * Redo the path (It only works when Crop mode is NO_CROP)
+     */
+    void setRedo();
+
+    /**
      * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
      */
     File getCropImage();
