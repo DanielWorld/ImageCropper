@@ -286,9 +286,12 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public synchronized void setRotationTo(float degrees) {
+        setPreviousScale();
 
         mSuppMatrix.setRotate(degrees % 360);
         resizeImageToFitScreen(true);
+
+        setCurrentDegree(degrees, false);
 
         isTouch = false;
         invalidate();
@@ -296,13 +299,60 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public synchronized void setRotationBy(float degrees) {
+        setPreviousScale();
 
         mSuppMatrix.postRotate(degrees % 360);
         resizeImageToFitScreen(true);
 
+        setCurrentDegree(degrees, true);
+
         isTouch = false;
         invalidate();
     }
+
+    float mPreScale = 0.0f;     // Daniel (2016-06-29 14:35:07): This scale is for previous path state
+    private void setPreviousScale(){
+        mPreScale = mMinScale;
+    }
+
+    private void setCurrentDegree(float degree, boolean rotateBy) {
+        // Daniel (2016-06-29 14:00:11): Rotate draw path
+        for (DrawInfo v : arrayDrawInfo) {
+            RectF rectF = getDisplayRect();
+
+            Matrix mMatrix = new Matrix();
+            RectF bounds = new RectF();
+            v.getPath().computeBounds(bounds, true);
+
+            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.width() / 2, rectF.height() / 2);
+
+            if (rotateBy)
+                mMatrix.postRotate(degree, rectF.centerX(), rectF.centerY());
+            else
+                mMatrix.setRotate(degree, rectF.centerX(), rectF.centerY());
+
+            v.getPath().transform(mMatrix);
+        }
+
+        // Daniel (2016-06-29 14:00:11): Rotate unDraw path
+        for (DrawInfo v : arrayUndoneDrawInfo) {
+            RectF rectF = getDisplayRect();
+
+            Matrix mMatrix = new Matrix();
+            RectF bounds = new RectF();
+            v.getPath().computeBounds(bounds, true);
+
+            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.width() / 2, rectF.height() / 2);
+
+            if (rotateBy)
+                mMatrix.postRotate(degree, rectF.centerX(), rectF.centerY());
+            else
+                mMatrix.setRotate(degree, rectF.centerX(), rectF.centerY());
+
+            v.getPath().transform(mMatrix);
+        }
+    }
+
 
     @Override
     public synchronized void setReverseUpsideDown() {
