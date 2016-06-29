@@ -321,10 +321,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             RectF rectF = getDisplayRect();
 
             Matrix mMatrix = new Matrix();
-            RectF bounds = new RectF();
-            v.getPath().computeBounds(bounds, true);
-
-            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.width() / 2, rectF.height() / 2);
+            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.centerX(), rectF.centerY());
 
             if (rotateBy)
                 mMatrix.postRotate(degree, rectF.centerX(), rectF.centerY());
@@ -339,10 +336,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             RectF rectF = getDisplayRect();
 
             Matrix mMatrix = new Matrix();
-            RectF bounds = new RectF();
-            v.getPath().computeBounds(bounds, true);
-
-            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.width() / 2, rectF.height() / 2);
+            mMatrix.postScale(getScale() / mPreScale, getScale() / mPreScale, rectF.centerX(), rectF.centerY());
 
             if (rotateBy)
                 mMatrix.postRotate(degree, rectF.centerX(), rectF.centerY());
