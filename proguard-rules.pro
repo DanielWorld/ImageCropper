@@ -4,10 +4,6 @@
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
 -keepclasseswithmembers class * {
-    native <methods>;
-#    public *;
-}
--keepclasseswithmembers class * {
 	native <methods>;
 }
 -keepclasseswithmembers class * {
