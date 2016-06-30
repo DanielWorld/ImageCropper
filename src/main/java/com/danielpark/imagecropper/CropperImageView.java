@@ -20,7 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.danielpark.imagecropper.listener.OnUndoRedoListener;
+import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
@@ -74,7 +74,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private ArrayList<DrawInfo> arrayDrawInfo = new ArrayList<>();
     private ArrayList<DrawInfo> arrayUndoneDrawInfo = new ArrayList<>();
 
-    private OnUndoRedoListener onUndoRedoListener;
+    private OnUndoRedoStateChangeListener onUndoRedoStateChangeListener;
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
 
@@ -179,8 +179,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         invalidate();
 
-        if (arrayDrawInfo.size() > 0 && onUndoRedoListener != null) {
-            onUndoRedoListener.onUndoAvailable(true);
+        if (arrayDrawInfo.size() > 0 && onUndoRedoStateChangeListener != null) {
+            onUndoRedoStateChangeListener.onUndoAvailable(true);
         }
     }
 
@@ -384,21 +384,21 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
 
         if (arrayDrawInfo.size() > 0) {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onUndoAvailable(true);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(true);
         }
         else {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onUndoAvailable(false);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(false);
         }
 
         if (arrayUndoneDrawInfo.size() > 0) {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onRedoAvailable(true);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(true);
         }
         else {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onRedoAvailable(false);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(false);
         }
     }
 
@@ -411,27 +411,27 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
 
         if (arrayDrawInfo.size() > 0) {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onUndoAvailable(true);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(true);
         }
         else {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onUndoAvailable(false);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(false);
         }
 
         if (arrayUndoneDrawInfo.size() > 0) {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onRedoAvailable(true);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(true);
         }
         else {
-            if (onUndoRedoListener != null)
-                onUndoRedoListener.onRedoAvailable(false);
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(false);
         }
     }
 
     @Override
-    public void setUndoRedoListener(OnUndoRedoListener listener) {
-        onUndoRedoListener = listener;
+    public void setUndoRedoListener(OnUndoRedoStateChangeListener listener) {
+        onUndoRedoStateChangeListener = listener;
     }
 
     @Override
@@ -1382,7 +1382,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     protected void onDetachedFromWindow() {
-        onUndoRedoListener = null;
+        onUndoRedoStateChangeListener = null;
         super.onDetachedFromWindow();
     }
 }

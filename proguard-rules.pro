@@ -18,7 +18,7 @@
 -keepclasseswithmembers interface com.danielpark.imagecropper.CropperInterface {
     <methods>;
 }
--keepclasseswithmembers interface com.danielpark.imagecropper.listener.OnUndoRedoListener {
+-keepclasseswithmembers interface com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener {
     <methods>;
 }
 -keepclasseswithmembers class com.danielpark.imagecropper.CropperImageView {

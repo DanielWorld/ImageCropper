@@ -2,7 +2,7 @@ package com.danielpark.imagecropper;
 
 import android.graphics.Bitmap;
 
-import com.danielpark.imagecropper.listener.OnUndoRedoListener;
+import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 import java.io.File;
 
@@ -92,11 +92,11 @@ public interface CropperInterface {
 
     /**
      * When Undo or Redo state has changed, notify to observer <br>
-     *     BEWARE ! {@link OnUndoRedoListener} should be applied to {@link CropperImageView} for each one by one <br>
+     *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>
      *         because it becomes null when {@link CropperImageView#onDetachedFromWindow()}
      * @param listener
      */
-    void setUndoRedoListener(OnUndoRedoListener listener);
+    void setUndoRedoListener(OnUndoRedoStateChangeListener listener);
 
     /**
      * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
