@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.danielpark.imagecropper.listener.OnUndoRedoListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
@@ -72,6 +73,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private Paint drawPaint;
     private ArrayList<DrawInfo> arrayDrawInfo = new ArrayList<>();
     private ArrayList<DrawInfo> arrayUndoneDrawInfo = new ArrayList<>();
+
+    private OnUndoRedoListener onUndoRedoListener;
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
 
@@ -175,6 +178,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
         drawPath.lineTo(mX, mY);
 
         invalidate();
+
+        if (arrayDrawInfo.size() > 0 && onUndoRedoListener != null) {
+            onUndoRedoListener.onUndoAvailable(true);
+        }
     }
 
     @Override
@@ -375,6 +382,24 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             invalidate();
         }
+
+        if (arrayDrawInfo.size() > 0) {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onUndoAvailable(true);
+        }
+        else {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onUndoAvailable(false);
+        }
+
+        if (arrayUndoneDrawInfo.size() > 0) {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onRedoAvailable(true);
+        }
+        else {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onRedoAvailable(false);
+        }
     }
 
     @Override
@@ -384,6 +409,29 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             invalidate();
         }
+
+        if (arrayDrawInfo.size() > 0) {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onUndoAvailable(true);
+        }
+        else {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onUndoAvailable(false);
+        }
+
+        if (arrayUndoneDrawInfo.size() > 0) {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onRedoAvailable(true);
+        }
+        else {
+            if (onUndoRedoListener != null)
+                onUndoRedoListener.onRedoAvailable(false);
+        }
+    }
+
+    @Override
+    public void setUndoRedoListener(OnUndoRedoListener listener) {
+        onUndoRedoListener = listener;
     }
 
     @Override
@@ -1330,5 +1378,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }else{
             return true;
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        onUndoRedoListener = null;
+        super.onDetachedFromWindow();
     }
 }
