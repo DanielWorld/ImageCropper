@@ -24,6 +24,7 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
+import com.danielpark.imagecropper.util.DeviceModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -191,39 +192,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
-        initializeDrawSetting();
-
-        setImageBitmap(null);
-        setImageBitmap(bitmap);
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSuppMatrix.setRotate(0 % 360);
-                        resizeImageToFitScreen(true);
-
-                        isTouch = false;
-                        invalidate();
-                    }
-                });
-            } else {
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSuppMatrix.setRotate(0 % 360);
-                        resizeImageToFitScreen(true);
-
-                        isTouch = false;
-                        invalidate();
-                    }
-                }, 400);
-            }
-
-        } catch (Exception e) {
-            isTouch = false;
-        }
+        setCustomImageBitmap(bitmap, 0);
     }
 
     @Override
@@ -243,6 +212,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
                         isTouch = false;
                         invalidate();
+
+                        checkToCallTwice(bitmap, degree);
                     }
                 });
             } else {
@@ -254,12 +225,53 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
                         isTouch = false;
                         invalidate();
+
+                        checkToCallTwice(bitmap, degree);
                     }
                 }, 400);
             }
 
         } catch (Exception e) {
             isTouch = false;
+        }
+    }
+
+    private void checkToCallTwice(final Bitmap bitmap, final int degree) {
+        // If current device should call twice then call it again after one second
+        if (DeviceModel.isDeviceCallTwice()) {
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    initializeDrawSetting();
+
+                    setImageBitmap(null);
+                    setImageBitmap(bitmap);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSuppMatrix.setRotate(degree % 360);
+                                resizeImageToFitScreen(true);
+
+                                isTouch = false;
+                                invalidate();
+                            }
+                        });
+                    } else {
+                        postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSuppMatrix.setRotate(degree % 360);
+                                resizeImageToFitScreen(true);
+
+                                isTouch = false;
+                                invalidate();
+                            }
+                        }, 400);
+                    }
+                }
+            }, 1000);
         }
     }
 
@@ -950,7 +962,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         try {
             output = new FileOutputStream(dstFile);
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
 
             output.flush();
             output.close();
