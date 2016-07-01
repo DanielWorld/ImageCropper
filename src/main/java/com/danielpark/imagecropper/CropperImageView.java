@@ -67,7 +67,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
     private CropMode isCropMode = CropMode.CROP_STRETCH;
-    private UtilMode isUtilMode = UtilMode.PENCIL;
+    private UtilMode isUtilMode = UtilMode.NONE;
     private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
 
     private Path drawPath;
@@ -454,13 +454,13 @@ public class CropperImageView extends ImageView implements CropperInterface{
         mDrawWidth = canvas.getWidth();
         mDrawHeight = canvas.getHeight();
 
-        if (isCropMode == CropMode.NO_CROP) {
+        if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
 
             for (DrawInfo v : arrayDrawInfo) {
                 canvas.drawPath(v.getPath(), v.getPaint());
             }
         }
-        else {
+        else if (isCropMode != CropMode.NO_CROP) {
             canvas.save();
             if (!isTouch) {
 
@@ -539,7 +539,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (isCropMode == CropMode.NO_CROP) {
+                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
@@ -601,7 +601,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     break;
                 case MotionEvent.ACTION_MOVE:
 
-                    if (isCropMode == CropMode.NO_CROP) {
+                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
@@ -661,7 +661,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                         }
                         drawActionMove(X, Y);
                     }
-                    else {
+                    else if (isCropMode != CropMode.NO_CROP) {
                         int X = (int) event.getX();
                         int Y = (int) event.getY();
 
@@ -790,7 +790,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
-                    if (isCropMode == CropMode.NO_CROP){
+                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE){
                         drawActionUp();
                     }
                     break;
