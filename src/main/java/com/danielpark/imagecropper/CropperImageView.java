@@ -882,23 +882,34 @@ public class CropperImageView extends ImageView implements CropperInterface{
                         0, templateBitmap.getHeight()
                 };
 
+                // Daniel (2016-07-01 18:21:54): Find perfect ratio of IMAGE
+                double L1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[0].x, 2) + Math.pow(centerPoint.y - coordinatePoints[0].y, 2));
+                double L2 = Math.sqrt(Math.pow(coordinatePoints[2].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[2].y - coordinatePoints[1].y, 2));
+
+                double M1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[2].x, 2) + Math.pow(centerPoint.y - coordinatePoints[2].y, 2));
+                double M2 = Math.sqrt(Math.pow(coordinatePoints[0].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[0].y - coordinatePoints[1].y, 2));
+
+                double h = ( M1 + M2 ) / 2;
+                double w = ( L1 + L2 ) / 2;
+
+                double diff = Math.abs(L1 - L2) / 2;
+
+                h = h * (1 + diff * 1.5 / w);
+
+//                float[] dsc = new float[]{
+//                        0, 0,
+//                        templateBitmap.getWidth(), 0,
+//                        templateBitmap.getWidth(), (float) (templateBitmap.getWidth() / w * h),
+//                        0,(float) (templateBitmap.getWidth() / w * h)
+//                };
+
                 Matrix matrix = new Matrix();
                 boolean transformResult = matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
                 canvas.drawBitmap(extra, matrix, null);
 
-                // Daniel (2016-06-24 11:13:54): Okay, once you crop-stretch, you need to find perfect ratio width and height!
-                double topWidth = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[0].x), 2) + Math.pow((centerPoint.y - coordinatePoints[0].y), 2));
-                double bottomWidth = Math.sqrt(Math.pow((coordinatePoints[1].x - coordinatePoints[2].x), 2) + Math.pow((coordinatePoints[1].y - coordinatePoints[2].y), 2));
-
-                double leftHeight = Math.sqrt(Math.pow((centerPoint.x - coordinatePoints[2].x), 2) + Math.pow((centerPoint.y - coordinatePoints[2].y), 2));
-                double rightHeight = Math.sqrt(Math.pow((coordinatePoints[0].x - coordinatePoints[1].x), 2) + Math.pow((coordinatePoints[0].y - coordinatePoints[1].y), 2));
-
-                int perfectWidth = (int) ((topWidth + bottomWidth) / 2);
-                int perfectHeight = (int) ((leftHeight + rightHeight) / 2);
-
-                // Daniel (2016-06-24 14:03:23): Improve cropped image quality
-                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), perfectHeight * templateBitmap.getWidth() / perfectWidth, true);
+                // Daniel (2016-07-01 18:22:45): Fixed the issue that Crop_Stretch's image ratio is not right!
+                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), (int) (templateBitmap.getWidth() / w * h), true);
 
                 if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
                     matrixBitmap.recycle();
