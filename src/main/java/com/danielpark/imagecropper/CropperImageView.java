@@ -904,12 +904,29 @@ public class CropperImageView extends ImageView implements CropperInterface{
 //                };
 
                 Matrix matrix = new Matrix();
-                boolean transformResult = matrix.setPolyToPoly(src, 0, dsc, 0, 4);
+                matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
                 canvas.drawBitmap(extra, matrix, null);
 
                 // Daniel (2016-07-01 18:22:45): Fixed the issue that Crop_Stretch's image ratio is not right!
-                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), (int) (templateBitmap.getWidth() / w * h), true);
+//                Bitmap perfectBitmap = null;
+//
+//                double alpha = templateBitmap.getWidth() / w;
+//                double beta = templateBitmap.getHeight() / h;
+//
+//                Log.d("OKAY2", "W : " + templateBitmap.getWidth() + "\nH : " + templateBitmap.getHeight());
+//                Log.d("OKAY2", "w' : " + w + "\nh' : " + h);
+//                Log.e("OKAY2", "alpha : " + alpha + "\nbeta : " + beta);
+//
+//                if (alpha < beta) {
+//                    perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), (int) (templateBitmap.getWidth() / w * h), true);
+//                }
+//                else {
+//                    perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) (templateBitmap.getHeight() / h * w), templateBitmap.getHeight(), true);
+//                }
+                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
+
+//                Log.d("OKAY2", "bitmap size ( " + perfectBitmap.getWidth() + " : " + perfectBitmap.getHeight() + " )");
 
                 if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
                     matrixBitmap.recycle();
