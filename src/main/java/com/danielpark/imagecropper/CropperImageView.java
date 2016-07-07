@@ -894,39 +894,36 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
                 double diff = Math.abs(L1 - L2) / 2;
 
-                h = h * (1 + diff * 1.5 / w);
+                float X2 = centerPoint.x;
+                float Y2 = centerPoint.y;
+                float X1 = coordinatePoints[1].x;
+                float Y1 = coordinatePoints[1].y;
+                float CX = coordinatePoints[2].x;
+                float CY = coordinatePoints[2].y;
 
-//                float[] dsc = new float[]{
-//                        0, 0,
-//                        templateBitmap.getWidth(), 0,
-//                        templateBitmap.getWidth(), (float) (templateBitmap.getWidth() / w * h),
-//                        0,(float) (templateBitmap.getWidth() / w * h)
-//                };
+                double leftTop = Math.atan((Y2 - CY) / (X2 - CX));
+                double leftBottom = Math.atan((Y1 - CY) / (X1 - CX));
+
+                double radian = leftTop - leftBottom;
+
+//                double angle = Math.abs(radian * 180 / Math.PI);
+//                Log.d("OKAY2", "angle : " + angle);
+
+                double factor = Math.abs(90 / (radian * 180 / Math.PI));
+                double diffFactor = (1 + diff * 1.45 / w);
+
+//                Log.d("OKAY2", "factor : " + factor);
+//                Log.d("OKAY2", "diffFactor : " + diffFactor);
+//                Log.d("OKAY2", " f / 2 : " +  ((factor + diffFactor) / 2));
+
+                h = h * ((factor + diffFactor) / 2);
 
                 Matrix matrix = new Matrix();
                 matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
                 canvas.drawBitmap(extra, matrix, null);
 
-                // Daniel (2016-07-01 18:22:45): Fixed the issue that Crop_Stretch's image ratio is not right!
-//                Bitmap perfectBitmap = null;
-//
-//                double alpha = templateBitmap.getWidth() / w;
-//                double beta = templateBitmap.getHeight() / h;
-//
-//                Log.d("OKAY2", "W : " + templateBitmap.getWidth() + "\nH : " + templateBitmap.getHeight());
-//                Log.d("OKAY2", "w' : " + w + "\nh' : " + h);
-//                Log.e("OKAY2", "alpha : " + alpha + "\nbeta : " + beta);
-//
-//                if (alpha < beta) {
-//                    perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, templateBitmap.getWidth(), (int) (templateBitmap.getWidth() / w * h), true);
-//                }
-//                else {
-//                    perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) (templateBitmap.getHeight() / h * w), templateBitmap.getHeight(), true);
-//                }
                 Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
-
-//                Log.d("OKAY2", "bitmap size ( " + perfectBitmap.getWidth() + " : " + perfectBitmap.getHeight() + " )");
 
                 if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
                     matrixBitmap.recycle();
