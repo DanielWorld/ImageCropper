@@ -1,3 +1,8 @@
+# 1.1.0
+2016-07-11
+- Enable to move CropRect by touch
+- Change crop stretch height factor point from 1.45 -> 1.5
+
 # 1.0.3
 2016-06-24
 
