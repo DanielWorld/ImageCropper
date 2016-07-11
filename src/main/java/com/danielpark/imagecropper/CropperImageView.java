@@ -59,9 +59,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
      */
     private Point centerPoint = new Point();
 
-    private int touchedButtonIndex = -1;    // Daniel (2016-06-21 16:53:58): touched button's index
-    // Daniel (2016-06-21 16:54:19): Start from right-top to clockwise 0, 1, 2, 3
-
     private RectF mCropRect = new RectF();    // Daniel (2016-06-22 14:08:55): Current cropped shape's rectangle scope
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
@@ -496,12 +493,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
             } else {
                 path.reset();
 
-//                if (touchedButtonIndex == 3) {
-                // Daniel (2016-06-21 16:55:26): if touched button's index == 3, set!
-                // because centerPoint.x, centerPoint.y is standard of touched button's index == 3
+                // Daniel (2016-06-21 16:55:26): centerPoint.x, centerPoint.y is standard of coordinatePoints[3]
                 centerPoint.x = coordinatePoints[3].x;
                 centerPoint.y = coordinatePoints[3].y;
-//                }
 
                 path.moveTo(centerPoint.x, centerPoint.y);
                 path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
@@ -597,6 +591,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
                             }
                         }
                         drawActionDown(X, Y);
+                    } else if (isCropMode != CropMode.NO_CROP) {
+                        float X = event.getX();
+                        float Y = event.getY();
+                        controlTouchInCropDown(X, Y);
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -680,6 +678,94 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
     };
 
+
+    float cropDownX, cropDownY;
+    /**
+     * It only works in Crop Mode for touch event!!
+     * @param X
+     * @param Y
+     */
+    private void controlTouchInCropDown(float X, float Y) {
+        cropDownX = -1; cropDownY = -1;
+
+        if (isControlBtnInImage) {
+            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+            if (X <= controlBtnSize)
+                return;
+            if (Y <= controlBtnSize)
+                return;
+
+            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+            if (X >= mDrawWidth - controlBtnSize)
+                return;
+            if (Y >= mDrawHeight - controlBtnSize)
+                return;
+
+            RectF displayRect = getDisplayRect();
+
+            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+            if (displayRect != null) {
+                if (X >= displayRect.right - controlBtnSize)
+                    return;
+                if (X <= displayRect.left + controlBtnSize)
+                    return;
+                if (Y >= displayRect.bottom - controlBtnSize)
+                    return;
+                if (Y <= displayRect.top + controlBtnSize)
+                    return;
+            }
+
+            if (X >= mCropRect.right - controlBtnSize)
+                return;
+            if (X <= mCropRect.left + controlBtnSize)
+                return;
+            if (Y >= mCropRect.bottom - controlBtnSize)
+                return;
+            if (Y <= mCropRect.top + controlBtnSize)
+                return;
+        }
+        else {
+            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+            if (X <= controlStrokeSize)
+                return;
+            if (Y <= controlStrokeSize)
+                return;
+
+            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+            if (X >= mDrawWidth - controlStrokeSize)
+                return;
+            if (Y >= mDrawHeight - controlStrokeSize)
+                return;
+
+            RectF displayRect = getDisplayRect();
+
+            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+            if (displayRect != null) {
+                if (X >= displayRect.right - controlStrokeSize)
+                    return;
+                if (X <= displayRect.left + controlStrokeSize)
+                    return;
+                if (Y >= displayRect.bottom - controlStrokeSize)
+                    return;
+                if (Y <= displayRect.top + controlStrokeSize)
+                    return;
+            }
+
+            if (X >= mCropRect.right - controlStrokeSize)
+                return;
+            if (X <= mCropRect.left + controlStrokeSize)
+                return;
+            if (Y >= mCropRect.bottom - controlStrokeSize)
+                return;
+            if (Y <= mCropRect.top + controlStrokeSize)
+                return;
+        }
+
+        cropDownX = X;
+        cropDownY = Y;
+    }
+
+
     /**
      * It only works in Crop Mode for touch event!!
      * @param X
@@ -719,15 +805,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[0].x = X;
                 coordinatePoints[0].y = Y;
 
-                touchedButtonIndex = 0;
-
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
                 coordinatePoints[1].x = X;
                 coordinatePoints[1].y = Y;
-
-                touchedButtonIndex = 1;
 
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
@@ -735,16 +817,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[2].x = X;
                 coordinatePoints[2].y = Y;
 
-                touchedButtonIndex = 2;
-
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
 
                 coordinatePoints[3].x = X;
                 coordinatePoints[3].y = Y;
 
-                touchedButtonIndex = 3;
-
+                invalidate();
+            } else if (isTouchInCropRect(X, Y)){
                 invalidate();
             }
         } else {
@@ -779,15 +859,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[0].x = X;
                 coordinatePoints[0].y = Y;
 
-                touchedButtonIndex = 0;
-
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
                 coordinatePoints[1].x = X;
                 coordinatePoints[1].y = Y;
-
-                touchedButtonIndex = 1;
 
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
@@ -795,19 +871,143 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[2].x = X;
                 coordinatePoints[2].y = Y;
 
-                touchedButtonIndex = 2;
-
                 invalidate();
             } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
 
                 coordinatePoints[3].x = X;
                 coordinatePoints[3].y = Y;
 
-                touchedButtonIndex = 3;
-
+                invalidate();
+            } else if (isTouchInCropRect(X, Y)){
                 invalidate();
             }
         }
+    }
+
+    private boolean isTouchInCropRect(int X, int Y) {
+        if (cropDownX < 0 || cropDownY < 0)
+            return false;
+
+        int xMove = (int) (X - cropDownX);
+        int yMove = (int) (Y - cropDownY);
+
+        boolean invalidX = false;
+        boolean invalidY = false;
+
+        // Daniel (2016-07-11 15:22:50): Check if point is valid!
+        for (Point p : coordinatePoints) {
+            int pX = p.x;
+            int pY = p.y;
+
+            switch (isValidPoint(pX + xMove, pY + yMove)){
+                case 0:
+                    invalidX = true;
+                    break;
+                case 1:
+                    invalidY = true;
+                    break;
+                case 2:
+                    invalidX = true;
+                    invalidY = true;
+                    break;
+                case 3:
+                    break;
+            }
+
+        }
+
+
+        if (invalidX && invalidY)
+            return false;
+
+        for (Point p : coordinatePoints) {
+            if (!invalidX)
+                p.x = p.x + xMove;
+            if (!invalidY)
+                p.y = p.y + yMove;
+        }
+
+        cropDownX = X;
+        cropDownY = Y;
+
+        return true;
+    }
+
+    /**
+     * Check if point is valid <br>
+     * <code>0</code> X is invalid<br> <code>1</code> Y is invalid<br> <code>2</code> all invalid<br> <code>3</code> Nothing is invalid
+     * @param X
+     * @param Y
+     * @return <code>0</code> X is invalid<br> <code>1</code> Y is invalid<br> <code>2</code> all invalid<br> <code>3</code> Nothing is invalid
+     */
+    private int isValidPoint(float X, float Y) {
+
+        boolean xInvalid = false;
+        boolean yInvalid = false;
+
+        if (isControlBtnInImage) {
+            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+            if (X <= controlBtnSize)
+                xInvalid = true;
+            if (Y <= controlBtnSize)
+                yInvalid = true;
+
+            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+            if (X >= mDrawWidth - controlBtnSize)
+                xInvalid = true;
+            if (Y >= mDrawHeight - controlBtnSize)
+                yInvalid = true;
+
+            RectF displayRect = getDisplayRect();
+
+            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+            if (displayRect != null) {
+                if (X >= displayRect.right - controlBtnSize)
+                    xInvalid = true;
+                if (X <= displayRect.left + controlBtnSize)
+                    xInvalid = true;
+                if (Y >= displayRect.bottom - controlBtnSize)
+                    yInvalid = true;
+                if (Y <= displayRect.top + controlBtnSize)
+                    yInvalid = true;
+            }
+        }
+        else {
+            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+            if (X <= controlStrokeSize)
+                xInvalid = true;
+            if (Y <= controlStrokeSize)
+                yInvalid = true;
+
+            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+            if (X >= mDrawWidth - controlStrokeSize)
+                xInvalid = true;
+            if (Y >= mDrawHeight - controlStrokeSize)
+                yInvalid = true;
+
+            RectF displayRect = getDisplayRect();
+
+            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+            if (displayRect != null) {
+                if (X >= displayRect.right - controlStrokeSize)
+                    xInvalid = true;
+                if (X <= displayRect.left + controlStrokeSize)
+                    xInvalid = true;
+                if (Y >= displayRect.bottom - controlStrokeSize)
+                    yInvalid = true;
+                if (Y <= displayRect.top + controlStrokeSize)
+                    yInvalid = true;
+            }
+        }
+
+        if (xInvalid && yInvalid)
+            return 2;
+        else if (xInvalid)
+            return 0;
+        else if (yInvalid)
+            return 1;
+        else
+            return 3;
     }
 
     @Override
@@ -910,7 +1110,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 //                Log.d("OKAY2", "angle : " + angle);
 
                 double factor = Math.abs(90 / (radian * 180 / Math.PI));
-                double diffFactor = (1 + diff * 1.45 / w);
+                double diffFactor = (1 + diff * 1.5 / w);
 
 //                Log.d("OKAY2", "factor : " + factor);
 //                Log.d("OKAY2", "diffFactor : " + diffFactor);
