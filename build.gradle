@@ -18,7 +18,7 @@ publish {
     userOrg = 'danielworld'
     groupId = 'com.danielworld'
     artifactId = 'image-crop-library'
-    publishVersion = '1.1.1'
+    publishVersion = '1.1.2'
     desc = 'A cropper library for image that modifies all shape'
     website = 'https://github.com/DanielWorld/ImageCropper'
     issueTracker = "${website}/issues"
@@ -33,7 +33,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.1.1"
+        versionName "1.1.2"
     }
 
     lintOptions {
