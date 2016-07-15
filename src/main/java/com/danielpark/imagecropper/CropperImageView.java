@@ -82,6 +82,12 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     public CropperImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        // Daniel (2016-07-15 18:09:16): below 4.0.4 there is issue with clip path java.lang.UnsupportedOperationException
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
         setScaleType(ScaleType.MATRIX);
 
         for (int i = 0; i < coordinatePoints.length; i++) {
