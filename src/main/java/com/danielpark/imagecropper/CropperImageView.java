@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -75,6 +76,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private OnUndoRedoStateChangeListener onUndoRedoStateChangeListener;
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
+
+	private int imageDegree = 0; // Daniel (2016-07-25 15:10:14): Get degree when image was set!
 
     public CropperImageView(Context context) {
         this (context, null);
@@ -200,6 +203,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
+		imageDegree = degree;	// get degree parameter
+
         initializeDrawSetting();
 
         setImageBitmap(null);
@@ -1016,174 +1021,362 @@ public class CropperImageView extends ImageView implements CropperInterface{
             return 3;
     }
 
-    @Override
-    public File getCropImage() {
-        Bitmap originalBitmap = getOriginalBitmap();
-        int oriWidth = 0;
-        int oriHeight = 0;
-        if (originalBitmap != null) {
-            oriWidth = originalBitmap.getWidth();
-            oriHeight = originalBitmap.getHeight();
-        }
+	/**
+	 * {@link CropMode#CROP_STRETCH} mode
+	 * @return
+	 */
+	private File getCropStretch() {
+		Bitmap originalBitmap = getOriginalBitmap();
+		int oriWidth = 0;
+		int oriHeight = 0;
+		if (originalBitmap != null) {
+			oriWidth = originalBitmap.getWidth();
+			oriHeight = originalBitmap.getHeight();
+		}
 
-        if (oriWidth == 0 || oriHeight == 0) {
-            oriWidth = mDrawWidth;
-            oriHeight = mDrawHeight;
-        }
+		if (oriWidth == 0 || oriHeight == 0) {
+			oriWidth = mDrawWidth;
+			oriHeight = mDrawHeight;
+		}
 
-        Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
-        Bitmap templateBitmap = null;
+		RectF displayRect = getDisplayRect();
 
-        templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
-//
-        Canvas canvas = new Canvas(templateBitmap);
-        canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
+		float X_Factor = (float) oriWidth / displayRect.width();
+		float Y_Factor = (float) oriHeight / displayRect.height();
 
-        if (isCropMode == CropMode.NO_CROP) {
-            for (DrawInfo v : arrayDrawInfo) {
-                canvas.drawPath(v.getPath(), v.getPaint());
-            }
+		// if there is rotation issue than you must recalculate Factor
+		if (imageDegree % 360 == 90 || imageDegree % 360 == 270) {
+			X_Factor = (float) oriHeight / displayRect.width();
+			Y_Factor = (float) oriWidth / displayRect.height();
+		}
 
-            RectF rectF = getDisplayRect();
+		Log.d("OKAY", "X_Factor : " + X_Factor);
+		Log.d("OKAY", "Y_Factor : " + Y_Factor);
 
-            int width = (int) (rectF.right - rectF.left);
-            int height = (int) (rectF.bottom - rectF.top);
-            // Daniel (2016-06-29 11:58:18): Okay, To prevent IllegalArgumentException y + height must be <= bitmap.height() or x
-            if (width > templateBitmap.getWidth())
-                width = templateBitmap.getWidth();
+		// Original bitmap is bigger than display bitmap
+		if (X_Factor > 1.0f && Y_Factor > 1.0f) {
 
-            if (height > templateBitmap.getHeight())
-                height = templateBitmap.getHeight();
+			Matrix mMatrix = new Matrix();
+			mMatrix.setRotate(imageDegree, oriWidth * 0.5f, oriHeight * 0.5f);
 
-            Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) rectF.left, (int) rectF.top, width, height);
+			Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
 
-            // Daniel (2016-06-22 14:50:28): recycle previous image
-            if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
-                templateBitmap.recycle();
-                templateBitmap = null;
-            }
+			Bitmap templateBitmap = Bitmap.createBitmap(matrixBitmap.getWidth(), matrixBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
-            if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
-                matrixBitmap.recycle();
-                matrixBitmap = null;
-            }
-            return saveFile(cropImageBitmap);
-        }
-        else {
-//        // Daniel (2016-06-23 23:37:23): is StretchMode?
-            if (isCropMode == CropMode.CROP_STRETCH) {
-                Bitmap extra = templateBitmap.copy(templateBitmap.getConfig(), true);
+			float widthGap = Math.abs(mDrawWidth - displayRect.width());
+			float heightGap = Math.abs(mDrawHeight - displayRect.height());
 
-                float[] src = new float[]{
-                        centerPoint.x, centerPoint.y,
-                        coordinatePoints[0].x, coordinatePoints[0].y,
-                        coordinatePoints[1].x, coordinatePoints[1].y,
-                        coordinatePoints[2].x, coordinatePoints[2].y
-                };
+			float removeX = displayRect.left;
+			float removeY = displayRect.top;
 
-                float[] dsc = new float[]{
-                        0, 0,
-                        templateBitmap.getWidth(), 0,
-                        templateBitmap.getWidth(), templateBitmap.getHeight(),
-                        0, templateBitmap.getHeight()
-                };
+			if (widthGap > heightGap)
+				removeY = 0;
+			else
+				removeX = 0;
 
-                // Daniel (2016-07-01 18:21:54): Find perfect ratio of IMAGE
-                double L1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[0].x, 2) + Math.pow(centerPoint.y - coordinatePoints[0].y, 2));
-                double L2 = Math.sqrt(Math.pow(coordinatePoints[2].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[2].y - coordinatePoints[1].y, 2));
+			float[] src = new float[]{
+					(centerPoint.x - removeX) * X_Factor, (centerPoint.y - removeY) * Y_Factor,
+					(coordinatePoints[0].x - removeX) * X_Factor, (coordinatePoints[0].y - removeY) * Y_Factor,
+					(coordinatePoints[1].x - removeX) * X_Factor, (coordinatePoints[1].y - removeY) * Y_Factor,
+					(coordinatePoints[2].x - removeX) * X_Factor, (coordinatePoints[2].y - removeY) * Y_Factor
+			};
 
-                double M1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[2].x, 2) + Math.pow(centerPoint.y - coordinatePoints[2].y, 2));
-                double M2 = Math.sqrt(Math.pow(coordinatePoints[0].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[0].y - coordinatePoints[1].y, 2));
+			// Daniel (2016-07-01 18:21:54): Find perfect ratio of IMAGE
+			double L1 = Math.sqrt(Math.pow(src[0] - src[2], 2) + Math.pow(src[1] - src[3], 2));
+			double L2 = Math.sqrt(Math.pow(src[6] - src[4], 2) + Math.pow(src[7] - src[5], 2));
 
-                double h = ( M1 + M2 ) / 2;
-                double w = ( L1 + L2 ) / 2;
+			double M1 = Math.sqrt(Math.pow(src[0] - src[6], 2) + Math.pow(src[1] - src[7], 2));
+			double M2 = Math.sqrt(Math.pow(src[2] - src[4], 2) + Math.pow(src[3] - src[5], 2));
 
-                double diff = Math.abs(L1 - L2) / 2;
+			double h = (M1 + M2) / 2;
+			double w = (L1 + L2) / 2;
 
-                float X2 = centerPoint.x;
-                float Y2 = centerPoint.y;
-                float X1 = coordinatePoints[1].x;
-                float Y1 = coordinatePoints[1].y;
-                float CX = coordinatePoints[2].x;
-                float CY = coordinatePoints[2].y;
+			double diff = Math.abs(L1 - L2) / 2;
 
-                double leftTop = Math.atan((Y2 - CY) / (X2 - CX));
-                double leftBottom = Math.atan((Y1 - CY) / (X1 - CX));
+			float X2 = src[0];
+			float Y2 = src[1];
+			float X1 = src[4];
+			float Y1 = src[5];
+			float CX = src[6];
+			float CY = src[7];
 
-                double radian = leftTop - leftBottom;
+			double leftTop = Math.atan((Y2 - CY) / (X2 - CX));
+			double leftBottom = Math.atan((Y1 - CY) / (X1 - CX));
+
+			double radian = leftTop - leftBottom;
 
 //                double angle = Math.abs(radian * 180 / Math.PI);
 //                Log.d("OKAY2", "angle : " + angle);
 
-                double factor = Math.abs(90 / (radian * 180 / Math.PI));
-                double diffFactor = (1 + diff * 1.5 / w);
+			double factor = Math.abs(90 / (radian * 180 / Math.PI));
+			double diffFactor = (1 + diff * 1.5 / w);
 
 //                Log.d("OKAY2", "factor : " + factor);
 //                Log.d("OKAY2", "diffFactor : " + diffFactor);
 //                Log.d("OKAY2", " f / 2 : " +  ((factor + diffFactor) / 2));
 
-                h = h * ((factor + diffFactor) / 2);
+			h = h * ((factor + diffFactor) / 2);
 
-                Matrix matrix = new Matrix();
-                matrix.setPolyToPoly(src, 0, dsc, 0, 4);
+			float[] dsc = new float[]{
+					0, 0,
+					templateBitmap.getWidth(), 0,
+					templateBitmap.getWidth(), templateBitmap.getHeight(),
+					0, templateBitmap.getHeight()
+			};
 
-                canvas.drawBitmap(extra, matrix, null);
+			Matrix matrix = new Matrix();
+			matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
-                Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
+			Canvas canvas = new Canvas(templateBitmap);
+			canvas.drawBitmap(matrixBitmap, matrix, null);
 
-                if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
-                    matrixBitmap.recycle();
-                    matrixBitmap = null;
-                }
+			Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
 
-                if (templateBitmap != null && templateBitmap != perfectBitmap && !templateBitmap.isRecycled()) {
-                    templateBitmap.recycle();
-                    templateBitmap = null;
-                }
+			if (originalBitmap != matrixBitmap && matrixBitmap != perfectBitmap && matrixBitmap != null && !matrixBitmap.isRecycled()) {
+				matrixBitmap.recycle();
+				matrixBitmap = null;
+			}
 
-                return saveFile(perfectBitmap);
+			if (originalBitmap != templateBitmap && templateBitmap != perfectBitmap && templateBitmap != null && !templateBitmap.isRecycled()) {
+				templateBitmap.recycle();
+				templateBitmap = null;
+			}
 
-            } else {
+			if (originalBitmap != perfectBitmap) {
+				return saveFile(perfectBitmap, true);
+			} else {
+				return saveFile(perfectBitmap, false);
+			}
+		}
+		// Daniel (2016-07-25 17:37:23): Original bitmap is smaller than display bitmap
+		else {
+			Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
+			Bitmap templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
+//
+			Canvas canvas = new Canvas(templateBitmap);
+			canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
 
-                path.reset();
+			Bitmap extra = templateBitmap.copy(templateBitmap.getConfig(), true);
 
-                path.moveTo(centerPoint.x, centerPoint.y);
-                path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+			float[] src = new float[]{
+					centerPoint.x, centerPoint.y,
+					coordinatePoints[0].x, coordinatePoints[0].y,
+					coordinatePoints[1].x, coordinatePoints[1].y,
+					coordinatePoints[2].x, coordinatePoints[2].y
+			};
 
-                path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
-                path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
-                path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+			float[] dsc = new float[]{
+					0, 0,
+					templateBitmap.getWidth(), 0,
+					templateBitmap.getWidth(), templateBitmap.getHeight(),
+					0, templateBitmap.getHeight()
+			};
 
-                canvas.clipPath(path, Region.Op.DIFFERENCE);
-                canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+			// Daniel (2016-07-01 18:21:54): Find perfect ratio of IMAGE
+			double L1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[0].x, 2) + Math.pow(centerPoint.y - coordinatePoints[0].y, 2));
+			double L2 = Math.sqrt(Math.pow(coordinatePoints[2].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[2].y - coordinatePoints[1].y, 2));
 
-                if (isCropMode == CropMode.CROP_SHRINK) {
-                    Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
+			double M1 = Math.sqrt(Math.pow(centerPoint.x - coordinatePoints[2].x, 2) + Math.pow(centerPoint.y - coordinatePoints[2].y, 2));
+			double M2 = Math.sqrt(Math.pow(coordinatePoints[0].x - coordinatePoints[1].x, 2) + Math.pow(coordinatePoints[0].y - coordinatePoints[1].y, 2));
 
-                    // Daniel (2016-06-22 14:50:28): recycle previous image
-                    if (templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
-                        templateBitmap.recycle();
-                        templateBitmap = null;
-                    }
+			double h = ( M1 + M2 ) / 2;
+			double w = ( L1 + L2 ) / 2;
 
-                    if (matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
-                        matrixBitmap.recycle();
-                        matrixBitmap = null;
-                    }
-                    return saveFile(cropImageBitmap);
-                } else {
-                    if (matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
-                        matrixBitmap.recycle();
-                        matrixBitmap = null;
-                    }
+			double diff = Math.abs(L1 - L2) / 2;
 
-                    return saveFile(templateBitmap);
-                }
-            }
-        }
+			float X2 = centerPoint.x;
+			float Y2 = centerPoint.y;
+			float X1 = coordinatePoints[1].x;
+			float Y1 = coordinatePoints[1].y;
+			float CX = coordinatePoints[2].x;
+			float CY = coordinatePoints[2].y;
+
+			double leftTop = Math.atan((Y2 - CY) / (X2 - CX));
+			double leftBottom = Math.atan((Y1 - CY) / (X1 - CX));
+
+			double radian = leftTop - leftBottom;
+
+//                double angle = Math.abs(radian * 180 / Math.PI);
+//                Log.d("OKAY2", "angle : " + angle);
+
+			double factor = Math.abs(90 / (radian * 180 / Math.PI));
+			double diffFactor = (1 + diff * 1.5 / w);
+
+//                Log.d("OKAY2", "factor : " + factor);
+//                Log.d("OKAY2", "diffFactor : " + diffFactor);
+//                Log.d("OKAY2", " f / 2 : " +  ((factor + diffFactor) / 2));
+
+			h = h * ((factor + diffFactor) / 2);
+
+			Matrix matrix = new Matrix();
+			matrix.setPolyToPoly(src, 0, dsc, 0, 4);
+
+			canvas.drawBitmap(extra, matrix, null);
+
+			Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
+
+			if (originalBitmap != matrixBitmap && matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
+				matrixBitmap.recycle();
+				matrixBitmap = null;
+			}
+
+			if (originalBitmap != templateBitmap && templateBitmap != null && templateBitmap != perfectBitmap && !templateBitmap.isRecycled()) {
+				templateBitmap.recycle();
+				templateBitmap = null;
+			}
+
+			if (originalBitmap != extra && extra != null && extra != perfectBitmap && !extra.isRecycled()) {
+				extra.recycle();
+				extra = null;
+			}
+
+			if (originalBitmap != perfectBitmap)
+				return saveFile(perfectBitmap, true);
+			else
+				return saveFile(perfectBitmap, false);
+		}
+	}
+
+	private File getNoCrop() {
+		Bitmap originalBitmap = getOriginalBitmap();
+		int oriWidth = 0;
+		int oriHeight = 0;
+		if (originalBitmap != null) {
+			oriWidth = originalBitmap.getWidth();
+			oriHeight = originalBitmap.getHeight();
+		}
+
+		if (oriWidth == 0 || oriHeight == 0) {
+			oriWidth = mDrawWidth;
+			oriHeight = mDrawHeight;
+		}
+
+		Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
+		Bitmap templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
+//
+		Canvas canvas = new Canvas(templateBitmap);
+		canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
+
+		for (DrawInfo v : arrayDrawInfo) {
+			canvas.drawPath(v.getPath(), v.getPaint());
+		}
+
+		RectF rectF = getDisplayRect();
+
+		int width = (int) (rectF.right - rectF.left);
+		int height = (int) (rectF.bottom - rectF.top);
+		// Daniel (2016-06-29 11:58:18): Okay, To prevent IllegalArgumentException y + height must be <= bitmap.height() or x
+		if (width > templateBitmap.getWidth())
+			width = templateBitmap.getWidth();
+
+		if (height > templateBitmap.getHeight())
+			height = templateBitmap.getHeight();
+
+		Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) rectF.left, (int) rectF.top, width, height);
+
+		// Daniel (2016-06-22 14:50:28): recycle previous image
+		if (originalBitmap != templateBitmap && templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
+			templateBitmap.recycle();
+			templateBitmap = null;
+		}
+
+		if (originalBitmap != matrixBitmap && matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
+			matrixBitmap.recycle();
+			matrixBitmap = null;
+		}
+
+		if (originalBitmap != cropImageBitmap)
+			return saveFile(cropImageBitmap, true);
+		else
+			return saveFile(cropImageBitmap, false);
+	}
+
+	private File getCropElse() {
+		Bitmap originalBitmap = getOriginalBitmap();
+		int oriWidth = 0;
+		int oriHeight = 0;
+		if (originalBitmap != null) {
+			oriWidth = originalBitmap.getWidth();
+			oriHeight = originalBitmap.getHeight();
+		}
+
+		if (oriWidth == 0 || oriHeight == 0) {
+			oriWidth = mDrawWidth;
+			oriHeight = mDrawHeight;
+		}
+
+		Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
+		Bitmap templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
+//
+		Canvas canvas = new Canvas(templateBitmap);
+		canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
+
+		path.reset();
+
+		path.moveTo(centerPoint.x, centerPoint.y);
+		path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+
+		path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
+		path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
+		path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+
+		canvas.clipPath(path, Region.Op.DIFFERENCE);
+		canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+
+		if (isCropMode == CropMode.CROP_SHRINK) {
+			Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
+
+			// Daniel (2016-06-22 14:50:28): recycle previous image
+			if (originalBitmap != templateBitmap && templateBitmap != null && templateBitmap != cropImageBitmap && !templateBitmap.isRecycled()) {
+				templateBitmap.recycle();
+				templateBitmap = null;
+			}
+
+			if (originalBitmap != matrixBitmap && matrixBitmap != null && matrixBitmap != cropImageBitmap && !matrixBitmap.isRecycled()) {
+				matrixBitmap.recycle();
+				matrixBitmap = null;
+			}
+
+			if (originalBitmap != cropImageBitmap)
+				return saveFile(cropImageBitmap, true);
+			else
+				return saveFile(cropImageBitmap, false);
+		} else {
+			if (originalBitmap != matrixBitmap && matrixBitmap != null && matrixBitmap != templateBitmap && !matrixBitmap.isRecycled()) {
+				matrixBitmap.recycle();
+				matrixBitmap = null;
+			}
+
+			if (originalBitmap != templateBitmap)
+				return saveFile(templateBitmap, true);
+			else
+				return saveFile(templateBitmap, false);
+		}
+	}
+
+    @Override
+    public File getCropImage() {
+
+		switch (isCropMode) {
+			case CROP_STRETCH:
+				return getCropStretch();
+			case NO_CROP:
+				return getNoCrop();
+			default:
+				return getCropElse();
+		}
     }
 
-    private File saveFile(Bitmap bitmap) {
+	@Override
+	public void onRecycleBitmap() {
+		try {
+			getOriginalBitmap().recycle();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	private File saveFile(Bitmap bitmap, boolean shouldRecycle) {
         OutputStream output = null;
 
         // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
@@ -1211,8 +1404,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (bitmap != null && !bitmap.isRecycled())
-                bitmap.recycle();
+            if (shouldRecycle && bitmap != null && !bitmap.isRecycled()) {
+				bitmap.recycle();
+				bitmap = null;
+			}
         }
 
         return dstFile;

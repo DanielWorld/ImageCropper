@@ -102,4 +102,9 @@ public interface CropperInterface {
      * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
      */
     File getCropImage();
+
+	/**
+	 * Try to recycle current rendered bitmap
+	 */
+	void onRecycleBitmap();
 }
