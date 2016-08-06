@@ -1060,8 +1060,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 		Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
 
-		Bitmap templateBitmap = Bitmap.createBitmap(matrixBitmap.getWidth(), matrixBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-
 		float widthGap = Math.abs(mDrawWidth - displayRect.width());
 		float heightGap = Math.abs(mDrawHeight - displayRect.height());
 
@@ -1116,29 +1114,31 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 		h = h * ((factor + diffFactor) / 2);
 
+		// Daniel (2016-08-06 18:18:14): If h is bigger than original image, then it should be fixed
+		// It might happened to be higher than original picture...
+		if (h > oriHeight) {
+			w = w * (oriHeight / h);
+			h = oriHeight;	// h = h * (oriHeight / h);
+		}
+
 		float[] dsc = new float[]{
 				0, 0,
-				templateBitmap.getWidth(), 0,
-				templateBitmap.getWidth(), templateBitmap.getHeight(),
-				0, templateBitmap.getHeight()
+				(float) w, 0,
+				(float) w, (float) h,
+				0, (float) h
 		};
+
+		Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
 
 		Matrix matrix = new Matrix();
 		matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
-		Canvas canvas = new Canvas(templateBitmap);
+		Canvas canvas = new Canvas(perfectBitmap);
 		canvas.drawBitmap(matrixBitmap, matrix, null);
-
-		Bitmap perfectBitmap = Bitmap.createScaledBitmap(templateBitmap, (int) w, (int) h, true);
 
 		if (originalBitmap != matrixBitmap && matrixBitmap != perfectBitmap && matrixBitmap != null && !matrixBitmap.isRecycled()) {
 			matrixBitmap.recycle();
 			matrixBitmap = null;
-		}
-
-		if (originalBitmap != templateBitmap && templateBitmap != perfectBitmap && templateBitmap != null && !templateBitmap.isRecycled()) {
-			templateBitmap.recycle();
-			templateBitmap = null;
 		}
 
 		if (originalBitmap != perfectBitmap) {
