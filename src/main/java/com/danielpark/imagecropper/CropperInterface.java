@@ -2,6 +2,7 @@ package com.danielpark.imagecropper;
 
 import android.graphics.Bitmap;
 
+import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 import java.io.File;
@@ -99,9 +100,21 @@ public interface CropperInterface {
     void setUndoRedoListener(OnUndoRedoStateChangeListener listener);
 
     /**
+     * When user left touch down & move, it will return thumbnail bitmap
+     * @param listener
+     */
+    void setThumbnailChangeListener(OnThumbnailChangeListener listener);
+
+    /**
      * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
      */
     File getCropImage();
+
+    /**
+     * Daniel (2016-08-08 11:58:50): Get thumbnail crop image bitmap
+     * @return
+     */
+    Bitmap getCropImageThumbnail();
 
 	/**
 	 * Try to recycle current rendered bitmap

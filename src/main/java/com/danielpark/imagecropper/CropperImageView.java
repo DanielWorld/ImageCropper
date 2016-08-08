@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
@@ -73,6 +74,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private ArrayList<DrawInfo> arrayUndoneDrawInfo = new ArrayList<>();
 
     private OnUndoRedoStateChangeListener onUndoRedoStateChangeListener;
+    private OnThumbnailChangeListener onThumbnailChangeListener;
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
 
@@ -460,6 +462,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
+    public void setThumbnailChangeListener(OnThumbnailChangeListener listener) {
+        onThumbnailChangeListener = listener;
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (canvas == null) return;
@@ -687,6 +694,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 case MotionEvent.ACTION_UP:
                     if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE){
                         drawActionUp();
+                    } else if (isCropMode != CropMode.NO_CROP) {
+                        if (onThumbnailChangeListener != null)
+                            onThumbnailChangeListener.onThumbnailChanged(getCropStretchThumbnailBitmap());
                     }
                     break;
             }
@@ -1281,6 +1291,142 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		}
 	}
 
+    /**
+     * it returns crop-stretch thumbnail bitmap <br>
+     *     current size is 80dp
+     */
+    private Bitmap getCropStretchThumbnailBitmap() {
+        Bitmap originalBitmap = getOriginalBitmap();
+        int oriWidth = 0;
+        int oriHeight = 0;
+        if (originalBitmap != null) {
+            oriWidth = originalBitmap.getWidth();
+            oriHeight = originalBitmap.getHeight();
+        }
+
+        if (oriWidth == 0 || oriHeight == 0) {
+            oriWidth = mDrawWidth;
+            oriHeight = mDrawHeight;
+        }
+
+        RectF displayRect = getDisplayRect();
+
+        float X_Factor = (float) oriWidth / displayRect.width();
+        float Y_Factor = (float) oriHeight / displayRect.height();
+
+        // if there is rotation issue than you must recalculate Factor
+        if (imageDegree % 360 == 90 || imageDegree % 360 == 270) {
+            X_Factor = (float) oriHeight / displayRect.width();
+            Y_Factor = (float) oriWidth / displayRect.height();
+        }
+
+        Matrix mMatrix = new Matrix();
+        mMatrix.setRotate(imageDegree, oriWidth * 0.5f, oriHeight * 0.5f);
+
+        Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
+
+        float widthGap = Math.abs(mDrawWidth - displayRect.width());
+        float heightGap = Math.abs(mDrawHeight - displayRect.height());
+
+        float removeX = displayRect.left;
+        float removeY = displayRect.top;
+
+        if (widthGap > heightGap)
+            removeY = 0;
+        else
+            removeX = 0;
+
+        float[] src = new float[]{
+                (centerPoint.x - removeX) * X_Factor, (centerPoint.y - removeY) * Y_Factor,
+                (coordinatePoints[0].x - removeX) * X_Factor, (coordinatePoints[0].y - removeY) * Y_Factor,
+                (coordinatePoints[1].x - removeX) * X_Factor, (coordinatePoints[1].y - removeY) * Y_Factor,
+                (coordinatePoints[2].x - removeX) * X_Factor, (coordinatePoints[2].y - removeY) * Y_Factor
+        };
+
+        // Daniel (2016-07-01 18:21:54): Find perfect ratio of IMAGE
+        double L1 = Math.sqrt(Math.pow(src[0] - src[2], 2) + Math.pow(src[1] - src[3], 2));
+        double L2 = Math.sqrt(Math.pow(src[6] - src[4], 2) + Math.pow(src[7] - src[5], 2));
+
+        double M1 = Math.sqrt(Math.pow(src[0] - src[6], 2) + Math.pow(src[1] - src[7], 2));
+        double M2 = Math.sqrt(Math.pow(src[2] - src[4], 2) + Math.pow(src[3] - src[5], 2));
+
+        double h = (M1 + M2) / 2;
+        double w = (L1 + L2) / 2;
+
+        double diff = Math.abs(L1 - L2) / 2;
+
+        float X2 = src[0];
+        float Y2 = src[1];
+        float X1 = src[4];
+        float Y1 = src[5];
+        float CX = src[6];
+        float CY = src[7];
+
+        double leftTop = Math.atan((Y2 - CY) / (X2 - CX));
+        double leftBottom = Math.atan((Y1 - CY) / (X1 - CX));
+
+        double radian = leftTop - leftBottom;
+
+//                double angle = Math.abs(radian * 180 / Math.PI);
+//                Log.d("OKAY2", "angle : " + angle);
+
+        double factor = Math.abs(90 / (radian * 180 / Math.PI));
+        double diffFactor = (1 + diff * 1.5 / w);
+
+//                Log.d("OKAY2", "factor : " + factor);
+//                Log.d("OKAY2", "diffFactor : " + diffFactor);
+//                Log.d("OKAY2", " f / 2 : " +  ((factor + diffFactor) / 2));
+
+        h = h * ((factor + diffFactor) / 2);
+
+        // Daniel (2016-08-06 18:18:14): If h is bigger than specified size, then it should be fixed
+        // It might happened to be higher than specified size...
+        // or vice versa
+        int customSize = ConvertUtil.convertDpToPixel(80);
+
+        double wRatio = customSize / w;
+        double hRatio = customSize / h;
+
+        if (w > customSize && h > customSize) {
+            if (wRatio > hRatio) {
+                w = w * hRatio;
+                h = customSize; // h = h * (customSize / h);
+            }
+            else {
+                w = customSize;
+                h = h * wRatio;
+            }
+        } else if (h > customSize) {
+            w = w * hRatio;
+            h = customSize;	// h = h * (oriHeight / h);
+        } else if (w > customSize) {
+            w = customSize;
+            h = h * wRatio;
+        }
+
+        float[] dsc = new float[]{
+                0, 0,
+                (float) w, 0,
+                (float) w, (float) h,
+                0, (float) h
+        };
+
+        Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
+
+        Matrix matrix = new Matrix();
+        matrix.setPolyToPoly(src, 0, dsc, 0, 4);
+
+        Canvas canvas = new Canvas(perfectBitmap);
+        canvas.drawBitmap(matrixBitmap, matrix, null);
+
+        if (originalBitmap != matrixBitmap && matrixBitmap != perfectBitmap && matrixBitmap != null && !matrixBitmap.isRecycled()) {
+            matrixBitmap.recycle();
+            matrixBitmap = null;
+        }
+
+        return perfectBitmap;
+    }
+
     @Override
     public File getCropImage() {
 
@@ -1294,7 +1440,17 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		}
     }
 
-	@Override
+    @Override
+    public Bitmap getCropImageThumbnail() {
+
+        switch (isCropMode) {
+            case CROP_STRETCH:
+                return getCropStretchThumbnailBitmap();
+        }
+        return null;
+    }
+
+    @Override
 	public void onRecycleBitmap() {
 		try {
 			getOriginalBitmap().recycle();
@@ -1759,6 +1915,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     protected void onDetachedFromWindow() {
         onUndoRedoStateChangeListener = null;
+        onThumbnailChangeListener = null;
         super.onDetachedFromWindow();
     }
 }
