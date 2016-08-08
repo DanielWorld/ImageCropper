@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 public interface OnThumbnailChangeListener {
 
     /**
-     * When user left touch down & move then it will return thumbnail bitmap
+     * When user left touch down and move then it will return thumbnail bitmap
      * @param bitmap
      */
     void onThumbnailChanged(Bitmap bitmap);

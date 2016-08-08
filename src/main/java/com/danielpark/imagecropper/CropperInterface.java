@@ -100,7 +100,7 @@ public interface CropperInterface {
     void setUndoRedoListener(OnUndoRedoStateChangeListener listener);
 
     /**
-     * When user left touch down & move, it will return thumbnail bitmap
+     * When user left touch down and move, it will return thumbnail bitmap
      * @param listener
      */
     void setThumbnailChangeListener(OnThumbnailChangeListener listener);

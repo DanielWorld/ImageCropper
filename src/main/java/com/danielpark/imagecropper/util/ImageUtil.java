@@ -40,7 +40,7 @@ public class ImageUtil {
 	}
 
 	/**
-	 * Fit ImageView size with width & height to display screen
+	 * Fit ImageView size with width and height to display screen
 	 * @param iv
 	 * @param bitmapWidth
 	 * @param bitmapHeight
