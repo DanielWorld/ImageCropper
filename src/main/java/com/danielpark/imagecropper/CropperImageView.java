@@ -1054,6 +1054,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
 			oriHeight = mDrawHeight;
 		}
 
+//        Log.d("OKAY2", "oriWidth : " + oriWidth);
+//        Log.d("OKAY2", "oriHeight : " + oriHeight);
+
 		RectF displayRect = getDisplayRect();
 
 		float X_Factor = (float) oriWidth / displayRect.width();
@@ -1126,10 +1129,30 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 		// Daniel (2016-08-06 18:18:14): If h is bigger than original image, then it should be fixed
 		// It might happened to be higher than original picture...
-		if (h > oriHeight) {
-			w = w * (oriHeight / h);
-			h = oriHeight;	// h = h * (oriHeight / h);
-		}
+        // Daniel (2016-08-08 17:11:30): consider Image's degree!
+        if (imageDegree % 360 == 90 || imageDegree % 360 == 270) {
+            double wRatio = oriHeight / w;
+            double hRatio = oriWidth / h;
+
+            if (h > oriWidth) {
+                w = w * hRatio;
+                h = oriWidth;    // h = h * (oriWidth / h);
+            } else if (w > oriHeight) {
+                w = oriHeight;  // w = w * (oriHeight / w);
+                h = h * wRatio;
+            }
+        } else {
+            double wRatio = oriWidth / w;
+            double hRatio = oriHeight / h;
+
+            if (h > oriHeight) {
+                w = w * hRatio;
+                h = oriHeight;    // h = h * (oriHeight / h);
+            } else if (w > oriWidth) {
+                w = oriWidth;      // w = w * (oriWidth / w);
+                h = h * wRatio;
+            }
+        }
 
 		float[] dsc = new float[]{
 				0, 0,
@@ -1150,6 +1173,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
 			matrixBitmap.recycle();
 			matrixBitmap = null;
 		}
+
+//        Log.d("OKAY2", "bitmap width : " + perfectBitmap.getWidth());
+//        Log.d("OKAY2", "bitmap height : " + perfectBitmap.getHeight());
 
 		if (originalBitmap != perfectBitmap) {
 			return saveFile(perfectBitmap, true);
