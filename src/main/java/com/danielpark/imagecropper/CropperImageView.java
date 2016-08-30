@@ -208,79 +208,26 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         initializeDrawSetting();
 
-        setImageBitmap(null);
         setImageBitmap(bitmap);
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSuppMatrix.setRotate(degree % 360);
-                        resizeImageToFitScreen(true);
+			post(new Runnable() {
+				@Override
+				public void run() {
+					// 1. Update base Matrix to fit ImageView
+					updateBaseMatrix(getDrawable());
+					// 2. Rotate ImageView with degree
+					mSuppMatrix.setRotate(degree % 360);
+					checkAndDisplayMatrix();    // applied
+					// 3. Resize Bitmap to fit ImageView Screen
+					resizeImageToFitScreen();
 
-                        isTouch = false;
-                        invalidate();
-
-                        checkToCallTwice(bitmap, degree);
-                    }
-                });
-            } else {
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSuppMatrix.setRotate(degree % 360);
-                        resizeImageToFitScreen(true);
-
-                        isTouch = false;
-                        invalidate();
-
-                        checkToCallTwice(bitmap, degree);
-                    }
-                }, 400);
-            }
-
+					isTouch = false;
+					invalidate();
+				}
+			});
         } catch (Exception e) {
             isTouch = false;
-        }
-    }
-
-    private void checkToCallTwice(final Bitmap bitmap, final int degree) {
-        // If current device should call twice then call it again after one second
-        if (DeviceModel.isDeviceCallTwice()) {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    initializeDrawSetting();
-
-                    setImageBitmap(null);
-                    setImageBitmap(bitmap);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSuppMatrix.setRotate(degree % 360);
-                                resizeImageToFitScreen(true);
-
-                                isTouch = false;
-                                invalidate();
-                            }
-                        });
-                    } else {
-                        postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSuppMatrix.setRotate(degree % 360);
-                                resizeImageToFitScreen(true);
-
-                                isTouch = false;
-                                invalidate();
-                            }
-                        }, 400);
-                    }
-                }
-            }, 1000);
         }
     }
 
@@ -320,7 +267,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		imageDegree = (int) (degrees % 360);
 
         mSuppMatrix.setRotate(degrees % 360);
-        resizeImageToFitScreen(true);
+		checkAndDisplayMatrix(); // applied
+
+        resizeImageToFitScreen();
 
         setCurrentDegree(degrees, false);
 
@@ -336,7 +285,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		imageDegree = (int) (imageDegree + degrees) % 360;
 
         mSuppMatrix.postRotate(degrees % 360);
-        resizeImageToFitScreen(true);
+		checkAndDisplayMatrix(); // applied
+
+        resizeImageToFitScreen();
 
         setCurrentDegree(degrees, true);
 
@@ -1844,50 +1795,37 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     /**
      * fit image to screen when parameter is true
-     * @param type
-     */
-    private void resizeImageToFitScreen(boolean type){
+	 */
+    private void resizeImageToFitScreen(){
         try {
-            if (type) {
+			// 3. Adjust Image to fit ImageView
+			final float viewWidth = getImageViewWidth();
+			final float viewHeight = getImageViewHeight();
+			RectF displayRect = getDisplayRect();
+			final int drawableWidth = (int) displayRect.width();
+			final int drawableHeight = (int) displayRect.height();
 
-                RectF drawableRect = getDisplayRect();
-                RectF viewRect = new RectF(0, 0, getImageViewWidth(), getImageViewHeight());
+//			Log.d("OKAY2", "viewWidth : " + viewWidth);
+//			Log.d("OKAY2", "viewHeight : " + viewHeight);
+//
+//			Log.d("OKAY2", "drawableWidth : " + drawableWidth);
+//			Log.d("OKAY2", "drawableHeight : " + drawableHeight);
 
-                getDisplayMatrix().setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+			final float widthScale = viewWidth / drawableWidth;
+			final float heightScale = viewHeight / drawableHeight;
 
-                checkAndDisplayMatrix();
+			final float scale = Math.min(widthScale, heightScale);
 
-                int up = 0;
-                int down = 0;
-                boolean flag = false;
-                while (!flag) {
-                    RectF f = getDisplayRect();
+//					RectF mTempSrc = new RectF(0, 0, drawableWidth, drawableHeight);
+//					RectF mTempDst = new RectF(0, 0, viewWidth, viewHeight);
 
-                    if (getImageViewWidth() < f.width() || getImageViewHeight() < f.height()) {
-                        if (Math.abs(f.width() - getImageViewWidth()) < 10
-                                && Math.abs(f.height() - getImageViewHeight()) < 10) {
-                            // okay;
-                            flag = true;
-                        } else {
-                            mSuppMatrix.postScale(0.99f, 0.99f);
-                            down += 1;
-                        }
-                    } else {
-                        mSuppMatrix.postScale(1.01f, 1.01f);
-                        up += 1;
-                    }
+//                        mSuppMatrix.postScale(widthScale, heightScale, displayRect.centerX(), displayRect.centerY());
+			mSuppMatrix.postScale(scale, scale, displayRect.centerX(), displayRect.centerY());
+			checkAndDisplayMatrix();    // applied
 
-                    if ((up + down) > 1000) {
-                        flag = true;
-                    }
-
-                }
-                checkAndDisplayMatrix();
-
-                // Daniel (2016-01-13 19:51:08): to prevent from downscaling image below Screen size.
-                float currentScale = getScale();
-                setScaleLevels(currentScale, currentScale * 2, currentScale * 3);
-            }
+			// Daniel (2016-01-13 19:51:08): to prevent from downscaling image below Screen size.
+			float currentScale = getScale();
+			setScaleLevels(currentScale, currentScale * 2, currentScale * 3);
         }catch (Exception e){
             e.printStackTrace();
         }
