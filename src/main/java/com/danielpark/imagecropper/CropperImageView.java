@@ -80,6 +80,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 	private int imageDegree = 0; // Daniel (2016-07-25 15:10:14): Get degree when image was set!
 
+	private float insetRatio = 0.2f;	// Daniel (2016-08-31 14:07:18): margin between outside border of Bitmap and 4 Crop rectangle border
+
     public CropperImageView(Context context) {
         this (context, null);
     }
@@ -197,7 +199,15 @@ public class CropperImageView extends ImageView implements CropperInterface{
         isControlBtnInImage = result;
     }
 
-    @Override
+	@Override
+	public void setCropInsetRatio(float percent) {
+		if (percent < 10f || percent > 90f)
+			return;
+
+		insetRatio = percent / 200f;
+	}
+
+	@Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
         setCustomImageBitmap(bitmap, 0);
     }
@@ -438,12 +448,15 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-06-22 16:29:33): Crop size should maintain the (ImageView / 2) size
                 RectF f = getDisplayRect();
                 if (f != null && f.width() != 0 && f.height() != 0) {
-                    float width = (f.width() / 2);
-                    float height = (f.height() / 2);
+					float width = f.width();
+					float height = f.height();
 
-                    centerPoint.set((int) (width - (width / 2) + f.left), (int) (height - (height / 2) + f.top));
-                    coordinatePoints[0].set((int) (width + (width / 2) + f.left), centerPoint.y);
-                    coordinatePoints[1].set(coordinatePoints[0].x, (int) (height + (height / 2) + f.top));
+                    float marginWidth = (f.width() * insetRatio);
+                    float marginHeight = (f.height() * insetRatio);
+
+                    centerPoint.set((int) (marginWidth + f.left), (int) (marginHeight + f.top));
+                    coordinatePoints[0].set((int) (width - marginWidth + f.left), centerPoint.y);
+                    coordinatePoints[1].set(coordinatePoints[0].x, (int) (height - marginHeight + f.top));
                     coordinatePoints[2].set(centerPoint.x, coordinatePoints[1].y);
                     coordinatePoints[3].set(centerPoint.x, centerPoint.y);
                 } else {

@@ -33,6 +33,13 @@ public interface CropperInterface {
      */
     void setControlInImage(boolean result);
 
+	/**
+	 * Set margin between outside border of Bitmap and 4 Crop rectangle border <br>
+	 *
+	 * @param percent 10.0% ~ 90.0 % (default value is 20%)
+	 */
+	void setCropInsetRatio(float percent);
+
     /**
      * Set Image bitmap to CropImageView
      * @param bitmap
