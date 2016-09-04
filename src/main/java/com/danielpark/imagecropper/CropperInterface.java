@@ -113,7 +113,8 @@ public interface CropperInterface {
     void setThumbnailChangeListener(OnThumbnailChangeListener listener);
 
     /**
-     * Daniel (2016-06-21 17:25:44): Try to crop Image from original image
+     * Try to crop Image from original image. <br>
+     *     it might return null
      */
     File getCropImage();
 

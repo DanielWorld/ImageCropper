@@ -1011,7 +1011,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		if (originalBitmap != null) {
 			oriWidth = originalBitmap.getWidth();
 			oriHeight = originalBitmap.getHeight();
-		}
+        } else {
+            // Daniel (2016-09-03 23:49:15): If Original Image is null then just leave it!
+            return null;
+        }
 
 		if (oriWidth == 0 || oriHeight == 0) {
 			oriWidth = mDrawWidth;
@@ -1035,7 +1038,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		Matrix mMatrix = new Matrix();
 		mMatrix.setRotate(imageDegree, oriWidth * 0.5f, oriHeight * 0.5f);
 
-		Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
+		Bitmap matrixBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, oriWidth, oriHeight, mMatrix, true);
 
 		float widthGap = Math.abs(mDrawWidth - displayRect.width());
 		float heightGap = Math.abs(mDrawHeight - displayRect.height());
@@ -1155,7 +1158,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		if (originalBitmap != null) {
 			oriWidth = originalBitmap.getWidth();
 			oriHeight = originalBitmap.getHeight();
-		}
+        } else {
+            // Daniel (2016-09-03 23:49:15): If Original Image is null then just leave it!
+            return null;
+        }
 
 		if (oriWidth == 0 || oriHeight == 0) {
 			oriWidth = mDrawWidth;
@@ -1165,7 +1171,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		// Daniel (2016-07-27 18:54:07): check if there are any draw & eraser
 		if (arrayDrawInfo != null && arrayDrawInfo.size() > 0) {
 
-			Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
+			Bitmap matrixBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
 			Bitmap templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
 //
 			Canvas canvas = new Canvas(templateBitmap);
@@ -1209,7 +1215,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 			Matrix mMatrix = new Matrix();
 			mMatrix.setRotate(imageDegree, oriWidth * 0.5f, oriHeight * 0.5f);
 
-			Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
+			Bitmap matrixBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, oriWidth, oriHeight, mMatrix, true);
 
 			if (originalBitmap != matrixBitmap)
 				return saveFile(matrixBitmap, true);
@@ -1225,14 +1231,17 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		if (originalBitmap != null) {
 			oriWidth = originalBitmap.getWidth();
 			oriHeight = originalBitmap.getHeight();
-		}
+        } else {
+            // Daniel (2016-09-03 23:49:15): If Original Image is null then just leave it!
+            return null;
+        }
 
 		if (oriWidth == 0 || oriHeight == 0) {
 			oriWidth = mDrawWidth;
 			oriHeight = mDrawHeight;
 		}
 
-		Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
+		Bitmap matrixBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, oriWidth, oriHeight, getDisplayMatrix(), true);
 		Bitmap templateBitmap = Bitmap.createBitmap(mDrawWidth, mDrawHeight, Bitmap.Config.ARGB_8888);
 //
 		Canvas canvas = new Canvas(templateBitmap);
@@ -1292,6 +1301,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
         if (originalBitmap != null) {
             oriWidth = originalBitmap.getWidth();
             oriHeight = originalBitmap.getHeight();
+        } else {
+            // Daniel (2016-09-03 23:49:15): If Original Image is null then just leave it!
+            return null;
         }
 
         if (oriWidth == 0 || oriHeight == 0) {
@@ -1313,7 +1325,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         Matrix mMatrix = new Matrix();
         mMatrix.setRotate(imageDegree, oriWidth * 0.5f, oriHeight * 0.5f);
 
-        Bitmap matrixBitmap = Bitmap.createBitmap(getOriginalBitmap(), 0, 0, oriWidth, oriHeight, mMatrix, true);
+        Bitmap matrixBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, oriWidth, oriHeight, mMatrix, true);
 
         float widthGap = Math.abs(mDrawWidth - displayRect.width());
         float heightGap = Math.abs(mDrawHeight - displayRect.height());
