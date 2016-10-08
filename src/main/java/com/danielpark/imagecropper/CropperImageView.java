@@ -784,6 +784,22 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[1].x += moveX;
                 coordinatePoints[3].y += moveY;
             }
+            else if (isShapeMode == ShapeMode.FREE) {
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[3].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[0].x;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[0].y;
+                }
+                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2));
+                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[0].x;
+                    Y = coordinatePoints[0].y;
+                }
+            }
 
             coordinatePoints[0].x = X;
             coordinatePoints[0].y = Y;
@@ -811,6 +827,22 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 }
                 coordinatePoints[0].x += moveX;
                 coordinatePoints[2].y += moveY;
+            }
+            else if (isShapeMode == ShapeMode.FREE) {
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[2].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[1].x;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[1].y;
+                }
+                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2));
+                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[1].x;
+                    Y = coordinatePoints[1].y;
+                }
             }
 
             coordinatePoints[1].x = X;
@@ -840,6 +872,22 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[3].x += moveX;
                 coordinatePoints[1].y += moveY;
             }
+            else if (isShapeMode == ShapeMode.FREE) {
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[1].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[2].x;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[2].y;
+                }
+                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2));
+                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[2].x;
+                    Y = coordinatePoints[2].y;
+                }
+            }
 
             coordinatePoints[2].x = X;
             coordinatePoints[2].y = Y;
@@ -867,6 +915,22 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 }
                 coordinatePoints[2].x += moveX;
                 coordinatePoints[0].y += moveY;
+            }
+            else if (isShapeMode == ShapeMode.FREE) {
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[0].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[3].x;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[3].y;
+                }
+                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2));
+                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[3].x;
+                    Y = coordinatePoints[3].y;
+                }
             }
 
             coordinatePoints[3].x = X;
