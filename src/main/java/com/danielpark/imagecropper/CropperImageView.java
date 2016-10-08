@@ -25,7 +25,6 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
-import com.danielpark.imagecropper.util.DeviceModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,6 +63,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
+    private ShapeMode isShapeMode = ShapeMode.FREE;
     private CropMode isCropMode = CropMode.CROP_STRETCH;
     private UtilMode isUtilMode = UtilMode.NONE;
     private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
@@ -108,6 +108,15 @@ public class CropperImageView extends ImageView implements CropperInterface{
         controlStrokeSize = ConvertUtil.convertDpToPixel(2);    // Daniel (2016-06-24 14:32:31): set Control stroke size
 
         setOnTouchListener(mTouchListener);
+    }
+
+    @Override
+    public void setShapeMode(ShapeMode mode) {
+        if (mode != null) {
+            this.isShapeMode = mode;
+
+            invalidate();
+        }
     }
 
     @Override
@@ -762,115 +771,105 @@ public class CropperImageView extends ImageView implements CropperInterface{
      * @param Y
      */
     private void controlTouchInCropMove(int X, int Y) {
-        if (isControlBtnInImage) {
+        int borderSize;    // borderSize
 
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlBtnSize)
-                X = controlBtnSize;
-            if (Y <= controlBtnSize)
-                Y = controlBtnSize;
+        if (isControlBtnInImage)
+            borderSize = controlBtnSize;
+        else
+            borderSize = controlStrokeSize;
 
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlBtnSize)
-                X = mDrawWidth - controlBtnSize;
-            if (Y >= mDrawHeight - controlBtnSize)
-                Y = mDrawHeight - controlBtnSize;
+        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+        if (X <= borderSize)
+            X = borderSize;
+        if (Y <= borderSize)
+            Y = borderSize;
 
-            RectF displayRect = getDisplayRect();
+        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+        if (X >= mDrawWidth - borderSize)
+            X = mDrawWidth - borderSize;
+        if (Y >= mDrawHeight - borderSize)
+            Y = mDrawHeight - borderSize;
 
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlBtnSize)
-                    X = (int) (displayRect.right - controlBtnSize);
-                if (X <= displayRect.left + controlBtnSize)
-                    X = (int) (displayRect.left + controlBtnSize);
-                if (Y >= displayRect.bottom - controlBtnSize)
-                    Y = (int) (displayRect.bottom - controlBtnSize);
-                if (Y <= displayRect.top + controlBtnSize)
-                    Y = (int) (displayRect.top + controlBtnSize);
+        RectF displayRect = getDisplayRect();
+
+        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+        if (displayRect != null) {
+            if (X >= displayRect.right - borderSize)
+                X = (int) (displayRect.right - borderSize);
+            if (X <= displayRect.left + borderSize)
+                X = (int) (displayRect.left + borderSize);
+            if (Y >= displayRect.bottom - borderSize)
+                Y = (int) (displayRect.bottom - borderSize);
+            if (Y <= displayRect.top + borderSize)
+                Y = (int) (displayRect.top + borderSize);
+        }
+
+        if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
+
+            if (isShapeMode == ShapeMode.FIXED) {
+                // Rectangle position
+                // moveX = the distance last point X - previous point X
+                // moveY = the distance last point Y - previous point Y
+                int moveX = X - coordinatePoints[0].x;
+                int moveY = Y - coordinatePoints[0].y;
+                coordinatePoints[1].x += moveX;
+                coordinatePoints[3].y += moveY;
             }
 
-            if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
+            coordinatePoints[0].x = X;
+            coordinatePoints[0].y = Y;
 
-                coordinatePoints[0].x = X;
-                coordinatePoints[0].y = Y;
+            invalidate();
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[1].x = X;
-                coordinatePoints[1].y = Y;
-
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[2].x = X;
-                coordinatePoints[2].y = Y;
-
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[3].x = X;
-                coordinatePoints[3].y = Y;
-
-                invalidate();
-            } else if (isTouchInCropRect(X, Y)){
-                invalidate();
-            }
-        } else {
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlStrokeSize)
-                X = controlStrokeSize;
-            if (Y <= controlStrokeSize)
-                Y = controlStrokeSize;
-
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlStrokeSize)
-                X = mDrawWidth - controlStrokeSize;
-            if (Y >= mDrawHeight - controlStrokeSize)
-                Y = mDrawHeight - controlStrokeSize;
-
-            RectF displayRect = getDisplayRect();
-
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlStrokeSize)
-                    X = (int) (displayRect.right - controlStrokeSize);
-                if (X <= displayRect.left + controlStrokeSize)
-                    X = (int) (displayRect.left + controlStrokeSize);
-                if (Y >= displayRect.bottom - controlStrokeSize)
-                    Y = (int) (displayRect.bottom - controlStrokeSize);
-                if (Y <= displayRect.top + controlStrokeSize)
-                    Y = (int) (displayRect.top + controlStrokeSize);
+            if (isShapeMode == ShapeMode.FIXED) {
+                // Rectangle position
+                // moveX = the distance last point X - previous point X
+                // moveY = the distance last point Y - previous point Y
+                int moveX = X - coordinatePoints[1].x;
+                int moveY = Y - coordinatePoints[1].y;
+                coordinatePoints[0].x += moveX;
+                coordinatePoints[2].y += moveY;
             }
 
-            if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
+            coordinatePoints[1].x = X;
+            coordinatePoints[1].y = Y;
 
-                coordinatePoints[0].x = X;
-                coordinatePoints[0].y = Y;
+            invalidate();
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
 
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[1].x = X;
-                coordinatePoints[1].y = Y;
-
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[2].x = X;
-                coordinatePoints[2].y = Y;
-
-                invalidate();
-            } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
-
-                coordinatePoints[3].x = X;
-                coordinatePoints[3].y = Y;
-
-                invalidate();
-            } else if (isTouchInCropRect(X, Y)){
-                invalidate();
+            if (isShapeMode == ShapeMode.FIXED) {
+                // Rectangle position
+                // moveX = the distance last point X - previous point X
+                // moveY = the distance last point Y - previous point Y
+                int moveX = X - coordinatePoints[2].x;
+                int moveY = Y - coordinatePoints[2].y;
+                coordinatePoints[3].x += moveX;
+                coordinatePoints[1].y += moveY;
             }
+
+            coordinatePoints[2].x = X;
+            coordinatePoints[2].y = Y;
+
+            invalidate();
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
+
+            if (isShapeMode == ShapeMode.FIXED) {
+                // Rectangle position
+                // moveX = the distance last point X - previous point X
+                // moveY = the distance last point Y - previous point Y
+                int moveX = X - coordinatePoints[3].x;
+                int moveY = Y - coordinatePoints[3].y;
+                coordinatePoints[2].x += moveX;
+                coordinatePoints[0].y += moveY;
+            }
+
+            coordinatePoints[3].x = X;
+            coordinatePoints[3].y = Y;
+
+            invalidate();
+        } else if (isTouchInCropRect(X, Y)) {
+            invalidate();
         }
     }
 

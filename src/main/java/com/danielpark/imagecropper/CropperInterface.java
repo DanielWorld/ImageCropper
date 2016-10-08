@@ -14,8 +14,13 @@ import java.io.File;
 public interface CropperInterface {
 
     /**
-     * If it is true, then when creating output file, crop image will be filled in rectangle. <br>
-     *     defautl mode is {@link CropMode#CROP_STRETCH}
+     * Set crop control mode
+     * @param mode
+     */
+    void setShapeMode(ShapeMode mode);
+
+    /**
+     * Default mode is {@link CropMode#CROP_STRETCH}
      * @param mode
      */
     void setStretchMode(CropMode mode);
