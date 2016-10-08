@@ -533,58 +533,37 @@ public class CropperImageView extends ImageView implements CropperInterface{
                         float X = event.getX();
                         float Y = event.getY();
 
-                        if (isControlBtnInImage) {
-                            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                            if (X <= controlBtnSize)
-                                return false;
-                            if (Y <= controlBtnSize)
-                                return false;
+                        int borderSize;    // borderSize
 
-                            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                            if (X >= mDrawWidth - controlBtnSize)
-                                return false;
-                            if (Y >= mDrawHeight - controlBtnSize)
-                                return false;
+                        if (isControlBtnInImage)
+                            borderSize = controlBtnSize;
+                        else
+                            borderSize = controlStrokeSize;
 
-                            RectF displayRect = getDisplayRect();
+                        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+                        if (X <= borderSize)
+                            return false;
+                        if (Y <= borderSize)
+                            return false;
 
-                            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                            if (displayRect != null) {
-                                if (X >= displayRect.right - controlBtnSize)
-                                    return false;
-                                if (X <= displayRect.left + controlBtnSize)
-                                    return false;
-                                if (Y >= displayRect.bottom - controlBtnSize)
-                                    return false;
-                                if (Y <= displayRect.top + controlBtnSize)
-                                    return false;
-                            }
-                        } else {
-                            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                            if (X <= controlStrokeSize)
-                                return false;
-                            if (Y <= controlStrokeSize)
-                                return false;
+                        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+                        if (X >= mDrawWidth - borderSize)
+                            return false;
+                        if (Y >= mDrawHeight - borderSize)
+                            return false;
 
-                            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                            if (X >= mDrawWidth - controlStrokeSize)
-                                return false;
-                            if (Y >= mDrawHeight - controlStrokeSize)
-                                return false;
+                        RectF displayRect = getDisplayRect();
 
-                            RectF displayRect = getDisplayRect();
-
-                            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                            if (displayRect != null) {
-                                if (X >= displayRect.right - controlStrokeSize)
-                                    return false;
-                                if (X <= displayRect.left + controlStrokeSize)
-                                    return false;
-                                if (Y >= displayRect.bottom - controlStrokeSize)
-                                    return false;
-                                if (Y <= displayRect.top + controlStrokeSize)
-                                    return false;
-                            }
+                        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+                        if (displayRect != null) {
+                            if (X >= displayRect.right - borderSize)
+                                return false;
+                            if (X <= displayRect.left + borderSize)
+                                return false;
+                            if (Y >= displayRect.bottom - borderSize)
+                                return false;
+                            if (Y <= displayRect.top + borderSize)
+                                return false;
                         }
                         drawActionDown(X, Y);
                     } else if (isCropMode != CropMode.NO_CROP) {
@@ -599,59 +578,37 @@ public class CropperImageView extends ImageView implements CropperInterface{
                         float X = event.getX();
                         float Y = event.getY();
 
-                        if (isControlBtnInImage) {
-                            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                            if (X <= controlBtnSize)
-                                X = controlBtnSize;
-                            if (Y <= controlBtnSize)
-                                Y = controlBtnSize;
+                        int borderSize;    // borderSize
 
-                            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                            if (X >= mDrawWidth - controlBtnSize)
-                                X = mDrawWidth - controlBtnSize;
-                            if (Y >= mDrawHeight - controlBtnSize)
-                                Y = mDrawHeight - controlBtnSize;
+                        if (isControlBtnInImage)
+                            borderSize = controlBtnSize;
+                        else
+                            borderSize = controlStrokeSize;
 
-                            RectF displayRect = getDisplayRect();
+                        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+                        if (X <= borderSize)
+                            X = borderSize;
+                        if (Y <= borderSize)
+                            Y = borderSize;
 
-                            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                            if (displayRect != null) {
-                                if (X >= displayRect.right - controlBtnSize)
-                                    X = (displayRect.right - controlBtnSize);
-                                if (X <= displayRect.left + controlBtnSize)
-                                    X = (displayRect.left + controlBtnSize);
-                                if (Y >= displayRect.bottom - controlBtnSize)
-                                    Y = (displayRect.bottom - controlBtnSize);
-                                if (Y <= displayRect.top + controlBtnSize)
-                                    Y = (displayRect.top + controlBtnSize);
-                            }
-                        }
-                        else {
-                            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                            if (X <= controlStrokeSize)
-                                X = controlStrokeSize;
-                            if (Y <= controlStrokeSize)
-                                Y = controlStrokeSize;
+                        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+                        if (X >= mDrawWidth - borderSize)
+                            X = mDrawWidth - borderSize;
+                        if (Y >= mDrawHeight - borderSize)
+                            Y = mDrawHeight - borderSize;
 
-                            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                            if (X >= mDrawWidth - controlStrokeSize)
-                                X = mDrawWidth - controlStrokeSize;
-                            if (Y >= mDrawHeight - controlStrokeSize)
-                                Y = mDrawHeight - controlStrokeSize;
+                        RectF displayRect = getDisplayRect();
 
-                            RectF displayRect = getDisplayRect();
-
-                            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                            if (displayRect != null) {
-                                if (X >= displayRect.right - controlStrokeSize)
-                                    X = (displayRect.right - controlStrokeSize);
-                                if (X <= displayRect.left + controlStrokeSize)
-                                    X = (displayRect.left + controlStrokeSize);
-                                if (Y >= displayRect.bottom - controlStrokeSize)
-                                    Y = (displayRect.bottom - controlStrokeSize);
-                                if (Y <= displayRect.top + controlStrokeSize)
-                                    Y = (displayRect.top + controlStrokeSize);
-                            }
+                        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+                        if (displayRect != null) {
+                            if (X >= displayRect.right - borderSize)
+                                X = (displayRect.right - borderSize);
+                            if (X <= displayRect.left + borderSize)
+                                X = (displayRect.left + borderSize);
+                            if (Y >= displayRect.bottom - borderSize)
+                                Y = (displayRect.bottom - borderSize);
+                            if (Y <= displayRect.top + borderSize)
+                                Y = (displayRect.top + borderSize);
                         }
                         drawActionMove(X, Y);
                     }
