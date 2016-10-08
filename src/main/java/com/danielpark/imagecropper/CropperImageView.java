@@ -769,6 +769,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[0].x;
                 int moveY = Y - coordinatePoints[0].y;
+
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[3].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[0].x;
+                    moveX = 0;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[0].y;
+                    moveY = 0;
+                }
                 coordinatePoints[1].x += moveX;
                 coordinatePoints[3].y += moveY;
             }
@@ -785,6 +797,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[1].x;
                 int moveY = Y - coordinatePoints[1].y;
+
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[2].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[1].x;
+                    moveX = 0;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[1].y;
+                    moveY = 0;
+                }
                 coordinatePoints[0].x += moveX;
                 coordinatePoints[2].y += moveY;
             }
@@ -801,6 +825,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[2].x;
                 int moveY = Y - coordinatePoints[2].y;
+
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[1].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[2].x;
+                    moveX = 0;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[2].y;
+                    moveY = 0;
+                }
                 coordinatePoints[3].x += moveX;
                 coordinatePoints[1].y += moveY;
             }
@@ -817,6 +853,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[3].x;
                 int moveY = Y - coordinatePoints[3].y;
+
+                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                int distanceWidth = Math.abs(X - coordinatePoints[0].x);
+                int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
+                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                    X = coordinatePoints[3].x;
+                    moveX = 0;
+                }
+                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                    Y = coordinatePoints[3].y;
+                    moveY = 0;
+                }
                 coordinatePoints[2].x += moveX;
                 coordinatePoints[0].y += moveY;
             }
