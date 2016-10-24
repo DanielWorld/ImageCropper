@@ -82,6 +82,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 	private float insetRatio = 0.2f;	// Daniel (2016-08-31 14:07:18): margin between outside border of Bitmap and 4 Crop rectangle border
 
+    private final float limitSizeFactor = 1.5f; // Daniel (2016-10-24 17:02:30): the least size of 4 points area factor
+
     public CropperImageView(Context context) {
         this (context, null);
     }
@@ -773,11 +775,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[3].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[0].x;
                     moveX = 0;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[0].y;
                     moveY = 0;
                 }
@@ -788,14 +790,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[3].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[0].x;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[0].y;
                 }
                 int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2));
-                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[0].x;
                     Y = coordinatePoints[0].y;
                 }
@@ -817,11 +819,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[2].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[1].x;
                     moveX = 0;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[1].y;
                     moveY = 0;
                 }
@@ -832,14 +834,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[2].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[1].x;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[1].y;
                 }
                 int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2));
-                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[1].x;
                     Y = coordinatePoints[1].y;
                 }
@@ -861,11 +863,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[1].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[2].x;
                     moveX = 0;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[2].y;
                     moveY = 0;
                 }
@@ -876,14 +878,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[1].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[2].x;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[2].y;
                 }
                 int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2));
-                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[2].x;
                     Y = coordinatePoints[2].y;
                 }
@@ -905,11 +907,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[0].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[3].x;
                     moveX = 0;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[3].y;
                     moveY = 0;
                 }
@@ -920,14 +922,14 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[0].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
-                if (distanceWidth < controlBtnSize + controlStrokeSize) {
+                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[3].x;
                 }
-                if (distanceHeight < controlBtnSize + controlStrokeSize) {
+                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     Y = coordinatePoints[3].y;
                 }
                 int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2));
-                if (distanceAcross < controlBtnSize + controlStrokeSize) {
+                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
                     X = coordinatePoints[3].x;
                     Y = coordinatePoints[3].y;
                 }
@@ -1195,6 +1197,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
 				(float) w, (float) h,
 				0, (float) h
 		};
+
+        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 1.0
+        if (w < 1.0) w = 1.0;
+        if (h < 1.0) h = 1.0;
 
 		Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
 
