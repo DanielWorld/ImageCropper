@@ -30,7 +30,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -1546,7 +1548,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 filePath.mkdirs();
             }
 
-            dstFile = new File(filePath, "aaaaa.jpg");
+            // Create a media file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                    .format(new Date());
+
+            dstFile = new File(filePath, "CropperLibrary_"+timeStamp+"_.jpg");
             try {
                 dstFile.createNewFile();
             } catch (IOException e) {
