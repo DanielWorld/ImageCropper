@@ -79,6 +79,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private OnThumbnailChangeListener onThumbnailChangeListener;
 
     private File dstFile;   // Daniel (2016-06-24 11:47:43): if user set dstFile, Cropped Image will be set to this file!
+    private boolean isNewFile = true;  // Daniel (2016-11-10 21:26:20): if user crop image, the file should be created new one?
 
 	private int imageDegree = 0; // Daniel (2016-07-25 15:10:14): Get degree when image was set!
 
@@ -222,12 +223,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 	@Override
     public void setCustomImageBitmap(final Bitmap bitmap) {
-        setCustomImageBitmap(bitmap, 0);
+        setCustomImageBitmap(bitmap, 0, true);
     }
 
     @Override
     public void setCustomImageBitmap(final Bitmap bitmap, final int degree) {
-		imageDegree = degree % 360;	// get degree parameter
+        setCustomImageBitmap(bitmap, degree, true);
+    }
+
+    private void setCustomImageBitmap(final Bitmap bitmap, final int degree, boolean isNewFile) {
+        this.isNewFile = isNewFile;
+
+        imageDegree = degree % 360;	// get degree parameter
 
         initializeDrawSetting();
 
@@ -257,7 +264,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public void setCustomImageFile(File file) {
         try {
-            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file));
+            dstFile = file;
+
+            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file), 0, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -266,7 +275,20 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public void setCustomImageFile(File file, int degree) {
         try {
-            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file), degree);
+            dstFile = file;
+
+            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file), degree, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setCustomImageFile(File file, int degree, boolean isNewFile) {
+        try {
+            if (!isNewFile) dstFile = file;
+
+            setCustomImageBitmap(BitmapUtil.getBitmap(getContext(), file), degree, isNewFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1541,7 +1563,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         OutputStream output = null;
 
         // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
-        if (dstFile == null || !dstFile.exists() || !dstFile.isFile()) {
+        if (isNewFile || dstFile == null || !dstFile.exists() || !dstFile.isFile()) {
             final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
 
             if (!filePath.exists()) {
@@ -1569,6 +1591,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            this.isNewFile = true;
+
             if (shouldRecycle && bitmap != null && !bitmap.isRecycled()) {
 				bitmap.recycle();
 				bitmap = null;

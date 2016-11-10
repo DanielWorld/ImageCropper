@@ -72,6 +72,13 @@ public interface CropperInterface {
     void setCustomImageFile(File file, int degree);
 
     /**
+     * Set Image File to CropImageView with degree
+     * @param file
+     * @param degree <b>true</b> if you wanna create new file when you crop image
+     */
+    void setCustomImageFile(File file, int degree, boolean isNewFile);
+
+    /**
      * Set degree
      * @param degrees
      */
