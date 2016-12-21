@@ -17,7 +17,7 @@ public interface CropperInterface {
      * Set crop control mode
      * @param mode
      */
-    void setShapeMode(ShapeMode mode);
+    void setShapeMode(ControlMode mode);
 
     /**
      * Default mode is {@link CropMode#CROP_STRETCH}
