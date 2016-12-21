@@ -14,10 +14,16 @@ import java.io.File;
 public interface CropperInterface {
 
     /**
+     * Set shape mode
+     * @param mode
+     */
+    void setShapeMode(ShapeMode mode);
+
+    /**
      * Set crop control mode
      * @param mode
      */
-    void setShapeMode(ControlMode mode);
+    void setControlMode(ControlMode mode);
 
     /**
      * Default mode is {@link CropMode#CROP_STRETCH}

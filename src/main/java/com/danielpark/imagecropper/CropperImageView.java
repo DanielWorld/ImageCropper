@@ -68,6 +68,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
+    private ShapeMode isShapeMode = ShapeMode.Rectangle;
     private ControlMode isControlMode = ControlMode.FREE;
     private CropMode isCropMode = CropMode.CROP_STRETCH;
     private UtilMode isUtilMode = UtilMode.NONE;
@@ -119,7 +120,16 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
-    public void setShapeMode(ControlMode mode) {
+    public void setShapeMode(ShapeMode mode) {
+        if (mode != null) {
+            this.isShapeMode = mode;
+
+            invalidate();
+        }
+    }
+
+    @Override
+    public void setControlMode(ControlMode mode) {
         if (mode != null) {
             this.isControlMode = mode;
 

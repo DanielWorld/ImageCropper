@@ -39,4 +39,7 @@
 -keepclasseswithmembers enum com.danielpark.imagecropper.ControlMode {
     *;
 }
+-keepclasseswithmembers enum com.danielpark.imagecropper.ShapeMode {
+    *;
+}
 
