@@ -8,6 +8,6 @@ package com.danielpark.imagecropper;
  * Copyright (c) 2014-2016 op7773hons@gmail.com
  * Created by Daniel Park on 2016-10-08.
  */
-public enum ShapeMode {
+public enum ControlMode {
     FREE, FIXED
 }

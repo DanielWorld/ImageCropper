@@ -25,6 +25,7 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
+import com.danielpark.imagecropper.util.log.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +41,8 @@ import java.util.Date;
  * Created by Daniel Park on 2016-06-21.
  */
 public class CropperImageView extends ImageView implements CropperInterface{
+
+    private Logger LOG = Logger.getInstance();
 
     Paint mPaint = new Paint();
     Path path = new Path();
@@ -65,7 +68,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
-    private ShapeMode isShapeMode = ShapeMode.FREE;
+    private ControlMode isControlMode = ControlMode.FREE;
     private CropMode isCropMode = CropMode.CROP_STRETCH;
     private UtilMode isUtilMode = UtilMode.NONE;
     private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
@@ -116,9 +119,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
-    public void setShapeMode(ShapeMode mode) {
+    public void setShapeMode(ControlMode mode) {
         if (mode != null) {
-            this.isShapeMode = mode;
+            this.isControlMode = mode;
 
             invalidate();
         }
@@ -789,7 +792,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
 
-            if (isShapeMode == ShapeMode.FIXED) {
+            if (isControlMode == ControlMode.FIXED) {
                 // Rectangle position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -810,7 +813,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[1].x += moveX;
                 coordinatePoints[3].y += moveY;
             }
-            else if (isShapeMode == ShapeMode.FREE) {
+            else if (isControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[3].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
@@ -833,7 +836,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
-            if (isShapeMode == ShapeMode.FIXED) {
+            if (isControlMode == ControlMode.FIXED) {
                 // Rectangle position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -854,7 +857,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[0].x += moveX;
                 coordinatePoints[2].y += moveY;
             }
-            else if (isShapeMode == ShapeMode.FREE) {
+            else if (isControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[2].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
@@ -877,7 +880,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
 
-            if (isShapeMode == ShapeMode.FIXED) {
+            if (isControlMode == ControlMode.FIXED) {
                 // Rectangle position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -898,7 +901,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[3].x += moveX;
                 coordinatePoints[1].y += moveY;
             }
-            else if (isShapeMode == ShapeMode.FREE) {
+            else if (isControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[1].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
@@ -921,7 +924,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
 
-            if (isShapeMode == ShapeMode.FIXED) {
+            if (isControlMode == ControlMode.FIXED) {
                 // Rectangle position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -942,7 +945,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[2].x += moveX;
                 coordinatePoints[0].y += moveY;
             }
-            else if (isShapeMode == ShapeMode.FREE) {
+            else if (isControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[0].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
