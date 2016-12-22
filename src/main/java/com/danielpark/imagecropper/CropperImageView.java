@@ -45,7 +45,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private Logger LOG = Logger.getInstance();
 
     Paint mPaint = new Paint();
-    Path path = new Path();
+    Path mRectanglePath = new Path();
+    Path mCirclePath = new Path();      // Daniel (2016-12-22 11:25:27): Circle mRectanglePath
 
     int controlBtnSize = 50; // Daniel (2016-06-21 16:40:26): Radius of Control button
     int controlStrokeSize = 50; // Daniel (2016-06-24 14:32:04): width of Control stroke
@@ -98,7 +99,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     public CropperImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // Daniel (2016-07-15 18:09:16): below 4.0.4 there is issue with clip path java.lang.UnsupportedOperationException
+        // Daniel (2016-07-15 18:09:16): below 4.0.4 there is issue with clip mRectanglePath java.lang.UnsupportedOperationException
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
@@ -353,13 +354,13 @@ public class CropperImageView extends ImageView implements CropperInterface{
         invalidate();
     }
 
-    float mPreScale = 0.0f;     // Daniel (2016-06-29 14:35:07): This scale is for previous path state
+    float mPreScale = 0.0f;     // Daniel (2016-06-29 14:35:07): This scale is for previous mRectanglePath state
     private void setPreviousScale(){
         mPreScale = mMinScale;
     }
 
     private void setCurrentDegree(float degree, boolean rotateBy) {
-        // Daniel (2016-06-29 14:00:11): Rotate draw path
+        // Daniel (2016-06-29 14:00:11): Rotate draw mRectanglePath
         for (DrawInfo v : arrayDrawInfo) {
             RectF rectF = getDisplayRect();
 
@@ -374,7 +375,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             v.getPath().transform(mMatrix);
         }
 
-        // Daniel (2016-06-29 14:00:11): Rotate unDraw path
+        // Daniel (2016-06-29 14:00:11): Rotate unDraw mRectanglePath
         for (DrawInfo v : arrayUndoneDrawInfo) {
             RectF rectF = getDisplayRect();
 
@@ -517,46 +518,68 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     coordinatePoints[2].set(centerPoint.x, coordinatePoints[1].y);
                     coordinatePoints[3].set(centerPoint.x, centerPoint.y);
                 }
-                path.reset();
-                path.moveTo(centerPoint.x, centerPoint.y);
+                mRectanglePath.reset();
+                mRectanglePath.moveTo(centerPoint.x, centerPoint.y);
                 for (Point p : coordinatePoints) {
-                    path.lineTo(p.x, p.y);
+                    mRectanglePath.lineTo(p.x, p.y);
                 }
 
                 // Daniel (2016-06-22 14:10:05): initialize current mCropRect
                 mCropRect.set(getCropLeft(), getCropTop(), getCropRight(), getCropBottom());
             } else {
-                path.reset();
+                mRectanglePath.reset();
 
                 // Daniel (2016-06-21 16:55:26): centerPoint.x, centerPoint.y is standard of coordinatePoints[3]
                 centerPoint.x = coordinatePoints[3].x;
                 centerPoint.y = coordinatePoints[3].y;
 
-                path.moveTo(centerPoint.x, centerPoint.y);
-                path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+                mRectanglePath.moveTo(centerPoint.x, centerPoint.y);
+                mRectanglePath.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
 
-                path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
-                path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
-                path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+                mRectanglePath.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
+                mRectanglePath.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
+                mRectanglePath.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
 
                 // Daniel (2016-06-22 14:10:05): initialize current mCropRect
                 mCropRect.set(getCropLeft(), getCropTop(), getCropRight(), getCropBottom());
             }
 
-            canvas.clipPath(path, Region.Op.DIFFERENCE);
-            canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
+            if (isShapeMode == ShapeMode.Rectangle) {
+                canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
+                canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
 
-            mPaint.setColor(Color.WHITE);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(controlStrokeSize);
-            canvas.drawPath(path, mPaint);
+                mPaint.setColor(Color.WHITE);
+                mPaint.setStyle(Paint.Style.STROKE);
+                mPaint.setStrokeWidth(controlStrokeSize);
+                canvas.drawPath(mRectanglePath, mPaint);
 
-            canvas.restore();
+                canvas.restore();
 
-            // Daniel (2016-06-21 16:34:28): draw control button
-            for (int i = 0; i < coordinatePoints.length; i++) {
-                cropButton[i].setBounds(coordinatePoints[i].x - controlBtnSize, coordinatePoints[i].y - controlBtnSize, coordinatePoints[i].x + controlBtnSize, coordinatePoints[i].y + controlBtnSize);
-                cropButton[i].draw(canvas);
+                // Daniel (2016-06-21 16:34:28): draw control button
+                for (int i = 0; i < coordinatePoints.length; i++) {
+                    cropButton[i].setBounds(coordinatePoints[i].x - controlBtnSize, coordinatePoints[i].y - controlBtnSize, coordinatePoints[i].x + controlBtnSize, coordinatePoints[i].y + controlBtnSize);
+                    cropButton[i].draw(canvas);
+                }
+            }
+            else if (isShapeMode == ShapeMode.Circle) {
+                mCirclePath.reset();
+
+                // Daniel (2016-12-21 18:28:38): get information from mRectangleRect
+                mCirclePath.moveTo(mCropRect.centerX(), mCropRect.top);
+                mCirclePath.addCircle(mCropRect.centerX(), mCropRect.centerY(), Math.min(mCropRect.width() / 2, mCropRect.height() / 2), Path.Direction.CW);
+
+                canvas.clipPath(mCirclePath, Region.Op.DIFFERENCE);
+                canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
+
+                mPaint.setColor(Color.WHITE);
+                mPaint.setStyle(Paint.Style.STROKE);
+                mPaint.setStrokeWidth(controlStrokeSize);
+
+                // Daniel (2016-12-22 10:53:54): resize cropRect
+
+                canvas.drawCircle(mCropRect.centerX(), mCropRect.centerY(), Math.min(mCropRect.width() / 2, mCropRect.height() / 2), mPaint);
+
+                canvas.restore();
             }
         }
     }
@@ -1358,16 +1381,16 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		Canvas canvas = new Canvas(templateBitmap);
 		canvas.drawBitmap(matrixBitmap, ((canvas.getWidth() - matrixBitmap.getWidth()) / 2), ((canvas.getHeight() - matrixBitmap.getHeight()) / 2), null);
 
-		path.reset();
+		mRectanglePath.reset();
 
-		path.moveTo(centerPoint.x, centerPoint.y);
-		path.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
+		mRectanglePath.moveTo(centerPoint.x, centerPoint.y);
+		mRectanglePath.lineTo(coordinatePoints[0].x, coordinatePoints[0].y);
 
-		path.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
-		path.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
-		path.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
+		mRectanglePath.lineTo(coordinatePoints[1].x, coordinatePoints[1].y);
+		mRectanglePath.lineTo(coordinatePoints[2].x, coordinatePoints[2].y);
+		mRectanglePath.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
 
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
+		canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
 		canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
 
 		if (isCropMode == CropMode.CROP_SHRINK) {

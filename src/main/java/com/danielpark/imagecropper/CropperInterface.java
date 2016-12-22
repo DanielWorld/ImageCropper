@@ -107,12 +107,12 @@ public interface CropperInterface {
     void setReverseRightToLeft();
 
     /**
-     * Undo the path (It only works when Crop mode is NO_CROP)
+     * Undo the mRectanglePath (It only works when Crop mode is NO_CROP)
      */
     void setUndo();
 
     /**
-     * Redo the path (It only works when Crop mode is NO_CROP)
+     * Redo the mRectanglePath (It only works when Crop mode is NO_CROP)
      */
     void setRedo();
 
