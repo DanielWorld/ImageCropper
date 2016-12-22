@@ -503,6 +503,20 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     float marginWidth = (f.width() * insetRatio);
                     float marginHeight = (f.height() * insetRatio);
 
+                    if (isShapeMode == ShapeMode.Circle) {
+                        // Daniel (2016-12-22 11:41:12): if width is smaller than height
+                        // 1. marginHeight should be larger to get same size as width
+                        // vice versa
+                        if (width < height) {
+                            float currentHalfWidth = (width / 2) - marginWidth;
+                            marginHeight = (height / 2) - currentHalfWidth;
+                        }
+                        else if (width > height) {
+                            float currentHalfHeight = (height / 2) - marginHeight;
+                            marginWidth = (width / 2) - currentHalfHeight;
+                        }
+                    }
+
                     centerPoint.set((int) (marginWidth + f.left), (int) (marginHeight + f.top));
                     coordinatePoints[0].set((int) (width - marginWidth + f.left), centerPoint.y);
                     coordinatePoints[1].set(coordinatePoints[0].x, (int) (height - marginHeight + f.top));
