@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
@@ -1282,7 +1283,22 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
 		Canvas canvas = new Canvas(perfectBitmap);
-		canvas.drawBitmap(matrixBitmap, matrix, null);
+
+        if (isShapeMode == ShapeMode.Circle) {
+            final int color = 0xff424242;
+            final Paint paint = new Paint();
+
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(color);
+            canvas.drawCircle(perfectBitmap.getWidth() / 2, perfectBitmap.getHeight() / 2,
+                    perfectBitmap.getWidth() / 2, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(matrixBitmap, matrix, paint);
+        }
+        else {
+            canvas.drawBitmap(matrixBitmap, matrix, null);
+        }
 
 		if (originalBitmap != matrixBitmap && matrixBitmap != perfectBitmap && matrixBitmap != null && !matrixBitmap.isRecycled()) {
 			matrixBitmap.recycle();
