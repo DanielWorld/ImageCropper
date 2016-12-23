@@ -249,7 +249,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private void setCustomImageBitmap(final Bitmap bitmap, final int degree, boolean isNewFile) {
         this.isNewFile = isNewFile;
 
-        imageDegree = degree % 360;	// get degree parameter
+        imageDegree = (degree + 360) % 360;	// get degree parameter
 
         initializeDrawSetting();
 
@@ -324,9 +324,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
         setPreviousScale();
 
 		// Daniel (2016-07-27 19:12:21): update current image degree
-		imageDegree = (int) (degrees % 360);
+		imageDegree = (int) ((degrees + 360) % 360);
 
-        mSuppMatrix.setRotate(degrees % 360);
+        mSuppMatrix.setRotate((degrees + 360) % 360);
 		checkAndDisplayMatrix(); // applied
 
         resizeImageToFitScreen();
@@ -342,9 +342,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
         setPreviousScale();
 
 		// Daniel (2016-07-27 18:09:28): update current image degree
-		imageDegree = (int) (imageDegree + degrees) % 360;
+		imageDegree = (int) (imageDegree + degrees + 360) % 360;
 
-        mSuppMatrix.postRotate(degrees % 360);
+        mSuppMatrix.postRotate((degrees + 360) % 360);
 		checkAndDisplayMatrix(); // applied
 
         resizeImageToFitScreen();
