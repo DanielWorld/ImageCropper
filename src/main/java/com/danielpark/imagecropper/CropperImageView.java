@@ -26,7 +26,6 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
-import com.danielpark.imagecropper.util.log.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,8 +41,6 @@ import java.util.Date;
  * Created by Daniel Park on 2016-06-21.
  */
 public class CropperImageView extends ImageView implements CropperInterface{
-
-    private Logger LOG = Logger.getInstance();
 
     Paint mPaint = new Paint();
     Path mRectanglePath = new Path();

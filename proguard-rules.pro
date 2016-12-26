@@ -15,9 +15,6 @@
 -keepclasseswithmembers class * {
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
--keepclasseswithmembers class com.danielpark.imagecropper.util.log.ImageCropperLogger {
-     <methods>;
-}
 -keepclasseswithmembers interface com.danielpark.imagecropper.CropperInterface {
     <methods>;
 }
