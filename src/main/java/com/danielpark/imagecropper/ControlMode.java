@@ -2,8 +2,8 @@ package com.danielpark.imagecropper;
 
 /**
  * Set crop control mode before editing a picture <br>
- *     <b> NONE : </b> Do nothing (it only works when {@link CropMode#NONE}) <br/>
- *     <b> FREE : </b> You control points without any limited shape <br/>
+ *     <b> NONE : </b> Do nothing (it only works when {@link CropMode#NONE}) <br>
+ *     <b> FREE : </b> You control points without any limited shape <br>
  *     <b> FIXED : </b> You can control point but its original shape is nearly fixed
  *
  * <br><br>
