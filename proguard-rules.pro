@@ -24,6 +24,15 @@
 -keepclasseswithmembers interface com.danielpark.imagecropper.listener.OnThumbnailChangeListener {
     <methods>;
 }
+-keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting {
+    public <init>(com.danielpark.imagecropper.model.CropSetting$CropBuilder);
+}
+-keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting {
+    <methods>;
+}
+-keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting$CropBuilder {
+    <methods>;
+}
 -keepclasseswithmembers class com.danielpark.imagecropper.CropperImageView {
     public *;
 }
@@ -42,4 +51,5 @@
 -keepclasseswithmembers enum com.danielpark.imagecropper.ShapeMode {
     *;
 }
+
 

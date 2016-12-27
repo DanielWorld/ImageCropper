@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
+import com.danielpark.imagecropper.model.CropSetting;
 
 import java.io.File;
 
@@ -12,6 +13,12 @@ import java.io.File;
  * Created by Daniel Park on 2016-06-23.
  */
 public interface CropperInterface {
+
+    /**
+     * Set crop setting
+     * @param cropSetting
+     */
+    void setCropSetting(CropSetting cropSetting);
 
     /**
      * Set shape mode
@@ -32,7 +39,7 @@ public interface CropperInterface {
     void setStretchMode(CropMode mode);
 
     /**
-     * Only works when CropMode is {@link CropMode#NO_CROP}
+     * Only works when CropMode is {@link CropMode#NONE}
      * @param mode
      */
     void setUtilMode(UtilMode mode);
@@ -107,12 +114,12 @@ public interface CropperInterface {
     void setReverseRightToLeft();
 
     /**
-     * Undo the mRectanglePath (It only works when Crop mode is NO_CROP)
+     * Undo the mRectanglePath (It only works when Crop mode is NONE)
      */
     void setUndo();
 
     /**
-     * Redo the mRectanglePath (It only works when Crop mode is NO_CROP)
+     * Redo the mRectanglePath (It only works when Crop mode is NONE)
      */
     void setRedo();
 

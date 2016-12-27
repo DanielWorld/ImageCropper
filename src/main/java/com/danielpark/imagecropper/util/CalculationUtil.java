@@ -11,9 +11,9 @@ public class CalculationUtil {
      * Check if x, y coordinates are inside of circle which has radius and center x, y
      * @param x         target x coordinates
      * @param y         target y coordinates
-     * @param centerX   center x coordinates of Circle
-     * @param centerY   center y coordinates of Circle
-     * @param radius    radius of Circle
+     * @param centerX   center x coordinates of CIRCLE
+     * @param centerY   center y coordinates of CIRCLE
+     * @param radius    radius of CIRCLE
      * @return  <b>true</b> if x, y coordinates are inside of circle
      */
     public static boolean isInsideCircle(float x, float y, float centerX, float centerY, float radius) {

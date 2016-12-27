@@ -23,6 +23,7 @@ import android.widget.ImageView;
 
 import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
+import com.danielpark.imagecropper.model.CropSetting;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
@@ -44,7 +45,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     Paint mPaint = new Paint();
     Path mRectanglePath = new Path();
-    Path mCirclePath = new Path();      // Daniel (2016-12-22 11:25:27): Circle mRectanglePath
+    Path mCirclePath = new Path();      // Daniel (2016-12-22 11:25:27): CIRCLE mRectanglePath
 
     int controlBtnSize = 50; // Daniel (2016-06-21 16:40:26): Radius of Control button
     int controlStrokeSize = 50; // Daniel (2016-06-24 14:32:04): width of Control stroke
@@ -67,10 +68,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     private int mDrawWidth, mDrawHeight;    // Daniel (2016-06-22 14:26:01): Current visible ImageView's width, height
 
-    private ShapeMode isShapeMode = ShapeMode.Rectangle;
-    private ControlMode isControlMode = ControlMode.FREE;
-    private CropMode isCropMode = CropMode.CROP_STRETCH;
-    private UtilMode isUtilMode = UtilMode.NONE;
+    private CropMode mCropMode = CropMode.CROP_STRETCH;
+    private ShapeMode mShapeMode = ShapeMode.RECTANGLE;
+    private ControlMode mControlMode = ControlMode.FREE;
+    private UtilMode mUtilMode = UtilMode.NONE;
     private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
 
     private Path drawPath;
@@ -119,9 +120,23 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
+    public void setCropSetting(CropSetting cropSetting) {
+        if (cropSetting != null) {
+            this.mCropMode = cropSetting.getCropMode();
+            this.mShapeMode = cropSetting.getShapeMode();
+            this.mControlMode = cropSetting.getControlMode();
+            this.mUtilMode = cropSetting.getUtilMode();
+
+            this.insetRatio = cropSetting.getCropInsetRatio() / 200f;
+
+            invalidate();
+        }
+    }
+
+    @Override
     public void setShapeMode(ShapeMode mode) {
         if (mode != null) {
-            this.isShapeMode = mode;
+            this.mShapeMode = mode;
 
             invalidate();
         }
@@ -130,7 +145,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public void setControlMode(ControlMode mode) {
         if (mode != null) {
-            this.isControlMode = mode;
+            this.mControlMode = mode;
 
             invalidate();
         }
@@ -139,7 +154,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public void setStretchMode(CropMode mode) {
         if (mode != null) {
-            this.isCropMode = mode;
+            this.mCropMode = mode;
 
             invalidate();
         }
@@ -148,9 +163,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public void setUtilMode(UtilMode mode) {
         if (mode != null) {
-            this.isUtilMode = mode;
+            this.mUtilMode = mode;
 
-            if (isUtilMode == UtilMode.PENCIL) {
+            if (mUtilMode == UtilMode.PENCIL) {
                 setPenPaint(Color.BLUE, 5);
             } else {
                 setEraserPaint(Color.WHITE, 10);
@@ -482,13 +497,13 @@ public class CropperImageView extends ImageView implements CropperInterface{
         mDrawWidth = canvas.getWidth();
         mDrawHeight = canvas.getHeight();
 
-        if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
+        if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE) {
 
             for (DrawInfo v : arrayDrawInfo) {
                 canvas.drawPath(v.getPath(), v.getPaint());
             }
         }
-        else if (isCropMode != CropMode.NO_CROP) {
+        else if (mCropMode != CropMode.NONE) {
             canvas.save();
             if (!isTouch) {
 
@@ -501,7 +516,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     float marginWidth = (f.width() * insetRatio);
                     float marginHeight = (f.height() * insetRatio);
 
-                    if (isShapeMode == ShapeMode.Circle) {
+                    if (mShapeMode == ShapeMode.CIRCLE) {
                         // Daniel (2016-12-22 11:41:12): if width is smaller than height
                         // 1. marginHeight should be larger to get same size as width
                         // vice versa
@@ -556,7 +571,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 mCropRect.set(getCropLeft(), getCropTop(), getCropRight(), getCropBottom());
             }
 
-            if (isShapeMode == ShapeMode.Rectangle) {
+            if (mShapeMode == ShapeMode.RECTANGLE) {
                 canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
                 canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
 
@@ -573,7 +588,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     cropButton[i].draw(canvas);
                 }
             }
-            else if (isShapeMode == ShapeMode.Circle) {
+            else if (mShapeMode == ShapeMode.CIRCLE) {
                 mCirclePath.reset();
 
                 // Daniel (2016-12-21 18:28:38): get information from mRectangleRect
@@ -603,7 +618,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
+                    if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
@@ -640,7 +655,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                                 return false;
                         }
                         drawActionDown(X, Y);
-                    } else if (isCropMode != CropMode.NO_CROP) {
+                    } else if (mCropMode != CropMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
                         controlTouchInCropDown(X, Y);
@@ -648,7 +663,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     break;
                 case MotionEvent.ACTION_MOVE:
 
-                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE) {
+                    if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
@@ -686,7 +701,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                         }
                         drawActionMove(X, Y);
                     }
-                    else if (isCropMode != CropMode.NO_CROP) {
+                    else if (mCropMode != CropMode.NONE) {
                         for (int index = 0; index < event.getPointerCount(); index++) {
                             int X = (int) event.getX(index);
                             int Y = (int) event.getY(index);
@@ -696,9 +711,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
-                    if (isCropMode == CropMode.NO_CROP && isUtilMode != UtilMode.NONE){
+                    if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE){
                         drawActionUp();
-                    } else if (isCropMode != CropMode.NO_CROP) {
+                    } else if (mCropMode != CropMode.NONE) {
                         if (onThumbnailChangeListener != null)
                             onThumbnailChangeListener.onThumbnailChanged(getCropStretchThumbnailBitmap());
                     }
@@ -837,8 +852,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
 
-            if (isControlMode == ControlMode.FIXED) {
-                // Rectangle position
+            if (mControlMode == ControlMode.FIXED) {
+                // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[0].x;
@@ -858,7 +873,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[1].x += moveX;
                 coordinatePoints[3].y += moveY;
             }
-            else if (isControlMode == ControlMode.FREE) {
+            else if (mControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[3].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
@@ -881,8 +896,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
-            if (isControlMode == ControlMode.FIXED) {
-                // Rectangle position
+            if (mControlMode == ControlMode.FIXED) {
+                // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[1].x;
@@ -902,7 +917,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[0].x += moveX;
                 coordinatePoints[2].y += moveY;
             }
-            else if (isControlMode == ControlMode.FREE) {
+            else if (mControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[2].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
@@ -925,8 +940,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
 
-            if (isControlMode == ControlMode.FIXED) {
-                // Rectangle position
+            if (mControlMode == ControlMode.FIXED) {
+                // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[2].x;
@@ -946,7 +961,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[3].x += moveX;
                 coordinatePoints[1].y += moveY;
             }
-            else if (isControlMode == ControlMode.FREE) {
+            else if (mControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[1].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
@@ -969,8 +984,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
             invalidate();
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
 
-            if (isControlMode == ControlMode.FIXED) {
-                // Rectangle position
+            if (mControlMode == ControlMode.FIXED) {
+                // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
                 int moveX = X - coordinatePoints[3].x;
@@ -990,7 +1005,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 coordinatePoints[2].x += moveX;
                 coordinatePoints[0].y += moveY;
             }
-            else if (isControlMode == ControlMode.FREE) {
+            else if (mControlMode == ControlMode.FREE) {
                 // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
                 int distanceWidth = Math.abs(X - coordinatePoints[0].x);
                 int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
@@ -1281,7 +1296,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
 		Canvas canvas = new Canvas(perfectBitmap);
 
-        if (isShapeMode == ShapeMode.Circle) {
+        if (mShapeMode == ShapeMode.CIRCLE) {
             final int color = 0xff424242;
             final Paint paint = new Paint();
 
@@ -1293,7 +1308,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             canvas.drawBitmap(matrixBitmap, matrix, paint);
         }
-        else {
+        else if (mShapeMode == ShapeMode.RECTANGLE) {
             canvas.drawBitmap(matrixBitmap, matrix, null);
         }
 
@@ -1420,7 +1435,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
 		canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
 
-		if (isCropMode == CropMode.CROP_SHRINK) {
+		if (mCropMode == CropMode.CROP_SHRINK) {
 			Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
 
 			// Daniel (2016-06-22 14:50:28): recycle previous image
@@ -1593,10 +1608,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public File getCropImage() {
 
-		switch (isCropMode) {
+		switch (mCropMode) {
 			case CROP_STRETCH:
 				return getCropStretch();
-			case NO_CROP:
+			case NONE:
 				return getNoCrop();
 			default:
 				return getCropElse();
@@ -1606,7 +1621,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public Bitmap getCropImageThumbnail() {
 
-        switch (isCropMode) {
+        switch (mCropMode) {
             case CROP_STRETCH:
                 return getCropStretchThumbnailBitmap();
         }
