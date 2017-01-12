@@ -27,6 +27,7 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.CropSetting;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.BitmapUtil;
+import com.danielpark.imagecropper.util.CalculationUtil;
 import com.danielpark.imagecropper.util.ConvertUtil;
 
 import java.io.File;
@@ -608,7 +609,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 canvas.drawCircle(mCropRect.centerX(), mCropRect.centerY(), Math.min(mCropRect.width() / 2, mCropRect.height() / 2), mPaint);
 
                 mPaint.setPathEffect(mDashPathEffect);      // Daniel (2017-01-12 11:45:36): dash effect
-                mPaint.setStrokeWidth(1.0f);
+                mPaint.setStrokeWidth(5.0f);
                 mPaint.setColor(Color.GRAY);
 
                 // Daniel (2017-01-12 11:41:15): draw outer rectangle line
@@ -617,6 +618,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 mPaint.reset();
 
                 canvas.restore();
+
+                // Daniel (2017-01-12 14:47:28): Resize control button when shape mode is circle.
+                if (controlBtnSize < 80)
+                    controlBtnSize = 80;
 
                 // Daniel (2016-06-21 16:34:28): draw control button
                 for (int i = 0; i < coordinatePoints.length; i++) {
@@ -869,6 +874,21 @@ public class CropperImageView extends ImageView implements CropperInterface{
         if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
 
             if (mControlMode == ControlMode.FIXED) {
+
+                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                if (mShapeMode == ShapeMode.CIRCLE) {
+                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                            coordinatePoints[0].x, coordinatePoints[0].y,
+                            coordinatePoints[2].x, coordinatePoints[2].y,
+                            X, Y
+                    );
+                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                            coordinatePoints[0].x, coordinatePoints[0].y,
+                            coordinatePoints[2].x, coordinatePoints[2].y,
+                            X, Y
+                    );
+                }
+
                 // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -913,6 +933,21 @@ public class CropperImageView extends ImageView implements CropperInterface{
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
 
             if (mControlMode == ControlMode.FIXED) {
+
+                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                if (mShapeMode == ShapeMode.CIRCLE) {
+                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                            coordinatePoints[1].x, coordinatePoints[1].y,
+                            coordinatePoints[3].x, coordinatePoints[3].y,
+                            X, Y
+                    );
+                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                            coordinatePoints[1].x, coordinatePoints[1].y,
+                            coordinatePoints[3].x, coordinatePoints[3].y,
+                            X, Y
+                    );
+                }
+
                 // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -957,6 +992,21 @@ public class CropperImageView extends ImageView implements CropperInterface{
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
 
             if (mControlMode == ControlMode.FIXED) {
+
+                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                if (mShapeMode == ShapeMode.CIRCLE) {
+                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                            coordinatePoints[2].x, coordinatePoints[2].y,
+                            coordinatePoints[0].x, coordinatePoints[0].y,
+                            X, Y
+                    );
+                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                            coordinatePoints[2].x, coordinatePoints[2].y,
+                            coordinatePoints[0].x, coordinatePoints[0].y,
+                            X, Y
+                    );
+                }
+
                 // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
@@ -1001,6 +1051,21 @@ public class CropperImageView extends ImageView implements CropperInterface{
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
 
             if (mControlMode == ControlMode.FIXED) {
+
+                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                if (mShapeMode == ShapeMode.CIRCLE) {
+                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                            coordinatePoints[3].x, coordinatePoints[3].y,
+                            coordinatePoints[1].x, coordinatePoints[1].y,
+                            X, Y
+                    );
+                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                            coordinatePoints[3].x, coordinatePoints[3].y,
+                            coordinatePoints[1].x, coordinatePoints[1].y,
+                            X, Y
+                    );
+                }
+
                 // RECTANGLE position
                 // moveX = the distance last point X - previous point X
                 // moveY = the distance last point Y - previous point Y
