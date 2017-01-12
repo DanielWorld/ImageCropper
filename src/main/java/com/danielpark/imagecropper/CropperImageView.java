@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -46,6 +47,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     Paint mPaint = new Paint();
     Path mRectanglePath = new Path();
     Path mCirclePath = new Path();      // Daniel (2016-12-22 11:25:27): CIRCLE mRectanglePath
+    DashPathEffect mDashPathEffect = new DashPathEffect(new float[]{10, 10, 10, 10}, 0);     // Daniel (2017-01-12 11:44:28): dash path effect
 
     int controlBtnSize = 50; // Daniel (2016-06-21 16:40:26): Radius of Control button
     int controlStrokeSize = 50; // Daniel (2016-06-24 14:32:04): width of Control stroke
@@ -602,11 +604,25 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 mPaint.setStyle(Paint.Style.STROKE);
                 mPaint.setStrokeWidth(controlStrokeSize);
 
-                // Daniel (2016-12-22 10:53:54): resize cropRect
-
+                // Daniel (2017-01-12 11:42:27): draw circle
                 canvas.drawCircle(mCropRect.centerX(), mCropRect.centerY(), Math.min(mCropRect.width() / 2, mCropRect.height() / 2), mPaint);
 
+                mPaint.setPathEffect(mDashPathEffect);      // Daniel (2017-01-12 11:45:36): dash effect
+                mPaint.setStrokeWidth(1.0f);
+                mPaint.setColor(Color.GRAY);
+
+                // Daniel (2017-01-12 11:41:15): draw outer rectangle line
+                canvas.drawPath(mRectanglePath, mPaint);
+
+                mPaint.reset();
+
                 canvas.restore();
+
+                // Daniel (2016-06-21 16:34:28): draw control button
+                for (int i = 0; i < coordinatePoints.length; i++) {
+                    cropButton[i].setBounds(coordinatePoints[i].x - controlBtnSize, coordinatePoints[i].y - controlBtnSize, coordinatePoints[i].x + controlBtnSize, coordinatePoints[i].y + controlBtnSize);
+                    cropButton[i].draw(canvas);
+                }
             }
         }
     }
@@ -1487,6 +1503,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             oriHeight = mDrawHeight;
         }
 
+
         RectF displayRect = getDisplayRect();
 
         float X_Factor = (float) oriWidth / displayRect.width();
@@ -1557,29 +1574,31 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         h = h * ((factor + diffFactor) / 2);
 
-        // Daniel (2016-08-06 18:18:14): If h is bigger than specified size, then it should be fixed
-        // It might happened to be higher than specified size...
-        // or vice versa
-        int customSize = ConvertUtil.convertDpToPixel(80);
+        // Daniel (2016-08-06 18:18:14): If h is bigger than original image, then it should be fixed
+        // It might happened to be higher than original picture...
+        // Daniel (2016-08-08 17:11:30): consider Image's degree!
+        if (imageDegree % 360 == 90 || imageDegree % 360 == 270) {
+            double wRatio = oriHeight / w;
+            double hRatio = oriWidth / h;
 
-        double wRatio = customSize / w;
-        double hRatio = customSize / h;
-
-        if (w > customSize && h > customSize) {
-            if (wRatio > hRatio) {
+            if (h > oriWidth) {
                 w = w * hRatio;
-                h = customSize; // h = h * (customSize / h);
-            }
-            else {
-                w = customSize;
+                h = oriWidth;    // h = h * (oriWidth / h);
+            } else if (w > oriHeight) {
+                w = oriHeight;  // w = w * (oriHeight / w);
                 h = h * wRatio;
             }
-        } else if (h > customSize) {
-            w = w * hRatio;
-            h = customSize;	// h = h * (oriHeight / h);
-        } else if (w > customSize) {
-            w = customSize;
-            h = h * wRatio;
+        } else {
+            double wRatio = oriWidth / w;
+            double hRatio = oriHeight / h;
+
+            if (h > oriHeight) {
+                w = w * hRatio;
+                h = oriHeight;    // h = h * (oriHeight / h);
+            } else if (w > oriWidth) {
+                w = oriWidth;      // w = w * (oriWidth / w);
+                h = h * wRatio;
+            }
         }
 
         float[] dsc = new float[]{
@@ -1589,13 +1608,32 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 0, (float) h
         };
 
+        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 1.0
+        if (w < 1.0) w = 1.0;
+        if (h < 1.0) h = 1.0;
+
         Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
 
         Matrix matrix = new Matrix();
         matrix.setPolyToPoly(src, 0, dsc, 0, 4);
 
         Canvas canvas = new Canvas(perfectBitmap);
-        canvas.drawBitmap(matrixBitmap, matrix, null);
+
+        if (mShapeMode == ShapeMode.CIRCLE) {
+            final int color = 0xff424242;
+            final Paint paint = new Paint();
+
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(color);
+            canvas.drawCircle(perfectBitmap.getWidth() / 2, perfectBitmap.getHeight() / 2,
+                    perfectBitmap.getWidth() / 2, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(matrixBitmap, matrix, paint);
+        }
+        else if (mShapeMode == ShapeMode.RECTANGLE) {
+            canvas.drawBitmap(matrixBitmap, matrix, null);
+        }
 
         if (originalBitmap != matrixBitmap && matrixBitmap != perfectBitmap && matrixBitmap != null && !matrixBitmap.isRecycled()) {
             matrixBitmap.recycle();
