@@ -132,6 +132,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             this.insetRatio = cropSetting.getCropInsetRatio() / 200f;
 
+            isTouch = false;
+
             invalidate();
         }
     }
@@ -155,9 +157,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
     }
 
     @Override
-    public void setStretchMode(CropMode mode) {
+    public void setCropMode(CropMode mode) {
         if (mode != null) {
             this.mCropMode = mode;
+
+            isTouch = false;
 
             invalidate();
         }
@@ -541,6 +545,18 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 } else {
                     int width = canvas.getWidth() / 2;
                     int height = canvas.getHeight() / 2;
+
+                    if (mShapeMode == ShapeMode.CIRCLE) {
+                        // Daniel (2016-12-22 11:41:12): if width is smaller than height
+                        // 1. marginHeight should be larger to get same size as width
+                        // vice versa
+                        if (width < height) {
+                            height = width;
+                        }
+                        else if (width > height) {
+                            width = height;
+                        }
+                    }
 
                     centerPoint.set(width - (width / 2), height - (height / 2));
                     coordinatePoints[0].set(width + (width / 2), centerPoint.y);

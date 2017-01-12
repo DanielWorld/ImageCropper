@@ -21,6 +21,18 @@ public interface CropperInterface {
     void setCropSetting(CropSetting cropSetting);
 
     /**
+     * Default mode is {@link CropMode#CROP_STRETCH}
+     * @param mode
+     */
+    void setCropMode(CropMode mode);
+
+    /**
+     * Only works when CropMode is {@link CropMode#NONE}
+     * @param mode
+     */
+    void setUtilMode(UtilMode mode);
+
+    /**
      * Set shape mode
      * @param mode
      */
@@ -31,18 +43,6 @@ public interface CropperInterface {
      * @param mode
      */
     void setControlMode(ControlMode mode);
-
-    /**
-     * Default mode is {@link CropMode#CROP_STRETCH}
-     * @param mode
-     */
-    void setStretchMode(CropMode mode);
-
-    /**
-     * Only works when CropMode is {@link CropMode#NONE}
-     * @param mode
-     */
-    void setUtilMode(UtilMode mode);
 
     /**
      * Whether control button should be in image or not <br>
