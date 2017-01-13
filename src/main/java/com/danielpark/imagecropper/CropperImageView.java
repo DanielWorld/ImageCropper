@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,6 +38,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -63,6 +66,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private Point[] coordinatePoints = new Point[4];
 
     /**
+     * Daniel (2017-01-13 11:18:16): the latest touched coordinate spot index (Start from right-top to clockwise)
+     */
+    private Set<Integer> mTouchedCoordinatePointIndex = new HashSet<>();
+
+    /**
      * the standard point
      */
     private Point centerPoint = new Point();
@@ -75,7 +83,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private ShapeMode mShapeMode = ShapeMode.RECTANGLE;
     private ControlMode mControlMode = ControlMode.FREE;
     private UtilMode mUtilMode = UtilMode.NONE;
-    private boolean isControlBtnInImage = false;    // Daniel (2016-06-24 14:33:53): whether control button should be inside of Image
 
     private Path drawPath;
     private Paint drawPaint;
@@ -240,11 +247,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
         if (arrayDrawInfo.size() > 0 && onUndoRedoStateChangeListener != null) {
             onUndoRedoStateChangeListener.onUndoAvailable(true);
         }
-    }
-
-    @Override
-    public void setControlInImage(boolean result) {
-        isControlBtnInImage = result;
     }
 
 	@Override
@@ -635,10 +637,6 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
                 canvas.restore();
 
-                // Daniel (2017-01-12 14:47:28): Resize control button when shape mode is circle.
-                if (controlBtnSize < 80)
-                    controlBtnSize = 80;
-
                 // Daniel (2016-06-21 16:34:28): draw control button
                 for (int i = 0; i < coordinatePoints.length; i++) {
                     cropButton[i].setBounds(coordinatePoints[i].x - controlBtnSize, coordinatePoints[i].y - controlBtnSize, coordinatePoints[i].x + controlBtnSize, coordinatePoints[i].y + controlBtnSize);
@@ -653,104 +651,58 @@ public class CropperImageView extends ImageView implements CropperInterface{
         public boolean onTouch(View v, MotionEvent event) {
             isTouch = true;
 
-            switch (event.getAction()) {
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN:
                     if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
-                        int borderSize;    // borderSize
+                        if (isCorrectCoordinates(X, Y))
+                            drawActionDown(X, Y);
 
-                        if (isControlBtnInImage)
-                            borderSize = controlBtnSize;
-                        else
-                            borderSize = controlStrokeSize;
-
-                        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                        if (X <= borderSize)
-                            return false;
-                        if (Y <= borderSize)
-                            return false;
-
-                        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                        if (X >= mDrawWidth - borderSize)
-                            return false;
-                        if (Y >= mDrawHeight - borderSize)
-                            return false;
-
-                        RectF displayRect = getDisplayRect();
-
-                        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                        if (displayRect != null) {
-                            if (X >= displayRect.right - borderSize)
-                                return false;
-                            if (X <= displayRect.left + borderSize)
-                                return false;
-                            if (Y >= displayRect.bottom - borderSize)
-                                return false;
-                            if (Y <= displayRect.top + borderSize)
-                                return false;
-                        }
-                        drawActionDown(X, Y);
                     } else if (mCropMode != CropMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
                         controlTouchInCropDown(X, Y);
                     }
                     break;
+                case MotionEvent.ACTION_POINTER_DOWN: {
+                    // Action pointer down
+                }
+                break;
                 case MotionEvent.ACTION_MOVE:
 
                     if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE) {
                         float X = event.getX();
                         float Y = event.getY();
 
-                        int borderSize;    // borderSize
+                        Pair<Float, Float> pair = correctCoordinates(X, Y);
+                        X = pair.first;
+                        Y = pair.second;
 
-                        if (isControlBtnInImage)
-                            borderSize = controlBtnSize;
-                        else
-                            borderSize = controlStrokeSize;
-
-                        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-                        if (X <= borderSize)
-                            X = borderSize;
-                        if (Y <= borderSize)
-                            Y = borderSize;
-
-                        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-                        if (X >= mDrawWidth - borderSize)
-                            X = mDrawWidth - borderSize;
-                        if (Y >= mDrawHeight - borderSize)
-                            Y = mDrawHeight - borderSize;
-
-                        RectF displayRect = getDisplayRect();
-
-                        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-                        if (displayRect != null) {
-                            if (X >= displayRect.right - borderSize)
-                                X = (displayRect.right - borderSize);
-                            if (X <= displayRect.left + borderSize)
-                                X = (displayRect.left + borderSize);
-                            if (Y >= displayRect.bottom - borderSize)
-                                Y = (displayRect.bottom - borderSize);
-                            if (Y <= displayRect.top + borderSize)
-                                Y = (displayRect.top + borderSize);
-                        }
                         drawActionMove(X, Y);
                     }
                     else if (mCropMode != CropMode.NONE) {
                         for (int index = 0; index < event.getPointerCount(); index++) {
-                            int X = (int) event.getX(index);
-                            int Y = (int) event.getY(index);
+                            float X = event.getX(index);
+                            float Y = event.getY(index);
 
                             controlTouchInCropMove(X, Y);
                         }
                     }
                     return true;
+                case MotionEvent.ACTION_POINTER_UP: {
+                    // Action pointer up
+                }
+                break;
                 case MotionEvent.ACTION_UP:
                     if (mCropMode == CropMode.NONE && mUtilMode != UtilMode.NONE){
                         drawActionUp();
                     } else if (mCropMode != CropMode.NONE) {
+
+                        // Daniel (2017-01-13 14:37:40): clear touched point index
+                        mTouchedCoordinatePointIndex.clear();
+
                         if (onThumbnailChangeListener != null)
                             onThumbnailChangeListener.onThumbnailChanged(getCropStretchThumbnailBitmap());
                     }
@@ -760,106 +712,52 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
     };
 
-
-    float cropDownX, cropDownY;
     /**
-     * It only works in Crop Mode for touch event!!
-     * @param X
-     * @param Y
+     * Check if target X, Y is correct coordinates
+     * @param targetX
+     * @param targetY
+     * @return
      */
-    private void controlTouchInCropDown(float X, float Y) {
-        cropDownX = -1; cropDownY = -1;
+    private boolean isCorrectCoordinates(float targetX, float targetY){
+        int borderSize = controlStrokeSize;
 
-        if (isControlBtnInImage) {
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlBtnSize)
-                return;
-            if (Y <= controlBtnSize)
-                return;
+        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+        if (targetX <= borderSize)
+            return false;
+        if (targetY <= borderSize)
+            return false;
 
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlBtnSize)
-                return;
-            if (Y >= mDrawHeight - controlBtnSize)
-                return;
+        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+        if (targetX >= mDrawWidth - borderSize)
+            return false;
+        if (targetY >= mDrawHeight - borderSize)
+            return false;
 
-            RectF displayRect = getDisplayRect();
+        RectF displayRect = getDisplayRect();
 
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlBtnSize)
-                    return;
-                if (X <= displayRect.left + controlBtnSize)
-                    return;
-                if (Y >= displayRect.bottom - controlBtnSize)
-                    return;
-                if (Y <= displayRect.top + controlBtnSize)
-                    return;
-            }
-
-            if (X >= mCropRect.right - controlBtnSize)
-                return;
-            if (X <= mCropRect.left + controlBtnSize)
-                return;
-            if (Y >= mCropRect.bottom - controlBtnSize)
-                return;
-            if (Y <= mCropRect.top + controlBtnSize)
-                return;
-        }
-        else {
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlStrokeSize)
-                return;
-            if (Y <= controlStrokeSize)
-                return;
-
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlStrokeSize)
-                return;
-            if (Y >= mDrawHeight - controlStrokeSize)
-                return;
-
-            RectF displayRect = getDisplayRect();
-
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlStrokeSize)
-                    return;
-                if (X <= displayRect.left + controlStrokeSize)
-                    return;
-                if (Y >= displayRect.bottom - controlStrokeSize)
-                    return;
-                if (Y <= displayRect.top + controlStrokeSize)
-                    return;
-            }
-
-            if (X >= mCropRect.right - controlStrokeSize)
-                return;
-            if (X <= mCropRect.left + controlStrokeSize)
-                return;
-            if (Y >= mCropRect.bottom - controlStrokeSize)
-                return;
-            if (Y <= mCropRect.top + controlStrokeSize)
-                return;
+        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+        if (displayRect != null) {
+            if (targetX >= displayRect.right - borderSize)
+                return false;
+            if (targetX <= displayRect.left + borderSize)
+                return false;
+            if (targetY >= displayRect.bottom - borderSize)
+                return false;
+            if (targetY <= displayRect.top + borderSize)
+                return false;
         }
 
-        cropDownX = X;
-        cropDownY = Y;
+        return true;
     }
 
-
     /**
-     * It only works in Crop Mode for touch event!!
+     * Correct unspecified X, Y coordinates
      * @param X
      * @param Y
+     * @return
      */
-    private void controlTouchInCropMove(int X, int Y) {
-        int borderSize;    // borderSize
-
-        if (isControlBtnInImage)
-            borderSize = controlBtnSize;
-        else
-            borderSize = controlStrokeSize;
+    private Pair<Float, Float> correctCoordinates(float X, float Y) {
+        Integer borderSize = controlStrokeSize;
 
         // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
         if (X <= borderSize)
@@ -878,253 +776,348 @@ public class CropperImageView extends ImageView implements CropperInterface{
         // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
         if (displayRect != null) {
             if (X >= displayRect.right - borderSize)
-                X = (int) (displayRect.right - borderSize);
+                X = displayRect.right - borderSize;
             if (X <= displayRect.left + borderSize)
-                X = (int) (displayRect.left + borderSize);
+                X = displayRect.left + borderSize;
             if (Y >= displayRect.bottom - borderSize)
-                Y = (int) (displayRect.bottom - borderSize);
+                Y = displayRect.bottom - borderSize;
             if (Y <= displayRect.top + borderSize)
-                Y = (int) (displayRect.top + borderSize);
+                Y = displayRect.top + borderSize;
         }
 
+        return new Pair<>(X, Y);
+    }
+
+    float cropDownX, cropDownY;
+    /**
+     * It only works in Crop Mode for touch event!!
+     * @param X
+     * @param Y
+     */
+    private void controlTouchInCropDown(float X, float Y) {
+        cropDownX = -1; cropDownY = -1;
+
+        if (isCorrectCoordinates(X, Y)) {
+            cropDownX = X;
+            cropDownY = Y;
+
+            saveTouchedCoordinatePointIndex(X, Y);
+        }
+    }
+
+    /**
+     * Save the latest touched coordinate point index
+     */
+    private void saveTouchedCoordinatePointIndex(float X, float Y) {
         if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
-
-            if (mControlMode == ControlMode.FIXED) {
-
-                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
-                if (mShapeMode == ShapeMode.CIRCLE) {
-                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
-                            coordinatePoints[0].x, coordinatePoints[0].y,
-                            coordinatePoints[2].x, coordinatePoints[2].y,
-                            X, Y
-                    );
-                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
-                            coordinatePoints[0].x, coordinatePoints[0].y,
-                            coordinatePoints[2].x, coordinatePoints[2].y,
-                            X, Y
-                    );
-                }
-
-                // RECTANGLE position
-                // moveX = the distance last point X - previous point X
-                // moveY = the distance last point Y - previous point Y
-                int moveX = X - coordinatePoints[0].x;
-                int moveY = Y - coordinatePoints[0].y;
-
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[3].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[0].x;
-                    moveX = 0;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[0].y;
-                    moveY = 0;
-                }
-                coordinatePoints[1].x += moveX;
-                coordinatePoints[3].y += moveY;
-            }
-            else if (mControlMode == ControlMode.FREE) {
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[3].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[0].x;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[0].y;
-                }
-                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2));
-                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[0].x;
-                    Y = coordinatePoints[0].y;
-                }
-            }
-
-            coordinatePoints[0].x = X;
-            coordinatePoints[0].y = Y;
-
-            invalidate();
+            mTouchedCoordinatePointIndex.add(0);
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
-
-            if (mControlMode == ControlMode.FIXED) {
-
-                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
-                if (mShapeMode == ShapeMode.CIRCLE) {
-                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
-                            coordinatePoints[1].x, coordinatePoints[1].y,
-                            coordinatePoints[3].x, coordinatePoints[3].y,
-                            X, Y
-                    );
-                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
-                            coordinatePoints[1].x, coordinatePoints[1].y,
-                            coordinatePoints[3].x, coordinatePoints[3].y,
-                            X, Y
-                    );
-                }
-
-                // RECTANGLE position
-                // moveX = the distance last point X - previous point X
-                // moveY = the distance last point Y - previous point Y
-                int moveX = X - coordinatePoints[1].x;
-                int moveY = Y - coordinatePoints[1].y;
-
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[2].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[1].x;
-                    moveX = 0;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[1].y;
-                    moveY = 0;
-                }
-                coordinatePoints[0].x += moveX;
-                coordinatePoints[2].y += moveY;
-            }
-            else if (mControlMode == ControlMode.FREE) {
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[2].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[1].x;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[1].y;
-                }
-                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2));
-                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[1].x;
-                    Y = coordinatePoints[1].y;
-                }
-            }
-
-            coordinatePoints[1].x = X;
-            coordinatePoints[1].y = Y;
-
-            invalidate();
+            mTouchedCoordinatePointIndex.add(1);
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
-
-            if (mControlMode == ControlMode.FIXED) {
-
-                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
-                if (mShapeMode == ShapeMode.CIRCLE) {
-                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
-                            coordinatePoints[2].x, coordinatePoints[2].y,
-                            coordinatePoints[0].x, coordinatePoints[0].y,
-                            X, Y
-                    );
-                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
-                            coordinatePoints[2].x, coordinatePoints[2].y,
-                            coordinatePoints[0].x, coordinatePoints[0].y,
-                            X, Y
-                    );
-                }
-
-                // RECTANGLE position
-                // moveX = the distance last point X - previous point X
-                // moveY = the distance last point Y - previous point Y
-                int moveX = X - coordinatePoints[2].x;
-                int moveY = Y - coordinatePoints[2].y;
-
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[1].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[2].x;
-                    moveX = 0;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[2].y;
-                    moveY = 0;
-                }
-                coordinatePoints[3].x += moveX;
-                coordinatePoints[1].y += moveY;
-            }
-            else if (mControlMode == ControlMode.FREE) {
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[1].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[2].x;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[2].y;
-                }
-                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2));
-                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[2].x;
-                    Y = coordinatePoints[2].y;
-                }
-            }
-
-            coordinatePoints[2].x = X;
-            coordinatePoints[2].y = Y;
-
-            invalidate();
+            mTouchedCoordinatePointIndex.add(2);
         } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
+            mTouchedCoordinatePointIndex.add(3);
+        }
+    }
 
-            if (mControlMode == ControlMode.FIXED) {
+    /**
+     * Calculate the latest touched coordinate point index
+     */
+    private int calculateTouchedCoordinatePointIndex(float X, float Y) {
+        if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
+            return 0;
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
+            return 1;
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
+            return 2;
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
+            return 3;
+        } else {
+            return -1;
+        }
+    }
 
-                // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
-                if (mShapeMode == ShapeMode.CIRCLE) {
-                    X = (int) CalculationUtil.rectifyOnProportionalLineX(
-                            coordinatePoints[3].x, coordinatePoints[3].y,
-                            coordinatePoints[1].x, coordinatePoints[1].y,
-                            X, Y
-                    );
-                    Y = (int) CalculationUtil.rectifyOnProportionalLineY(
-                            coordinatePoints[3].x, coordinatePoints[3].y,
-                            coordinatePoints[1].x, coordinatePoints[1].y,
-                            X, Y
-                    );
-                }
+    /**
+     * It only works in Crop Mode for touch event!!
+     * @param X
+     * @param Y
+     */
+    private void controlTouchInCropMove(float X, float Y) {
 
-                // RECTANGLE position
-                // moveX = the distance last point X - previous point X
-                // moveY = the distance last point Y - previous point Y
-                int moveX = X - coordinatePoints[3].x;
-                int moveY = Y - coordinatePoints[3].y;
+        Pair<Float, Float> pair = correctCoordinates(X, Y);
+        X = pair.first;
+        Y = pair.second;
 
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[0].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[3].x;
-                    moveX = 0;
-                }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[3].y;
-                    moveY = 0;
-                }
-                coordinatePoints[2].x += moveX;
-                coordinatePoints[0].y += moveY;
+        if (Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2)) <= controlBtnSize) {
+            mTouchedCoordinatePointIndex.add(0);
+            controlTouchInCropMoveIndex(0, (int) X, (int) Y);
+
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2)) <= controlBtnSize) {
+            mTouchedCoordinatePointIndex.add(1);
+            controlTouchInCropMoveIndex(1, (int) X, (int) Y);
+
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2)) <= controlBtnSize) {
+            mTouchedCoordinatePointIndex.add(2);
+            controlTouchInCropMoveIndex(2, (int) X, (int) Y);
+
+        } else if (Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2)) <= controlBtnSize) {
+            mTouchedCoordinatePointIndex.add(3);
+            controlTouchInCropMoveIndex(3, (int) X, (int) Y);
+
+        }
+        // Daniel (2017-01-13 11:05:49): check if touch down coordinates were inside of control button
+        else if (!mTouchedCoordinatePointIndex.isEmpty()){
+            for (Integer i : mTouchedCoordinatePointIndex) {
+                controlTouchInCropMoveIndex(i, (int) X, (int) Y);
             }
-            else if (mControlMode == ControlMode.FREE) {
-                // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
-                int distanceWidth = Math.abs(X - coordinatePoints[0].x);
-                int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
-                if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[3].x;
+        }
+        else if (isTouchInCropRect((int) X, (int) Y)) {
+            invalidate();
+        }
+    }
+
+    private void controlTouchInCropMoveIndex(int index, int X, int Y) {
+        switch (index) {
+            case 0: {
+                if (mControlMode == ControlMode.FIXED) {
+
+                    // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                    if (mShapeMode == ShapeMode.CIRCLE) {
+                        X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                                coordinatePoints[0].x, coordinatePoints[0].y,
+                                coordinatePoints[2].x, coordinatePoints[2].y,
+                                X, Y
+                        );
+                        Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                                coordinatePoints[0].x, coordinatePoints[0].y,
+                                coordinatePoints[2].x, coordinatePoints[2].y,
+                                X, Y
+                        );
+                    }
+
+                    // RECTANGLE position
+                    // moveX = the distance last point X - previous point X
+                    // moveY = the distance last point Y - previous point Y
+                    int moveX = X - coordinatePoints[0].x;
+                    int moveY = Y - coordinatePoints[0].y;
+
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[3].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[0].x;
+                        moveX = 0;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[0].y;
+                        moveY = 0;
+                    }
+                    coordinatePoints[1].x += moveX;
+                    coordinatePoints[3].y += moveY;
                 }
-                if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    Y = coordinatePoints[3].y;
+                else if (mControlMode == ControlMode.FREE) {
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[3].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[1].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[0].x;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[0].y;
+                    }
+                    int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[2].x, 2) + Math.pow(Y - coordinatePoints[2].y, 2));
+                    if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[0].x;
+                        Y = coordinatePoints[0].y;
+                    }
                 }
-                int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2));
-                if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
-                    X = coordinatePoints[3].x;
-                    Y = coordinatePoints[3].y;
-                }
+
+                coordinatePoints[0].x = X;
+                coordinatePoints[0].y = Y;
+
+                invalidate();
             }
+            break;
+            case 1: {
+                if (mControlMode == ControlMode.FIXED) {
 
-            coordinatePoints[3].x = X;
-            coordinatePoints[3].y = Y;
+                    // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                    if (mShapeMode == ShapeMode.CIRCLE) {
+                        X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                                coordinatePoints[1].x, coordinatePoints[1].y,
+                                coordinatePoints[3].x, coordinatePoints[3].y,
+                                X, Y
+                        );
+                        Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                                coordinatePoints[1].x, coordinatePoints[1].y,
+                                coordinatePoints[3].x, coordinatePoints[3].y,
+                                X, Y
+                        );
+                    }
 
-            invalidate();
-        } else if (isTouchInCropRect(X, Y)) {
-            invalidate();
+                    // RECTANGLE position
+                    // moveX = the distance last point X - previous point X
+                    // moveY = the distance last point Y - previous point Y
+                    int moveX = X - coordinatePoints[1].x;
+                    int moveY = Y - coordinatePoints[1].y;
+
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[2].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[1].x;
+                        moveX = 0;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[1].y;
+                        moveY = 0;
+                    }
+                    coordinatePoints[0].x += moveX;
+                    coordinatePoints[2].y += moveY;
+                }
+                else if (mControlMode == ControlMode.FREE) {
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[2].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[0].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[1].x;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[1].y;
+                    }
+                    int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[3].x, 2) + Math.pow(Y - coordinatePoints[3].y, 2));
+                    if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[1].x;
+                        Y = coordinatePoints[1].y;
+                    }
+                }
+
+                coordinatePoints[1].x = X;
+                coordinatePoints[1].y = Y;
+
+                invalidate();
+            }
+            break;
+            case 2: {
+                if (mControlMode == ControlMode.FIXED) {
+
+                    // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                    if (mShapeMode == ShapeMode.CIRCLE) {
+                        X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                                coordinatePoints[2].x, coordinatePoints[2].y,
+                                coordinatePoints[0].x, coordinatePoints[0].y,
+                                X, Y
+                        );
+                        Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                                coordinatePoints[2].x, coordinatePoints[2].y,
+                                coordinatePoints[0].x, coordinatePoints[0].y,
+                                X, Y
+                        );
+                    }
+
+                    // RECTANGLE position
+                    // moveX = the distance last point X - previous point X
+                    // moveY = the distance last point Y - previous point Y
+                    int moveX = X - coordinatePoints[2].x;
+                    int moveY = Y - coordinatePoints[2].y;
+
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[1].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[2].x;
+                        moveX = 0;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[2].y;
+                        moveY = 0;
+                    }
+                    coordinatePoints[3].x += moveX;
+                    coordinatePoints[1].y += moveY;
+                }
+                else if (mControlMode == ControlMode.FREE) {
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[1].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[3].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[2].x;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[2].y;
+                    }
+                    int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[0].x, 2) + Math.pow(Y - coordinatePoints[0].y, 2));
+                    if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[2].x;
+                        Y = coordinatePoints[2].y;
+                    }
+                }
+
+                coordinatePoints[2].x = X;
+                coordinatePoints[2].y = Y;
+
+                invalidate();
+            }
+            break;
+            case 3: {
+                if (mControlMode == ControlMode.FIXED) {
+
+                    // Daniel (2017-01-12 14:42:53): in Circle mode, rectangle should maintain square.
+                    if (mShapeMode == ShapeMode.CIRCLE) {
+                        X = (int) CalculationUtil.rectifyOnProportionalLineX(
+                                coordinatePoints[3].x, coordinatePoints[3].y,
+                                coordinatePoints[1].x, coordinatePoints[1].y,
+                                X, Y
+                        );
+                        Y = (int) CalculationUtil.rectifyOnProportionalLineY(
+                                coordinatePoints[3].x, coordinatePoints[3].y,
+                                coordinatePoints[1].x, coordinatePoints[1].y,
+                                X, Y
+                        );
+                    }
+
+                    // RECTANGLE position
+                    // moveX = the distance last point X - previous point X
+                    // moveY = the distance last point Y - previous point Y
+                    int moveX = X - coordinatePoints[3].x;
+                    int moveY = Y - coordinatePoints[3].y;
+
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[0].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[3].x;
+                        moveX = 0;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[3].y;
+                        moveY = 0;
+                    }
+                    coordinatePoints[2].x += moveX;
+                    coordinatePoints[0].y += moveY;
+                }
+                else if (mControlMode == ControlMode.FREE) {
+                    // Daniel (2016-10-08 23:09:36): Each point should not interfere with other points
+                    int distanceWidth = Math.abs(X - coordinatePoints[0].x);
+                    int distanceHeight = Math.abs(Y - coordinatePoints[2].y);
+                    if (distanceWidth < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[3].x;
+                    }
+                    if (distanceHeight < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        Y = coordinatePoints[3].y;
+                    }
+                    int distanceAcross = (int) Math.sqrt(Math.pow(X - coordinatePoints[1].x, 2) + Math.pow(Y - coordinatePoints[1].y, 2));
+                    if (distanceAcross < (controlBtnSize + controlStrokeSize) * limitSizeFactor) {
+                        X = coordinatePoints[3].x;
+                        Y = coordinatePoints[3].y;
+                    }
+                }
+
+                coordinatePoints[3].x = X;
+                coordinatePoints[3].y = Y;
+
+                invalidate();
+            }
+            break;
         }
     }
 
@@ -1189,59 +1182,30 @@ public class CropperImageView extends ImageView implements CropperInterface{
         boolean xInvalid = false;
         boolean yInvalid = false;
 
-        if (isControlBtnInImage) {
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlBtnSize)
+        // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
+        if (X <= controlStrokeSize)
+            xInvalid = true;
+        if (Y <= controlStrokeSize)
+            yInvalid = true;
+
+        // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
+        if (X >= mDrawWidth - controlStrokeSize)
+            xInvalid = true;
+        if (Y >= mDrawHeight - controlStrokeSize)
+            yInvalid = true;
+
+        RectF displayRect = getDisplayRect();
+
+        // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
+        if (displayRect != null) {
+            if (X >= displayRect.right - controlStrokeSize)
                 xInvalid = true;
-            if (Y <= controlBtnSize)
-                yInvalid = true;
-
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlBtnSize)
+            if (X <= displayRect.left + controlStrokeSize)
                 xInvalid = true;
-            if (Y >= mDrawHeight - controlBtnSize)
+            if (Y >= displayRect.bottom - controlStrokeSize)
                 yInvalid = true;
-
-            RectF displayRect = getDisplayRect();
-
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlBtnSize)
-                    xInvalid = true;
-                if (X <= displayRect.left + controlBtnSize)
-                    xInvalid = true;
-                if (Y >= displayRect.bottom - controlBtnSize)
-                    yInvalid = true;
-                if (Y <= displayRect.top + controlBtnSize)
-                    yInvalid = true;
-            }
-        }
-        else {
-            // Daniel (2016-06-21 19:03:45): touch event should not go outside of screen
-            if (X <= controlStrokeSize)
-                xInvalid = true;
-            if (Y <= controlStrokeSize)
+            if (Y <= displayRect.top + controlStrokeSize)
                 yInvalid = true;
-
-            // Daniel (2016-06-22 14:26:45): touch Event should not right or bottom outside of screen
-            if (X >= mDrawWidth - controlStrokeSize)
-                xInvalid = true;
-            if (Y >= mDrawHeight - controlStrokeSize)
-                yInvalid = true;
-
-            RectF displayRect = getDisplayRect();
-
-            // Daniel (2016-06-22 16:19:05): touch event should not go outside of visible image
-            if (displayRect != null) {
-                if (X >= displayRect.right - controlStrokeSize)
-                    xInvalid = true;
-                if (X <= displayRect.left + controlStrokeSize)
-                    xInvalid = true;
-                if (Y >= displayRect.bottom - controlStrokeSize)
-                    yInvalid = true;
-                if (Y <= displayRect.top + controlStrokeSize)
-                    yInvalid = true;
-            }
         }
 
         if (xInvalid && yInvalid)

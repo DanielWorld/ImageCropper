@@ -49,7 +49,7 @@ public interface CropperInterface {
      *     default is false
      * @param result <code>true</code> control button should be inside of Image
      */
-    void setControlInImage(boolean result);
+//    void setControlInImage(boolean result);
 
 	/**
 	 * Set margin between outside border of Bitmap and 4 Crop rectangle border <br>
