@@ -98,7 +98,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 	private int imageDegree = 0; // Daniel (2016-07-25 15:10:14): Get degree when image was set!
 
 	private float insetRatio = 0.2f;	// Daniel (2016-08-31 14:07:18): margin between outside border of Bitmap and 4 Crop rectangle border
-    private float thumbnailSizeRatio = 10f;     // Daniel (2017-01-19 17:12:38): the thumbnail size ratio which compares to original size
+    private float thumbnailSizeRatio = 30f;     // Daniel (2017-01-19 17:12:38): the thumbnail size ratio which compares to original size
 
     private final float limitSizeFactor = 1.5f; // Daniel (2016-10-24 17:02:30): the least size of 4 points area factor
 
