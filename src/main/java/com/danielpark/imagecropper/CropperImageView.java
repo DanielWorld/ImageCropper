@@ -98,6 +98,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 	private int imageDegree = 0; // Daniel (2016-07-25 15:10:14): Get degree when image was set!
 
 	private float insetRatio = 0.2f;	// Daniel (2016-08-31 14:07:18): margin between outside border of Bitmap and 4 Crop rectangle border
+    private float thumbnailSizeRatio = 10f;     // Daniel (2017-01-19 17:12:38): the thumbnail size ratio which compares to original size
 
     private final float limitSizeFactor = 1.5f; // Daniel (2016-10-24 17:02:30): the least size of 4 points area factor
 
@@ -138,6 +139,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             this.mUtilMode = cropSetting.getUtilMode();
 
             this.insetRatio = cropSetting.getCropInsetRatio() / 200f;
+            this.thumbnailSizeRatio = cropSetting.getThumbnailSizeRatio();
 
             isTouch = false;
 
@@ -1529,7 +1531,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
     /**
      * it returns crop-stretch thumbnail bitmap <br>
-     *     current size is 80dp
+     *     {@link #thumbnailSizeRatio} is default ratio size
      */
     private Bitmap getCropStretchThumbnailBitmap() {
         Bitmap originalBitmap = getOriginalBitmap();
@@ -1685,7 +1687,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
             matrixBitmap = null;
         }
 
-        return perfectBitmap;
+        try {
+            return BitmapUtil.getBitmap(getContext(), perfectBitmap, (int) (perfectBitmap.getWidth() * (thumbnailSizeRatio / 100)), (int) (perfectBitmap.getHeight() * (thumbnailSizeRatio / 100)), true);
+        } catch (Exception e) {
+            return perfectBitmap;
+        }
     }
 
     @Override

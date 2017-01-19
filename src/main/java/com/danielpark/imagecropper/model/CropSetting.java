@@ -20,6 +20,7 @@ public class CropSetting {
     private final UtilMode utilMode;
 
     private final float cropInsetRatio;
+    private final float thumbnailSizeRatio;
 
     private CropSetting(CropBuilder builder) {
         cropMode = builder.cropMode;
@@ -28,6 +29,7 @@ public class CropSetting {
         utilMode = builder.utilMode;
 
         cropInsetRatio = builder.cropInsetRatio;
+        thumbnailSizeRatio = builder.thumbnailSizeRatio;
     }
 
     public CropMode getCropMode() {
@@ -50,6 +52,10 @@ public class CropSetting {
         return cropInsetRatio;
     }
 
+    public float getThumbnailSizeRatio() {
+        return thumbnailSizeRatio;
+    }
+
     public static class CropBuilder {
         private final CropMode cropMode;
         private ShapeMode shapeMode;
@@ -57,6 +63,7 @@ public class CropSetting {
         private UtilMode utilMode;
 
         private float cropInsetRatio = 20f;   // it should be between 10f and 90f
+        private float thumbnailSizeRatio = 30f;     // it should be between 1f and 100f
 
         public CropBuilder(CropMode cropMode) {
             this.cropMode = cropMode;
@@ -91,6 +98,23 @@ public class CropSetting {
             }
 
             this.cropInsetRatio = cropPercent;
+            return this;
+        }
+
+        /**
+         * Set thumbnail size percentage of original image
+         * <p>It should be between 1% and 100% </p>
+         * default value is 30%
+         * @param thumbnailSizePercent
+         * @return
+         */
+        public CropBuilder setThumbnailSizeRatio(float thumbnailSizePercent) {
+            if (thumbnailSizePercent < 1f || thumbnailSizePercent > 100f) {
+                this.thumbnailSizeRatio = 30f;
+                return this;
+            }
+
+            this.thumbnailSizeRatio = thumbnailSizePercent;
             return this;
         }
 
