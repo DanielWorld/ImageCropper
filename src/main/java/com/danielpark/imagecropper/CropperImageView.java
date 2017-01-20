@@ -1731,9 +1731,11 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
         // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
         if (isNewFile || dstFile == null || !dstFile.exists() || !dstFile.isFile()) {
-            final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
+//            final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
+            // Daniel (2017-01-20 12:07:43): Use cache directory instead
+            final File filePath = getContext().getExternalCacheDir();
 
-            if (!filePath.exists()) {
+            if (filePath != null && !filePath.exists()) {
                 filePath.mkdirs();
             }
 
@@ -1751,7 +1753,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         try {
             output = new FileOutputStream(dstFile);
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
 
             output.flush();
             output.close();
