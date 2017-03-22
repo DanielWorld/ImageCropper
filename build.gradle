@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'com.novoda:bintray-release:0.3.4'
     }
 }
@@ -18,7 +18,7 @@ publish {
     userOrg = 'danielworld'
     groupId = 'com.danielworld'
     artifactId = 'image-crop-library'
-    publishVersion = '1.2.9'
+    publishVersion = '1.2.10'
     desc = 'A cropper library for image that modifies all shape'
     website = 'https://github.com/DanielWorld/ImageCropper'
     issueTracker = "${website}/issues"
@@ -33,7 +33,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.2.9"
+        versionName "1.2.10"
     }
 
     lintOptions {
