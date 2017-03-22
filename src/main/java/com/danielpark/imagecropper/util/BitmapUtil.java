@@ -105,7 +105,21 @@ public class BitmapUtil {
 	 * @throws Exception
 	 */
 	public static Bitmap getBitmap(Context context, Bitmap bitmap, boolean isRecycle) throws Exception {
-		int sampleSize = calculateInSampleSize(context, bitmap.getWidth(), bitmap.getHeight(), 0, 0);
+		return getBitmap(context, bitmap, 0, 0, isRecycle);
+	}
+
+	/**
+	 * get scaled bitmap with size requirement
+	 * @param context
+	 * @param bitmap
+	 * @param reqWidth
+	 * @param reqHeight
+	 * @param isRecycle
+	 * @return
+     * @throws Exception
+     */
+	public static Bitmap getBitmap(Context context, Bitmap bitmap, int reqWidth, int reqHeight, boolean isRecycle) throws Exception {
+		int sampleSize = calculateInSampleSize(context, bitmap.getWidth(), bitmap.getHeight(), reqWidth, reqHeight);
 
 		if (sampleSize >= 2) {
 			Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / sampleSize, bitmap.getHeight() / sampleSize, false);

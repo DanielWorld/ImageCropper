@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
+import com.danielpark.imagecropper.model.CropSetting;
 
 import java.io.File;
 
@@ -14,29 +15,41 @@ import java.io.File;
 public interface CropperInterface {
 
     /**
-     * Set crop control mode
-     * @param mode
+     * Set crop setting
+     * @param cropSetting
      */
-    void setShapeMode(ControlMode mode);
+    void setCropSetting(CropSetting cropSetting);
 
     /**
      * Default mode is {@link CropMode#CROP_STRETCH}
      * @param mode
      */
-    void setStretchMode(CropMode mode);
+    void setCropMode(CropMode mode);
 
     /**
-     * Only works when CropMode is {@link CropMode#NO_CROP}
+     * Only works when CropMode is {@link CropMode#NONE}
      * @param mode
      */
     void setUtilMode(UtilMode mode);
+
+    /**
+     * Set shape mode
+     * @param mode
+     */
+    void setShapeMode(ShapeMode mode);
+
+    /**
+     * Set crop control mode
+     * @param mode
+     */
+    void setControlMode(ControlMode mode);
 
     /**
      * Whether control button should be in image or not <br>
      *     default is false
      * @param result <code>true</code> control button should be inside of Image
      */
-    void setControlInImage(boolean result);
+//    void setControlInImage(boolean result);
 
 	/**
 	 * Set margin between outside border of Bitmap and 4 Crop rectangle border <br>
@@ -101,12 +114,12 @@ public interface CropperInterface {
     void setReverseRightToLeft();
 
     /**
-     * Undo the path (It only works when Crop mode is NO_CROP)
+     * Undo the mRectanglePath (It only works when Crop mode is NONE)
      */
     void setUndo();
 
     /**
-     * Redo the path (It only works when Crop mode is NO_CROP)
+     * Redo the mRectanglePath (It only works when Crop mode is NONE)
      */
     void setRedo();
 
