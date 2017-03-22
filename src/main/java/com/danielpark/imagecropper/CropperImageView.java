@@ -1348,9 +1348,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
 				0, (float) h
 		};
 
-        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 1.0
-        if (w < 1.0) w = 1.0;
-        if (h < 1.0) h = 1.0;
+        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 10
+        if (w < 10) w = 10;
+        if (h < 10) h = 10;
 
 		Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
 
@@ -1655,9 +1655,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 0, (float) h
         };
 
-        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 1.0
-        if (w < 1.0) w = 1.0;
-        if (h < 1.0) h = 1.0;
+        // Daniel (2016-10-24 17:09:54): w and h should be equal or larger than 10
+        if (w < 10) w = 10;
+        if (h < 10) h = 10;
 
         Bitmap perfectBitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
 
