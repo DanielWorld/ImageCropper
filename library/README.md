@@ -3,8 +3,6 @@
 It crops Image using multiple mode (Crop mode, Crop-Strecth mode, Crop-Shrink mode)
 Also, you can use pen or eraser to decorate Image. <a href="https://github.com/DanielWorld/ImageCropper">ImageCropper</a><br>
 
-See sample code : <a href="https://github.com/DanielWorld/ImageCropperLibrary"> Here </a>
-=======
 ## Gradle build
 build.gradle
 <pre>
@@ -38,4 +36,3 @@ dependencies {
 
 ### NONE mode
 <img src="https://cloud.githubusercontent.com/assets/9348174/17641603/c45429f4-6161-11e6-9b8a-21ec71a8028b.png" width="240">
->>>>>>> develop
