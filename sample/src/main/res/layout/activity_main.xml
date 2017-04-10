@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/bottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Done" />
+
+        <ImageButton
+            android:id="@+id/takeCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="Camera"
+            android:src="@drawable/ic_camera_enhance_black_36dp"/>
+
+        <Button
+            android:id="@+id/modeChanger"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Change Mode"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_above="@+id/bottomContainer"
+        android:id="@+id/bottomContainer2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/rotateClockwise"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_rotate_right_black_36dp"
+            android:contentDescription="Rotate"
+            />
+
+        <ImageButton
+            android:id="@+id/rotateCountClockwise"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_rotate_left_black_36dp"
+            android:contentDescription="ReRotate"/>
+
+        <ImageButton
+            android:id="@+id/undo"
+            android:layout_width="50dp"
+            android:layout_margin="6dp"
+            android:layout_height="match_parent"
+            android:enabled="false"
+            android:background="@drawable/selector_btn_redo_undo"
+            android:src="@drawable/ic_undo_black_36dp"
+            android:contentDescription="UNDO"
+            />
+
+        <ImageButton
+            android:id="@+id/redo"
+            android:layout_width="50dp"
+            android:layout_margin="6dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/selector_btn_redo_undo"
+            android:src="@drawable/ic_redo_black_36dp"
+            android:contentDescription="REDO"
+            />
+
+        <Button
+            android:id="@+id/shapeChanger"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="SHAPE MODE"/>
+
+    </LinearLayout>
+
+    <com.danielpark.imagecropper.CropperImageView
+        android:layout_above="@+id/bottomContainer2"
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/splash" />
+
+    <!-- Thumbnail ImageView -->
+    <ImageView
+        android:id="@+id/thumbnailView"
+        android:background="@android:color/white"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
+
+    <!-- Top view -->
+    <TextView
+        android:id="@+id/modeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="mode"
+        android:background="@color/bapul_color_image_cover"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:padding="5dp"/>
+
+    <com.danielpark.imagecropper.CropperImageView
+        android:layout_above="@+id/bottomContainer2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/result"
+        android:visibility="gone"
+        android:src="@mipmap/ic_launcher"/>
+
+</RelativeLayout>
