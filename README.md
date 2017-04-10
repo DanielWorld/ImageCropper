@@ -1,9 +1,8 @@
 # ImageCropperSample
 
 It crops Image using multiple mode (Crop mode, Crop-Strecth mode, Crop-Shrink mode)
-Also, you can use pen or eraser to decorate Image. <a href="https://github.com/DanielWorld/ImageCropper">ImageCropper</a><br>
+Also, you can use pen or eraser to decorate Image. <br>
 
-See sample code : <a href="https://github.com/DanielWorld/ImageCropperLibrary"> Here </a>
 =======
 ## Gradle build
 build.gradle
