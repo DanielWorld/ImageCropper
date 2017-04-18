@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
         iv.setCropSetting(cropSetting);
 
+        // Daniel (2017-04-18 14:10:13): simulate IllegalArgument Exception
+//        iv.getCropImageThumbnail();
         iv.setCustomImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.splash));
         iv.setUndoRedoListener(this);
         iv.setThumbnailChangeListener(this);
