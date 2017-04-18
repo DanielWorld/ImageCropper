@@ -16,7 +16,6 @@ import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -1697,24 +1696,34 @@ public class CropperImageView extends ImageView implements CropperInterface{
     @Override
     public File getCropImage() {
 
-		switch (mCropMode) {
-			case CROP_STRETCH:
-				return getCropStretch();
-			case NONE:
-				return getNoCrop();
-			default:
-				return getCropElse();
-		}
+        try {
+            switch (mCropMode) {
+                case CROP_STRETCH:
+                    return getCropStretch();
+                case NONE:
+                    return getNoCrop();
+                default:
+                    return getCropElse();
+            }
+        } catch (IllegalArgumentException e) {
+            // Daniel (2017-04-18 14:02:34): it happens especially getting file before loading image
+            return null;
+        }
     }
 
     @Override
     public Bitmap getCropImageThumbnail() {
 
-        switch (mCropMode) {
-            case CROP_STRETCH:
-                return getCropStretchThumbnailBitmap();
+        try {
+            switch (mCropMode) {
+                case CROP_STRETCH:
+                    return getCropStretchThumbnailBitmap();
+            }
+            return null;
+        } catch (IllegalArgumentException e) {
+            // Daniel (2017-04-18 14:02:34): it happens especially getting file before loading image
+            return null;
         }
-        return null;
     }
 
     @Override
