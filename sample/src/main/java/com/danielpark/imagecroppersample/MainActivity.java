@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     ImageView thumbnailView;
 
     Toast toast;
-    Button btnDone, btnChangeMode, shapeChanger;
+    Button btnDone, btnChangeMode, shapeChanger, cropShape;
     ImageButton btnCamera, btnRotate, btnReRotate, btnUndo, btnRedo;
     File file;
 
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         btnRedo = (ImageButton) findViewById(R.id.redo);
         shapeChanger = (Button) findViewById(R.id.shapeChanger);
         thumbnailView = (ImageView) findViewById(R.id.thumbnailView);
+        cropShape = (Button) findViewById(R.id.cropShape);
 
         result = (CropperImageView) findViewById(R.id.result);
 
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         btnUndo.setOnClickListener(this);
         btnRedo.setOnClickListener(this);
         shapeChanger.setOnClickListener(this);
+        cropShape.setOnClickListener(this);
 
         // set undo / redo disabled at first
         btnUndo.setEnabled(false);
@@ -432,6 +434,19 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 break;
             case R.id.shapeChanger:
                 presenter.clickShapeChange(shapeMode % 3);
+                break;
+            case R.id.cropShape:
+                if (cropShape.isSelected()) {
+                    cropShape.setSelected(false);
+
+                    iv.setShapeMode(ShapeMode.RECTANGLE);
+                    cropShape.setText("Rectangle");
+                } else {
+                    cropShape.setSelected(true);
+
+                    iv.setShapeMode(ShapeMode.CIRCLE);
+                    cropShape.setText("Circle");
+                }
                 break;
         }
     }

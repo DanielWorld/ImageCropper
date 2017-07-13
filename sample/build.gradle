@@ -23,7 +23,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.0'
     // Daniel (2016-06-23 14:37:35): Image Cropper 추가
-//    compile project(':library')
-    compile 'com.danielworld:image-crop-library:1.2.10'
+    compile project(':library')
+//    compile 'com.danielworld:image-crop-library:1.2.10'
 }
 
