@@ -17,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -903,6 +904,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                                 coordinatePoints[2].x, coordinatePoints[2].y,
                                 X, Y
                         );
+
+                        // Daniel (2017-07-14 11:40:44): it could be outside coordinates!
+                        if (!isCorrectCoordinates(X, Y)) break;
                     }
 
                     // RECTANGLE position
@@ -963,6 +967,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                                 coordinatePoints[3].x, coordinatePoints[3].y,
                                 X, Y
                         );
+
+                        // Daniel (2017-07-14 11:40:44): it could be outside coordinates!
+                        if (!isCorrectCoordinates(X, Y)) break;
                     }
 
                     // RECTANGLE position
@@ -1023,6 +1030,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                                 coordinatePoints[0].x, coordinatePoints[0].y,
                                 X, Y
                         );
+
+                        // Daniel (2017-07-14 11:40:44): it could be outside coordinates!
+                        if (!isCorrectCoordinates(X, Y)) break;
                     }
 
                     // RECTANGLE position
@@ -1083,6 +1093,9 @@ public class CropperImageView extends ImageView implements CropperInterface{
                                 coordinatePoints[1].x, coordinatePoints[1].y,
                                 X, Y
                         );
+
+                        // Daniel (2017-07-14 11:40:44): it could be outside coordinates!
+                        if (!isCorrectCoordinates(X, Y)) break;
                     }
 
                     // RECTANGLE position

@@ -456,13 +456,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 if (extension.isSelected()) {
                     extension.setSelected(false);
 
-                    iv.setCropExtension(CropExtension.png);
-                    extension.setText("PNG");
+                    iv.setCropExtension(CropExtension.jpg);
+                    extension.setText("JPG");
                 } else {
                     extension.setSelected(true);
 
-                    iv.setCropExtension(CropExtension.jpg);
-                    extension.setText("JPG");
+                    iv.setCropExtension(CropExtension.png);
+                    extension.setText("PNG");
                 }
                 break;
         }
