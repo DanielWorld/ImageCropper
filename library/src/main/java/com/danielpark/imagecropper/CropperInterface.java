@@ -45,6 +45,12 @@ public interface CropperInterface {
     void setControlMode(ControlMode mode);
 
     /**
+     * Set crop file extension
+     * @param mode
+     */
+    void setCropExtension(CropExtension mode);
+
+    /**
      * Whether control button should be in image or not <br>
      *     default is false
      * @param result <code>true</code> control button should be inside of Image

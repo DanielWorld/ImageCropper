@@ -82,6 +82,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
     private ShapeMode mShapeMode = ShapeMode.RECTANGLE;
     private ControlMode mControlMode = ControlMode.FREE;
     private UtilMode mUtilMode = UtilMode.NONE;
+    private CropExtension mCropExtension = CropExtension.jpg;
 
     private Path drawPath;
     private Paint drawPaint;
@@ -136,6 +137,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             this.mShapeMode = cropSetting.getShapeMode();
             this.mControlMode = cropSetting.getControlMode();
             this.mUtilMode = cropSetting.getUtilMode();
+            this.mCropExtension = cropSetting.getCropExtension();
 
             this.insetRatio = cropSetting.getCropInsetRatio() / 200f;
             this.thumbnailSizeRatio = cropSetting.getThumbnailSizeRatio();
@@ -161,6 +163,13 @@ public class CropperImageView extends ImageView implements CropperInterface{
             this.mControlMode = mode;
 
             invalidate();
+        }
+    }
+
+    @Override
+    public void setCropExtension(CropExtension mode) {
+        if (mode != null) {
+            this.mCropExtension = mode;
         }
     }
 
@@ -1495,7 +1504,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		mRectanglePath.lineTo(coordinatePoints[3].x, coordinatePoints[3].y);
 
 		canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
-		canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+		canvas.drawColor(0xff424242, PorterDuff.Mode.CLEAR);
 
 		if (mCropMode == CropMode.CROP_SHRINK) {
 			Bitmap cropImageBitmap = Bitmap.createBitmap(templateBitmap, (int) mCropRect.left, (int) mCropRect.top, (int) (mCropRect.right - mCropRect.left), (int) (mCropRect.bottom - mCropRect.top));
@@ -1752,7 +1761,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                     .format(new Date());
 
-            dstFile = new File(filePath, "CropperLibrary_"+timeStamp+"_.jpg");
+            dstFile = new File(filePath, "CropperLibrary_"+timeStamp+"_." + mCropExtension.name());
             try {
                 dstFile.createNewFile();
             } catch (IOException e) {
@@ -1762,7 +1771,10 @@ public class CropperImageView extends ImageView implements CropperInterface{
         try {
             output = new FileOutputStream(dstFile);
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
+            if (mCropExtension == CropExtension.png)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 95, output);
+            else
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
 
             output.flush();
             output.close();

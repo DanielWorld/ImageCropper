@@ -1,6 +1,7 @@
 package com.danielpark.imagecropper.model;
 
 import com.danielpark.imagecropper.ControlMode;
+import com.danielpark.imagecropper.CropExtension;
 import com.danielpark.imagecropper.CropMode;
 import com.danielpark.imagecropper.ShapeMode;
 import com.danielpark.imagecropper.UtilMode;
@@ -18,6 +19,7 @@ public class CropSetting {
     private final ShapeMode shapeMode;
     private final ControlMode controlMode;
     private final UtilMode utilMode;
+    private final CropExtension cropExtension;
 
     private final float cropInsetRatio;
     private final float thumbnailSizeRatio;
@@ -27,6 +29,7 @@ public class CropSetting {
         shapeMode = builder.shapeMode;
         controlMode = builder.controlMode;
         utilMode = builder.utilMode;
+        cropExtension = builder.cropExtension;
 
         cropInsetRatio = builder.cropInsetRatio;
         thumbnailSizeRatio = builder.thumbnailSizeRatio;
@@ -48,6 +51,10 @@ public class CropSetting {
         return utilMode;
     }
 
+    public CropExtension getCropExtension() {
+        return cropExtension;
+    }
+
     public float getCropInsetRatio() {
         return cropInsetRatio;
     }
@@ -61,6 +68,7 @@ public class CropSetting {
         private ShapeMode shapeMode;
         private ControlMode controlMode;
         private UtilMode utilMode;
+        private CropExtension cropExtension;
 
         private float cropInsetRatio = 20f;   // it should be between 10f and 90f
         private float thumbnailSizeRatio = 30f;     // it should be between 1f and 100f
@@ -81,6 +89,11 @@ public class CropSetting {
 
         public CropBuilder setUtilMode(UtilMode utilMode) {
             this.utilMode = utilMode;
+            return this;
+        }
+
+        public CropBuilder setCropExtension(CropExtension cropExtension) {
+            this.cropExtension = cropExtension;
             return this;
         }
 
@@ -133,6 +146,9 @@ public class CropSetting {
 
                 utilMode = UtilMode.NONE;
             }
+
+            if (checkNullNone(cropExtension))
+                cropExtension = CropExtension.jpg;
 
             return new CropSetting(this);
         }

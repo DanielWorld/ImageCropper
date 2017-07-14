@@ -51,5 +51,8 @@
 -keepclasseswithmembers enum com.danielpark.imagecropper.ShapeMode {
     *;
 }
+-keepclasseswithmembers enum com.danielpark.imagecropper.CropExtension {
+    *;
+}
 
 

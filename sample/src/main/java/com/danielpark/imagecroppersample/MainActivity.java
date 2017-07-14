@@ -18,8 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.danielpark.imagecropper.ControlMode;
+import com.danielpark.imagecropper.CropExtension;
 import com.danielpark.imagecropper.CropMode;
 import com.danielpark.imagecropper.CropperImageView;
 import com.danielpark.imagecropper.ShapeMode;
@@ -48,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     ImageView thumbnailView;
 
     Toast toast;
-    Button btnDone, btnChangeMode, shapeChanger, cropShape;
-    ImageButton btnCamera, btnRotate, btnReRotate, btnUndo, btnRedo;
+    TextView btnDone, btnChangeMode, shapeChanger, cropShape, extension;
+    ImageView btnCamera, btnRotate, btnReRotate, btnUndo, btnRedo;
     File file;
 
     int mode = 0;
@@ -65,16 +64,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
         modeTitle = (TextView) findViewById(R.id.modeTitle);
         iv = (CropperImageView) findViewById(R.id.imageView1);
-        btnDone = (Button) findViewById(R.id.btnConfirm);
-        btnCamera = (ImageButton) findViewById(R.id.takeCamera);
-        btnRotate = (ImageButton) findViewById(R.id.rotateClockwise);
-        btnChangeMode = (Button) findViewById(R.id.modeChanger);
-        btnReRotate = (ImageButton) findViewById(R.id.rotateCountClockwise);
-        btnUndo = (ImageButton) findViewById(R.id.undo);
-        btnRedo = (ImageButton) findViewById(R.id.redo);
-        shapeChanger = (Button) findViewById(R.id.shapeChanger);
+        btnDone = (TextView) findViewById(R.id.btnConfirm);
+        btnCamera = (ImageView) findViewById(R.id.takeCamera);
+        btnRotate = (ImageView) findViewById(R.id.rotateClockwise);
+        btnChangeMode = (TextView) findViewById(R.id.modeChanger);
+        btnReRotate = (ImageView) findViewById(R.id.rotateCountClockwise);
+        btnUndo = (ImageView) findViewById(R.id.undo);
+        btnRedo = (ImageView) findViewById(R.id.redo);
+        shapeChanger = (TextView) findViewById(R.id.shapeChanger);
         thumbnailView = (ImageView) findViewById(R.id.thumbnailView);
-        cropShape = (Button) findViewById(R.id.cropShape);
+        cropShape = (TextView) findViewById(R.id.cropShape);
+        extension = (TextView) findViewById(R.id.extension);
 
         result = (CropperImageView) findViewById(R.id.result);
 
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 .setShapeMode(ShapeMode.RECTANGLE)
                 .setControlMode(ControlMode.FIXED)
                 .setUtilMode(UtilMode.NONE)
+                .setCropExtension(CropExtension.jpg)
                 .setCropInsetRatio(20f)
                 .build();
 
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         if (filePath != null && !filePath.exists())
             filePath.mkdirs();
 
-        file = new File(filePath, "aaaaa.jpg");
+        file = new File(filePath, "aaaaa.png");
 
         if (!file.exists())
             try {
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         btnRedo.setOnClickListener(this);
         shapeChanger.setOnClickListener(this);
         cropShape.setOnClickListener(this);
+        extension.setOnClickListener(this);
 
         // set undo / redo disabled at first
         btnUndo.setEnabled(false);
@@ -151,13 +153,15 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                     CropSetting cropSetting = new CropSetting.CropBuilder(CropMode.NONE)
                             .setShapeMode(ShapeMode.NONE)
                             .setControlMode(ControlMode.NONE)
-                            .setUtilMode(UtilMode.PENCIL)
+                            .setUtilMode(UtilMode.NONE)
                             .build();
 
                     result.setCropSetting(cropSetting);
 
                     result.setCustomImageFile(path);
                     result.setVisibility(View.VISIBLE);
+
+                    thumbnailView.setImageBitmap(BitmapFactory.decodeFile(path.getAbsolutePath()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -446,6 +450,19 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
                     iv.setShapeMode(ShapeMode.CIRCLE);
                     cropShape.setText("Circle");
+                }
+                break;
+            case R.id.extension:
+                if (extension.isSelected()) {
+                    extension.setSelected(false);
+
+                    iv.setCropExtension(CropExtension.png);
+                    extension.setText("PNG");
+                } else {
+                    extension.setSelected(true);
+
+                    iv.setCropExtension(CropExtension.jpg);
+                    extension.setText("JPG");
                 }
                 break;
         }

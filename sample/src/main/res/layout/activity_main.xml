@@ -13,30 +13,59 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
 
-        <Button
+        <TextView
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#000000"
             android:text="Done" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/takeCamera"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:contentDescription="Camera"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
             android:src="@drawable/ic_camera_enhance_black_36dp"/>
 
-        <Button
+        <TextView
             android:id="@+id/modeChanger"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#000000"
             android:text="Change Mode"/>
 
-        <Button
+        <TextView
             android:id="@+id/cropShape"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#000000"
             android:text="Rectangle"/>
+
+        <TextView
+            android:id="@+id/extension"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="JPG"/>
 
     </LinearLayout>
 
@@ -47,47 +76,62 @@
         android:layout_height="40dp"
         android:orientation="horizontal">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/rotateClockwise"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
             android:src="@drawable/ic_rotate_right_black_36dp"
             android:contentDescription="Rotate"
             />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/rotateCountClockwise"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
             android:src="@drawable/ic_rotate_left_black_36dp"
             android:contentDescription="ReRotate"/>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/undo"
-            android:layout_width="50dp"
-            android:layout_margin="6dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:enabled="false"
             android:background="@drawable/selector_btn_redo_undo"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
             android:src="@drawable/ic_undo_black_36dp"
             android:contentDescription="UNDO"
             />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/redo"
-            android:layout_width="50dp"
-            android:layout_margin="6dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/selector_btn_redo_undo"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
             android:src="@drawable/ic_redo_black_36dp"
             android:contentDescription="REDO"
             />
 
-        <Button
+        <TextView
             android:id="@+id/shapeChanger"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="SHAPE MODE"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="Shape mode"/>
 
     </LinearLayout>
 
