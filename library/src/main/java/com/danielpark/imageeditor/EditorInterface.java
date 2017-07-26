@@ -25,9 +25,24 @@ public interface EditorInterface {
     void addImage(Bitmap bitmap);
 
     /**
-     * Delete image which is selcted
+     * Delete image which is selected
      */
     void deleteImage();
+
+    /**
+     * Add panel page
+     */
+    void addPanelPage();
+
+    /**
+     * Move to previous Panel Page
+     */
+    void prevPanelPage();
+
+    /**
+     * Move to next Panel Page
+     */
+    void nextPanelPage();
 
     /**
      * Undo the mRectanglePath (It only works when Crop mode is NONE)
@@ -55,5 +70,12 @@ public interface EditorInterface {
     /**
      * When EditorMode state has changed, notify to observer
      */
-    void setOnEditorModeSateChangeListener(OnEditorModeStateChangeListener listener);
+    void setOnEditorModeStateChangeListener(OnEditorModeStateChangeListener listener);
+
+    /**
+     * When page was added or page Prev or Next has changed, notify to observer <br>
+     *
+     * @param listener
+     */
+    void setOnPanelPageStateChangeListener(OnPanelPageStateChangeListener listener);
 }

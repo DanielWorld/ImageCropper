@@ -12,6 +12,7 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecroppersample.databinding.ActivityEditorBinding;
 import com.danielpark.imageeditor.EditorMode;
 import com.danielpark.imageeditor.OnEditorModeStateChangeListener;
+import com.danielpark.imageeditor.OnPanelPageStateChangeListener;
 
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
@@ -30,10 +31,21 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_editor);
 
-        binding.editorPanelView.setBackgroundColor(Color.parseColor("#772611"));
         binding.editorPanelView.setEditorMode(EditorMode.PEN);
 
-        binding.editorPanelView.setOnEditorModeSateChangeListener(new OnEditorModeStateChangeListener() {
+        binding.editorPanelView.setOnPanelPageStateChangeListener(new OnPanelPageStateChangeListener() {
+            @Override
+            public void onPrevPanelPageAvailable(boolean result) {
+                binding.prev.setEnabled(result);
+            }
+
+            @Override
+            public void onNextPanelPageAvailable(boolean result) {
+                binding.next.setEnabled(result);
+            }
+        });
+
+        binding.editorPanelView.setOnEditorModeStateChangeListener(new OnEditorModeStateChangeListener() {
             @Override
             public void onEditorModeState(EditorMode currentEditorMode) {
                 // TODO: Do not invoke click event trigger
@@ -95,13 +107,13 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 );
                 break;
             case R.id.addPage:
-
+                binding.editorPanelView.addPanelPage();
                 break;
             case R.id.prev:
-
+                binding.editorPanelView.prevPanelPage();
                 break;
             case R.id.next:
-
+                binding.editorPanelView.nextPanelPage();
                 break;
             case R.id.done:
 
