@@ -1,6 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</LinearLayout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:background="@android:color/darker_gray"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/topContainer"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/prev"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Prev"/>
+
+            <TextView
+                android:id="@+id/next"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Next"/>
+
+            <TextView
+                android:id="@+id/addImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="AddImage"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottomContainer"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/edit"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Edit"/>
+
+            <TextView
+                android:id="@+id/pen"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Pen"/>
+
+            <TextView
+                android:id="@+id/eraser"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Eraser"/>
+
+            <ImageView
+                android:id="@+id/undo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:background="@drawable/selector_btn_redo_undo"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                android:src="@drawable/ic_undo_black_36dp"
+                android:contentDescription="UNDO"
+                />
+
+            <ImageView
+                android:id="@+id/redo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_btn_redo_undo"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                android:src="@drawable/ic_redo_black_36dp"
+                android:contentDescription="REDO"
+                />
+
+        </LinearLayout>
+
+        <com.danielpark.imageeditor.EditorImageView
+            android:id="@+id/editorImageView"
+            android:layout_below="@+id/topContainer"
+            android:layout_above="@+id/bottomContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+</layout>

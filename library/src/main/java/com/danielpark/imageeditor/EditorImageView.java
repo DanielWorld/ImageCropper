@@ -1,13 +1,15 @@
 package com.danielpark.imageeditor;
 
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
+import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 /**
  * Unlike {@link com.danielpark.imagecropper.CropperImageView}, it is used for editing image
@@ -18,7 +20,10 @@ import android.view.ViewGroup;
  * Created by Daniel Park on 2017-07-26.
  */
 
-public class EditorImageView extends ViewGroup {
+public class EditorImageView extends RelativeLayout implements EditorInterface{
+
+    // Undo / Redo Pen & Eraser Listener
+    private OnUndoRedoStateChangeListener mOnUndoRedoStateChangeListener;
 
     public EditorImageView(Context context) {
         this(context, null);
@@ -31,14 +36,9 @@ public class EditorImageView extends ViewGroup {
     public EditorImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        setBackgroundColor(Color.parseColor("#ff4958"));    // Set background color
+        setBackgroundColor(Color.parseColor("#FFFFFF"));    // Set background color
 
         setOnTouchListener(mTouchListener);     // Add Touch Listener
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
     }
 
     OnTouchListener mTouchListener = new OnTouchListener() {
@@ -47,4 +47,36 @@ public class EditorImageView extends ViewGroup {
             return false;
         }
     };
+
+    @Override
+    public void addImage(Bitmap bitmap) {
+
+        // Daniel (2017-07-26 14:47:11): Add new ImageView
+//        RelativeLayout.LayoutParams layoutParams
+//                = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams layoutParams
+                = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        FingerImageView iv  = new FingerImageView(getContext());
+        iv.setLayoutParams(layoutParams);
+        iv.imageSet(bitmap);
+
+        iv.setManipulationMode(true);
+
+        addView(iv);
+    }
+
+    @Override
+    public void setUndo() {
+
+    }
+
+    @Override
+    public void setRedo() {
+
+    }
+
+    @Override
+    public void setUndoRedoListener(OnUndoRedoStateChangeListener listener) {
+        mOnUndoRedoStateChangeListener = listener;
+    }
 }
