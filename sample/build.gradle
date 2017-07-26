@@ -21,6 +21,11 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    // Daniel (2017-07-26 13:47:55): data binding
+    dataBinding {
+        enabled = true
+    }
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -29,5 +34,6 @@ dependencies {
     // Daniel (2016-06-23 14:37:35): Image Cropper 추가
     compile project(':library')
 //    compile 'com.danielworld:image-crop-library:1.2.10'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
