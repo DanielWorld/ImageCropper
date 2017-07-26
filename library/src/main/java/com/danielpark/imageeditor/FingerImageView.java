@@ -243,6 +243,10 @@ public class FingerImageView extends ImageView {
         invalidate();
     }
 
+    public boolean isManipulationMode() {
+        return this._mode;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int touchX = (int) event.getX();

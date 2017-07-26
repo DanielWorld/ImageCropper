@@ -49,6 +49,30 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
     };
 
     @Override
+    public void setEditorMode(EditorMode editorMode) {
+
+        if (editorMode == EditorMode.EDIT) {
+            // And set all FingerImageViews to modifiable
+            for (int index = 0; index < getChildCount(); index++) {
+                View childView = getChildAt(index);
+
+                if (childView instanceof FingerImageView) {
+                    ((FingerImageView) childView).setManipulationMode(true);
+                }
+            }
+        } else {
+            // And set all FingerImageViews to modifiable
+            for (int index = 0; index < getChildCount(); index++) {
+                View childView = getChildAt(index);
+
+                if (childView instanceof FingerImageView) {
+                    ((FingerImageView) childView).setManipulationMode(false);
+                }
+            }
+        }
+    }
+
+    @Override
     public void addImage(Bitmap bitmap) {
 
         // Daniel (2017-07-26 14:47:11): Add new ImageView
@@ -73,25 +97,18 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
     }
 
     @Override
-    public void setEditorMode(EditorMode editorMode) {
+    public void deleteImage() {
 
-        if (editorMode == EditorMode.EDIT) {
-            // And set all FingerImageViews to modifiable
-            for (int index = 0; index < getChildCount(); index++) {
-                View childView = getChildAt(index);
+        // TODO: 현재는 manipulated 된 것을 모두 삭제처리
+        for (int index = getChildCount() - 1; index >= 0; index--) {
+            if (index < 0) return;
 
-                if (childView instanceof FingerImageView) {
-                    ((FingerImageView) childView).setManipulationMode(true);
-                }
-            }
-        } else {
-            // And set all FingerImageViews to modifiable
-            for (int index = 0; index < getChildCount(); index++) {
-                View childView = getChildAt(index);
+            View childView = getChildAt(index);
 
-                if (childView instanceof FingerImageView) {
-                    ((FingerImageView) childView).setManipulationMode(false);
-                }
+            if (childView instanceof FingerImageView
+                    && ((FingerImageView)childView).isManipulationMode()) {
+
+               removeViewAt(index);
             }
         }
     }

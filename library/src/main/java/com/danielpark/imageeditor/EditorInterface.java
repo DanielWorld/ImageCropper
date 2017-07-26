@@ -13,16 +13,21 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 public interface EditorInterface {
 
     /**
+     * Set editor mode
+     * @param editorMode
+     */
+    void setEditorMode(EditorMode editorMode);
+
+    /**
      * Add image to View
      * @param bitmap
      */
     void addImage(Bitmap bitmap);
 
     /**
-     * Set editor mode
-     * @param editorMode
+     * Delete image which is selcted
      */
-    void setEditorMode(EditorMode editorMode);
+    void deleteImage();
 
     /**
      * Undo the mRectanglePath (It only works when Crop mode is NONE)

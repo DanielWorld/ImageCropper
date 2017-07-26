@@ -36,6 +36,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.prev.setOnClickListener(this);
         binding.next.setOnClickListener(this);
         binding.addImage.setOnClickListener(this);
+        binding.addPage.setOnClickListener(this);
         binding.done.setOnClickListener(this);
 
         binding.edit.setOnClickListener(this);
@@ -44,6 +45,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.redo.setOnClickListener(this);
         binding.undo.setOnClickListener(this);
         binding.rotate.setOnClickListener(this);
+        binding.delete.setOnClickListener(this);
     }
 
     @Override
@@ -57,6 +59,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorImageView.addImage(
                         BitmapFactory.decodeResource(getResources(), R.drawable.splash)
                 );
+                break;
+            case R.id.addPage:
+
                 break;
             case R.id.prev:
 
@@ -85,6 +90,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.rotate:
 
+                break;
+            case R.id.delete:
+                binding.editorImageView.deleteImage();
                 break;
         }
     }
