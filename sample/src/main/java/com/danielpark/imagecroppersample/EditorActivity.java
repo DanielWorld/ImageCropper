@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.danielpark.imagecroppersample.databinding.ActivityEditorBinding;
+import com.danielpark.imageeditor.EditorMode;
 
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
@@ -35,12 +36,14 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.prev.setOnClickListener(this);
         binding.next.setOnClickListener(this);
         binding.addImage.setOnClickListener(this);
+        binding.done.setOnClickListener(this);
 
         binding.edit.setOnClickListener(this);
         binding.pen.setOnClickListener(this);
         binding.eraser.setOnClickListener(this);
         binding.redo.setOnClickListener(this);
         binding.undo.setOnClickListener(this);
+        binding.rotate.setOnClickListener(this);
     }
 
     @Override
@@ -54,14 +57,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorImageView.addImage(
                         BitmapFactory.decodeResource(getResources(), R.drawable.splash)
                 );
-
-//                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//                ImageView iv = new ImageView(this);
-//                iv.setLayoutParams(layoutParams);
-//                iv.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.splash)
-//                );
-//
-//                binding.editorImageView.addView(iv, 0); // mFingerImageView 가장 바닥에 지정
                 break;
             case R.id.prev:
 
@@ -69,19 +64,26 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.next:
 
                 break;
-            case R.id.edit:
+            case R.id.done:
 
                 break;
+            case R.id.edit:
+                binding.editorImageView.setEditorMode(EditorMode.EDIT);
+                break;
             case R.id.pen:
+                binding.editorImageView.setEditorMode(EditorMode.PEN);
 
                 break;
             case R.id.eraser:
-
+                binding.editorImageView.setEditorMode(EditorMode.ERASER);
                 break;
             case R.id.redo:
 
                 break;
             case R.id.undo:
+
+                break;
+            case R.id.rotate:
 
                 break;
         }

@@ -19,6 +19,12 @@ public interface EditorInterface {
     void addImage(Bitmap bitmap);
 
     /**
+     * Set editor mode
+     * @param editorMode
+     */
+    void setEditorMode(EditorMode editorMode);
+
+    /**
      * Undo the mRectanglePath (It only works when Crop mode is NONE)
      */
     void setUndo();

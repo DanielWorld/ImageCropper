@@ -273,7 +273,7 @@ public class FingerImageView extends ImageView {
                 else if (((touchX > _sx + DEP) && (touchX < _ex - DEP)) && ((touchY > _sy + DEP) && (touchY < _ey - DEP)))
                     _bMove = true;
                 else {
-                    setManipulationMode(false);
+//                    setManipulationMode(false);
                     return false;  //Yang (2014-12-18-15:31:25) : 이미지 바깥 Touch 이후 바로 FingerPen 사용 가능하도록
                 }
                 return true;
