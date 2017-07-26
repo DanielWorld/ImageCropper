@@ -23,6 +23,11 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
+    private EditorMode mEditorMode;
+
+    // Editor mode state change listener;
+    private OnEditorModeStateChangeListener mOnEditorModeStateChangeListener;
+
     // Undo / Redo Pen & Eraser Listener
     private OnUndoRedoStateChangeListener mOnUndoRedoStateChangeListener;
 
@@ -46,6 +51,16 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     }
 
+    private void addPenPage() {
+        RelativeLayout.LayoutParams layoutParams
+                = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        FingerPenView iv  = new FingerPenView(getContext());
+        iv.setLayoutParams(layoutParams);
+        iv.setUndoRedoListener(mOnUndoRedoStateChangeListener);
+
+        addView(iv);
+    }
+
     OnTouchListener mTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -55,6 +70,8 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void setEditorMode(EditorMode editorMode) {
+
+        mEditorMode = editorMode;
 
         if (editorMode == EditorMode.EDIT) {
             // And set all FingerImageViews to modifiable
@@ -81,6 +98,9 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
                 }
             }
         }
+
+        if (mOnEditorModeStateChangeListener != null)
+            mOnEditorModeStateChangeListener.onEditorModeState(editorMode);
     }
 
     @Override
@@ -106,16 +126,9 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
                 ((FingerImageView) childView).setManipulationMode(true);
             }
         }
-    }
 
-    private void addPenPage() {
-        RelativeLayout.LayoutParams layoutParams
-                = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        FingerPenView iv  = new FingerPenView(getContext());
-        iv.setLayoutParams(layoutParams);
-        iv.setUndoRedoListener(mOnUndoRedoStateChangeListener);
-
-        addView(iv);
+        // TODO: if you add image then, make sure that current EditorMode state should be 'EDIT' mode
+        setEditorMode(EditorMode.EDIT);
     }
 
     @Override
@@ -137,6 +150,8 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void setUndo() {
+        if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
+
         for (int index = 0; index < getChildCount(); index++) {
             View childView = getChildAt(index);
 
@@ -149,6 +164,8 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void setRedo() {
+        if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
+
         for (int index = 0; index < getChildCount(); index++) {
             View childView = getChildAt(index);
 
@@ -160,7 +177,26 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     }
 
     @Override
+    public void deletePen() {
+        if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
+
+        for (int index = 0; index < getChildCount(); index++) {
+            View childView = getChildAt(index);
+
+            if (childView instanceof FingerPenView) {
+                ((FingerPenView) childView).deletePen();
+                break;
+            }
+        }
+    }
+
+    @Override
     public void setUndoRedoListener(OnUndoRedoStateChangeListener listener) {
         mOnUndoRedoStateChangeListener = listener;
+    }
+
+    @Override
+    public void setOnEditorModeSateChangeListener(OnEditorModeStateChangeListener listener) {
+        mOnEditorModeStateChangeListener = listener;
     }
 }

@@ -31,8 +31,8 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
 
     private Paint drawPaint;
     private Path drawPath;
-    private ArrayList<DrawInfo> arrayDrawInfo = new ArrayList<>();
-    private ArrayList<DrawInfo> arrayUndoneDrawInfo = new ArrayList<>();
+    private final ArrayList<DrawInfo> arrayDrawInfo = new ArrayList<>();
+    private final ArrayList<DrawInfo> arrayUndoneDrawInfo = new ArrayList<>();
 
     private OnUndoRedoStateChangeListener onUndoRedoStateChangeListener;
 
@@ -129,6 +129,14 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
             if (onUndoRedoStateChangeListener != null)
                 onUndoRedoStateChangeListener.onRedoAvailable(false);
         }
+    }
+
+    @Override
+    public void deletePen() {
+        arrayDrawInfo.clear();
+        arrayUndoneDrawInfo.clear();
+
+        invalidate();
     }
 
     @Override

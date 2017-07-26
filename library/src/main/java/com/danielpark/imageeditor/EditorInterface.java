@@ -40,10 +40,20 @@ public interface EditorInterface {
     void setRedo();
 
     /**
+     * Delete all pen and eraser marks
+     */
+    void deletePen();
+
+    /**
      * When Undo or Redo state has changed, notify to observer <br>
      *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>
      *         because it becomes null when {@link CropperImageView#onDetachedFromWindow()}
      * @param listener
      */
     void setUndoRedoListener(OnUndoRedoStateChangeListener listener);
+
+    /**
+     * When EditorMode state has changed, notify to observer
+     */
+    void setOnEditorModeSateChangeListener(OnEditorModeStateChangeListener listener);
 }

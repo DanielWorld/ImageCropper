@@ -11,6 +11,7 @@ import android.view.View;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecroppersample.databinding.ActivityEditorBinding;
 import com.danielpark.imageeditor.EditorMode;
+import com.danielpark.imageeditor.OnEditorModeStateChangeListener;
 
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
@@ -30,7 +31,29 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 DataBindingUtil.setContentView(this, R.layout.activity_editor);
 
         binding.editorPanelView.setBackgroundColor(Color.parseColor("#772611"));
+        binding.editorPanelView.setEditorMode(EditorMode.PEN);
 
+        binding.editorPanelView.setOnEditorModeSateChangeListener(new OnEditorModeStateChangeListener() {
+            @Override
+            public void onEditorModeState(EditorMode currentEditorMode) {
+                // TODO: Do not invoke click event trigger
+
+                if (currentEditorMode == EditorMode.PEN ||
+                        currentEditorMode == EditorMode.ERASER) {
+                    binding.redo.setVisibility(View.VISIBLE);
+                    binding.undo.setVisibility(View.VISIBLE);
+                    binding.rotate.setVisibility(View.GONE);
+                    binding.deleteImage.setVisibility(View.GONE);
+                    binding.deletePen.setVisibility(View.VISIBLE);
+                } else {
+                    binding.redo.setVisibility(View.GONE);
+                    binding.undo.setVisibility(View.GONE);
+                    binding.rotate.setVisibility(View.VISIBLE);
+                    binding.deleteImage.setVisibility(View.VISIBLE);
+                    binding.deletePen.setVisibility(View.GONE);
+                }
+            }
+        });
         binding.editorPanelView.setUndoRedoListener(new OnUndoRedoStateChangeListener() {
             @Override
             public void onUndoAvailable(boolean result) {
@@ -55,7 +78,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.redo.setOnClickListener(this);
         binding.undo.setOnClickListener(this);
         binding.rotate.setOnClickListener(this);
-        binding.delete.setOnClickListener(this);
+        binding.deleteImage.setOnClickListener(this);
+        binding.deletePen.setOnClickListener(this);
     }
 
     @Override
@@ -86,12 +110,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorPanelView.setEditorMode(EditorMode.EDIT);
                 break;
             case R.id.pen:
-                if (v.isSelected()) {
-                    // Daniel (2017-07-26 17:50:44): show Color picker
-                } else {
-                    v.setSelected(true);
+//                if (v.isSelected()) {
+//                    // Daniel (2017-07-26 17:50:44): show Color picker
+//                } else {
+//                    v.setSelected(true);
                     binding.editorPanelView.setEditorMode(EditorMode.PEN);
-                }
+//                }
                 break;
             case R.id.eraser:
                 binding.editorPanelView.setEditorMode(EditorMode.ERASER);
@@ -105,8 +129,11 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.rotate:
 
                 break;
-            case R.id.delete:
+            case R.id.deleteImage:
                 binding.editorPanelView.deleteImage();
+                break;
+            case R.id.deletePen:
+                binding.editorPanelView.deletePen();
                 break;
         }
     }

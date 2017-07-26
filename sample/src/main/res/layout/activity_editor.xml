@@ -122,6 +122,15 @@
                 />
 
             <TextView
+                android:id="@+id/deletePen"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Delete Pen"/>
+
+            <TextView
                 android:id="@+id/rotate"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -130,11 +139,15 @@
                 android:paddingLeft="10dp"
                 android:text="Rotate"/>
 
-            <ImageView
-                android:id="@+id/delete"
+            <TextView
+                android:id="@+id/deleteImage"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@android:drawable/ic_delete"/>
+                android:gravity="center_vertical"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Delete Image"/>
+
 
         </LinearLayout>
 

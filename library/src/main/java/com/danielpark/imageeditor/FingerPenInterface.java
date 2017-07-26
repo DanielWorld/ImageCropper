@@ -28,6 +28,11 @@ public interface FingerPenInterface {
     void setRedo();
 
     /**
+     * Delete all pen and eraser
+     */
+    void deletePen();
+
+    /**
      * When Undo or Redo state has changed, notify to observer <br>
      *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>
      *         because it becomes null when {@link CropperImageView#onDetachedFromWindow()}
