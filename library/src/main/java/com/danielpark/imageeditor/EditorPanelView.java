@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.danielpark.imagecropper.UtilMode;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 /**
@@ -20,25 +21,29 @@ import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
  * Created by Daniel Park on 2017-07-26.
  */
 
-public class EditorImageView extends RelativeLayout implements EditorInterface{
+public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     // Undo / Redo Pen & Eraser Listener
     private OnUndoRedoStateChangeListener mOnUndoRedoStateChangeListener;
 
-    public EditorImageView(Context context) {
+    public EditorPanelView(Context context) {
         this(context, null);
     }
 
-    public EditorImageView(Context context, AttributeSet attrs) {
+    public EditorPanelView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public EditorImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EditorPanelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setBackgroundColor(Color.parseColor("#FFFFFF"));    // Set background color
 
+        // Daniel (2017-07-26 14:47:11): Add new pen view
+        addPenPage();
+
         setOnTouchListener(mTouchListener);     // Add Touch Listener
+
     }
 
     OnTouchListener mTouchListener = new OnTouchListener() {
@@ -59,6 +64,9 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
                 if (childView instanceof FingerImageView) {
                     ((FingerImageView) childView).setManipulationMode(true);
                 }
+                else if (childView instanceof FingerPenView) {
+                    ((FingerPenView) childView).setEditorMode(editorMode);
+                }
             }
         } else {
             // And set all FingerImageViews to modifiable
@@ -67,6 +75,9 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
 
                 if (childView instanceof FingerImageView) {
                     ((FingerImageView) childView).setManipulationMode(false);
+                }
+                else if (childView instanceof FingerPenView) {
+                    ((FingerPenView) childView).setEditorMode(editorMode);
                 }
             }
         }
@@ -84,7 +95,8 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
 
         iv.setManipulationMode(true);
 
-        addView(iv);
+        // Daniel (2017-07-26 17:04:42): Image should be lower than pen view
+        addView(iv, getChildCount() <= 1 ? 0 : getChildCount() - 1);
 
         // And set all FingerImageViews to modifiable
         for (int index = 0; index < getChildCount(); index++) {
@@ -94,6 +106,16 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
                 ((FingerImageView) childView).setManipulationMode(true);
             }
         }
+    }
+
+    private void addPenPage() {
+        RelativeLayout.LayoutParams layoutParams
+                = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        FingerPenView iv  = new FingerPenView(getContext());
+        iv.setLayoutParams(layoutParams);
+        iv.setUndoRedoListener(mOnUndoRedoStateChangeListener);
+
+        addView(iv);
     }
 
     @Override
@@ -115,12 +137,26 @@ public class EditorImageView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void setUndo() {
+        for (int index = 0; index < getChildCount(); index++) {
+            View childView = getChildAt(index);
 
+            if (childView instanceof FingerPenView) {
+                ((FingerPenView) childView).setUndo();
+                break;
+            }
+        }
     }
 
     @Override
     public void setRedo() {
+        for (int index = 0; index < getChildCount(); index++) {
+            View childView = getChildAt(index);
 
+            if (childView instanceof FingerPenView) {
+                ((FingerPenView) childView).setRedo();
+                break;
+            }
+        }
     }
 
     @Override

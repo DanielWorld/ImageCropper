@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
+import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecroppersample.databinding.ActivityEditorBinding;
 import com.danielpark.imageeditor.EditorMode;
 
@@ -31,7 +29,19 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_editor);
 
-        binding.editorImageView.setBackgroundColor(Color.parseColor("#772611"));
+        binding.editorPanelView.setBackgroundColor(Color.parseColor("#772611"));
+
+        binding.editorPanelView.setUndoRedoListener(new OnUndoRedoStateChangeListener() {
+            @Override
+            public void onUndoAvailable(boolean result) {
+                binding.undo.setEnabled(result);
+            }
+
+            @Override
+            public void onRedoAvailable(boolean result) {
+                binding.redo.setEnabled(result);
+            }
+        });
 
         binding.prev.setOnClickListener(this);
         binding.next.setOnClickListener(this);
@@ -56,7 +66,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (id) {
             case R.id.addImage:
-                binding.editorImageView.addImage(
+                binding.editorPanelView.addImage(
                         BitmapFactory.decodeResource(getResources(), R.drawable.splash)
                 );
                 break;
@@ -73,26 +83,30 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
             case R.id.edit:
-                binding.editorImageView.setEditorMode(EditorMode.EDIT);
+                binding.editorPanelView.setEditorMode(EditorMode.EDIT);
                 break;
             case R.id.pen:
-                binding.editorImageView.setEditorMode(EditorMode.PEN);
-
+                if (v.isSelected()) {
+                    // Daniel (2017-07-26 17:50:44): show Color picker
+                } else {
+                    v.setSelected(true);
+                    binding.editorPanelView.setEditorMode(EditorMode.PEN);
+                }
                 break;
             case R.id.eraser:
-                binding.editorImageView.setEditorMode(EditorMode.ERASER);
+                binding.editorPanelView.setEditorMode(EditorMode.ERASER);
                 break;
             case R.id.redo:
-
+                binding.editorPanelView.setRedo();
                 break;
             case R.id.undo:
-
+                binding.editorPanelView.setUndo();
                 break;
             case R.id.rotate:
 
                 break;
             case R.id.delete:
-                binding.editorImageView.deleteImage();
+                binding.editorPanelView.deleteImage();
                 break;
         }
     }

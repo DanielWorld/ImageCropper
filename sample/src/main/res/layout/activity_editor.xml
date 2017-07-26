@@ -138,8 +138,8 @@
 
         </LinearLayout>
 
-        <com.danielpark.imageeditor.EditorImageView
-            android:id="@+id/editorImageView"
+        <com.danielpark.imageeditor.EditorPanelView
+            android:id="@+id/editorPanelView"
             android:layout_below="@+id/topContainer"
             android:layout_above="@+id/bottomContainer"
             android:layout_width="match_parent"

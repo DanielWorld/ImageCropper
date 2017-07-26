@@ -7,17 +7,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -25,7 +20,7 @@ import com.danielpark.imagecropper.R;
 import com.danielpark.imagecropper.util.ConvertUtil;
 
 /**
- * This is embed image view in {@link EditorImageView}
+ * This is embed image view in {@link EditorPanelView}
  * <br><br>
  * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
