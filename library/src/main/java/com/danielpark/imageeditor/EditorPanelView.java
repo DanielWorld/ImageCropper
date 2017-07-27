@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
+import com.danielpark.imagecropper.R;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     // Undo / Redo Pen & Eraser Listener
     private OnUndoRedoStateChangeListener mOnUndoRedoStateChangeListener;
+
+    // Prev / Next panel page listener
+    private OnPanelPageStateChangeListener mOnPanelPageStateChangeListener;
 
     public EditorPanelView(Context context) {
         this(context, null);
@@ -69,10 +74,9 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
                 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         FingerPenView iv  = new FingerPenView(getContext());
         iv.setLayoutParams(layoutParams);
-        iv.setUndoRedoListener(mOnUndoRedoStateChangeListener);
+        iv.setUndoRedoListener(mFingerViewUndoRedoListener);
 
         mEditorPanelPage.get(mCurrentPanelPageIndex).addView(iv);
-//        addView(iv);
     }
 
 //    OnTouchListener mTouchListener = new OnTouchListener() {
@@ -186,16 +190,130 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
         // When you add Panel page, you also have to add pen page
         addPenPage();
+
+        // Mode should be Pen
+        setEditorMode(EditorMode.PEN);
+
+        // Animation effect
+        if (mEditorPanelPage.size() > 1) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_left);
+            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+
+            // When you add page from first page.
+            if (mCurrentPanelPageIndex != mEditorPanelPage.size() - 1) {
+                Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_right);
+                mEditorPanelPage.get(++mCurrentPanelPageIndex).startAnimation(animation2);
+            } else {
+                Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_right);
+                mEditorPanelPage.get(mCurrentPanelPageIndex).startAnimation(animation2);
+            }
+        }
+
+        onUpdatePanelPageState();
+
+        onUpdateUndoRedoState();
     }
 
     @Override
     public void prevPanelPage() {
+        if (mCurrentPanelPageIndex == 0)
+            return;
 
+        // Update current panel page index
+        mCurrentPanelPageIndex -= 1;
+
+        // Mode should be Pen
+        setEditorMode(EditorMode.PEN);
+
+        // Animation effect
+        if (mEditorPanelPage.size() > 1) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_right);
+            animation.setAnimationListener(prevAnimationListener);
+            mEditorPanelPage.get(mCurrentPanelPageIndex + 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+
+            Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_left);
+            mEditorPanelPage.get(mCurrentPanelPageIndex).startAnimation(animation2);
+        }
+
+        onUpdatePanelPageState();
+
+        onUpdateUndoRedoState();
     }
 
     @Override
     public void nextPanelPage() {
+        if (mEditorPanelPage.size() == mCurrentPanelPageIndex + 1)
+            return;
 
+        // Update current panel page index
+        mCurrentPanelPageIndex += 1;
+
+        // Mode should be Pen
+        setEditorMode(EditorMode.PEN);
+
+        // Animation effect
+        if (mEditorPanelPage.size() > 1) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_left);
+            animation.setAnimationListener(nextAnimationListener);
+            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+
+            Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_right);
+            mEditorPanelPage.get(mCurrentPanelPageIndex).startAnimation(animation2);
+        }
+
+        onUpdatePanelPageState();
+
+        onUpdateUndoRedoState();
+    }
+
+    private void onUpdatePanelPageState() {
+        // trigger listener
+        if (mCurrentPanelPageIndex == 0) {
+            if (mOnPanelPageStateChangeListener != null) {
+                mOnPanelPageStateChangeListener.onPrevPanelPageAvailable(false);
+            }
+
+            if (mCurrentPanelPageIndex != mEditorPanelPage.size() - 1) {
+                if (mOnPanelPageStateChangeListener != null) {
+                    mOnPanelPageStateChangeListener.onNextPanelPageAvailable(true);
+                }
+            } else {
+                if (mOnPanelPageStateChangeListener != null) {
+                    mOnPanelPageStateChangeListener.onNextPanelPageAvailable(false);
+                }
+            }
+        }
+        else if (mCurrentPanelPageIndex == mEditorPanelPage.size() - 1) {
+            if (mOnPanelPageStateChangeListener != null) {
+                mOnPanelPageStateChangeListener.onNextPanelPageAvailable(false);
+            }
+
+            if (mCurrentPanelPageIndex == 0) {
+                if (mOnPanelPageStateChangeListener != null) {
+                    mOnPanelPageStateChangeListener.onPrevPanelPageAvailable(false);
+                }
+            } else {
+                if (mOnPanelPageStateChangeListener != null) {
+                    mOnPanelPageStateChangeListener.onPrevPanelPageAvailable(true);
+                }
+            }
+        } else {
+            if (mOnPanelPageStateChangeListener != null) {
+                mOnPanelPageStateChangeListener.onPrevPanelPageAvailable(true);
+                mOnPanelPageStateChangeListener.onNextPanelPageAvailable(true);
+            }
+        }
+    }
+
+    private void onUpdateUndoRedoState() {
+        for (int index = 0; index < mEditorPanelPage.get(mCurrentPanelPageIndex).getChildCount(); index++) {
+            View childView = mEditorPanelPage.get(mCurrentPanelPageIndex).getChildAt(index);
+
+            if (childView instanceof FingerPenView) {
+                ((FingerPenView) childView).updateUndoRedo();
+                break;
+            }
+        }
     }
 
     @Override
@@ -252,6 +370,60 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void setOnPanelPageStateChangeListener(OnPanelPageStateChangeListener listener) {
-
+        mOnPanelPageStateChangeListener = listener;
     }
+
+    /**
+     * First page's undo / redo listener could be null, so make bridge between views
+     */
+    private OnUndoRedoStateChangeListener mFingerViewUndoRedoListener = new OnUndoRedoStateChangeListener() {
+        @Override
+        public void onUndoAvailable(boolean result) {
+            if (mOnUndoRedoStateChangeListener != null)
+                mOnUndoRedoStateChangeListener.onUndoAvailable(result);
+        }
+
+        @Override
+        public void onRedoAvailable(boolean result) {
+            if (mOnUndoRedoStateChangeListener != null)
+                mOnUndoRedoStateChangeListener.onRedoAvailable(result);
+        }
+    };
+
+    private Animation.AnimationListener prevAnimationListener = new Animation.AnimationListener() {
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            mEditorPanelPage.get(mCurrentPanelPageIndex + 1).setVisibility(View.INVISIBLE);
+            mEditorPanelPage.get(mCurrentPanelPageIndex).setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
+    private Animation.AnimationListener nextAnimationListener = new Animation.AnimationListener() {
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).setVisibility(View.INVISIBLE);
+            mEditorPanelPage.get(mCurrentPanelPageIndex).setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
 }

@@ -28,6 +28,11 @@ public interface FingerPenInterface {
     void setRedo();
 
     /**
+     * Update undo / redo and receive events
+     */
+    void updateUndoRedo();
+
+    /**
      * Delete all pen and eraser
      */
     void deletePen();

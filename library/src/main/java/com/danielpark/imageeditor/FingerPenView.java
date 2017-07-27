@@ -132,11 +132,34 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
     }
 
     @Override
+    public void updateUndoRedo() {
+        if (arrayDrawInfo.size() > 0) {
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(true);
+        }
+        else {
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onUndoAvailable(false);
+        }
+
+        if (arrayUndoneDrawInfo.size() > 0) {
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(true);
+        }
+        else {
+            if (onUndoRedoStateChangeListener != null)
+                onUndoRedoStateChangeListener.onRedoAvailable(false);
+        }
+    }
+
+    @Override
     public void deletePen() {
         arrayDrawInfo.clear();
         arrayUndoneDrawInfo.clear();
 
         invalidate();
+
+        updateUndoRedo();
     }
 
     @Override
@@ -199,9 +222,7 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
 
         invalidate();
 
-        if (arrayDrawInfo.size() > 0 && onUndoRedoStateChangeListener != null) {
-            onUndoRedoStateChangeListener.onUndoAvailable(true);
-        }
+        updateUndoRedo();
     }
 
     OnTouchListener mTouchListener = new OnTouchListener() {
