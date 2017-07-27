@@ -55,6 +55,12 @@ public interface EditorInterface {
     void setRedo();
 
     /**
+     * Rotate image by degree
+     * @param degree
+     */
+    void setRotationBy(int degree);
+
+    /**
      * Delete all pen and eraser marks
      */
     void deletePen();

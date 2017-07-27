@@ -154,7 +154,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorPanelView.setUndo();
                 break;
             case R.id.rotate:
-
+                binding.editorPanelView.setRotationBy(90);
                 break;
             case R.id.deleteImage:
                 binding.editorPanelView.deleteImage();

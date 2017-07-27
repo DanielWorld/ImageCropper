@@ -345,6 +345,21 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     }
 
     @Override
+    public void setRotationBy(int degree) {
+        if (mEditorMode != EditorMode.EDIT) return;
+
+        for (int index = 0; index < mEditorPanelPage.get(mCurrentPanelPageIndex).getChildCount(); index++) {
+            View childView = mEditorPanelPage.get(mCurrentPanelPageIndex).getChildAt(index);
+
+            if (childView instanceof FingerImageView
+                    && ((FingerImageView) childView).isManipulationMode()) {
+                ((FingerImageView) childView).setRotation90Image();
+//                break;
+            }
+        }
+    }
+
+    @Override
     public void deletePen() {
         if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
 

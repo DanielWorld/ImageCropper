@@ -162,13 +162,25 @@ public class FingerImageView extends ImageView {
      * 이미지 및 mRect 를 90 Rotate
      * @param bitmap
      */
-    public void setRotation90Image(Bitmap bitmap) {
+    private void setRotation90Image(Bitmap bitmap) {
         mBitmap = bitmap;
 
         mBitmapRatio = 1 / mBitmapRatio;  //Yang (2015-02-09-22:20:13) : 회전하기때문에 비율을 바꿔준다.
         setMinimumRange(mBitmapRatio);
         isRotation = true;
         invalidate();
+    }
+
+    /**
+     * Rotate current image by 90 degree
+     */
+    public void setRotation90Image() {
+        if (mBitmap == null || mBitmap.isRecycled()) return;
+
+        Matrix matrix = new Matrix();
+        matrix.setRotate(90);
+
+        setRotation90Image(Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, true));
     }
 
     public void onDraw( Canvas canvas) {
