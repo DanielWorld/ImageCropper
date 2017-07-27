@@ -1,7 +1,9 @@
 package com.danielpark.imageeditor.colorpicker;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -9,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.danielpark.imagecropper.R;
@@ -23,7 +24,10 @@ import com.danielpark.imageeditor.customview.CheckBoxRadioButton;
 
 public class ColorPickerDialogFragment extends DialogFragment implements View.OnClickListener, ColorPickerView.OnColorChangedListener {
 
-    private LinearLayout colorPickerToolbar;
+    public final static String TAG_PEN_COLOR = "com.danielpark.imageeditor.colorpicker_penColor";
+    public final static String TAG_PEN_WIDTH = "com.danielpark.imageeditor.colorpicker_penWidth";
+
+//    private LinearLayout colorPickerToolbar;
     private CheckBoxRadioButton radioButtonFirstSwatchColor;
     private CheckBoxRadioButton radioButtonSecondSwatchColor;
     private CheckBoxRadioButton radioButtonThirdSwatchColor;
@@ -35,6 +39,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
     //ColorPicker
     private int mPaintColor;
     private int mPenWidth = 1;
+
+    private SharedPreferences mSharedPref;
 
     public static ColorPickerDialogFragment newInstance() {
         return new ColorPickerDialogFragment();
@@ -49,7 +55,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_color_picker, container, false);
-        colorPickerToolbar = (LinearLayout) v.findViewById(R.id.colorPickerToolbar);
+//        colorPickerToolbar = (LinearLayout) v.findViewById(R.id.colorPickerToolbar);
         radioButtonFirstSwatchColor = (CheckBoxRadioButton) v.findViewById(R.id.radioButtonFirstSwatchColor);
         radioButtonSecondSwatchColor = (CheckBoxRadioButton) v.findViewById(R.id.radioButtonSecondSwatchColor);
         radioButtonThirdSwatchColor = (CheckBoxRadioButton) v.findViewById(R.id.radioButtonThirdSwatchColor);
@@ -67,9 +73,11 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         colorPickerView.setOnColorChangedListener(this);
         // 색 초기 설정.
-        mPaintColor = Color.parseColor("#000000"); // default 검정색.
+        mPaintColor = mSharedPref.getInt(TAG_PEN_COLOR, Color.parseColor("#000000")); // default 검정색.
         colorPickerView.setColor(mPaintColor);
 
         radioButtonFirstSwatchColor.setBackgroundColor(Color.parseColor("#ff4958"));
@@ -97,7 +105,14 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             radioButtonThirdSwatchColor.setChecked(false);
         //---------------------------------------------------------------------------------
 
-        if (mPenWidth < 1) mPenWidth = 1;
+        // 펜 굵기 크기 불러오기
+        mPenWidth = mSharedPref.getInt(TAG_PEN_WIDTH, 1);
+        if (mPenWidth < 1 || mPenWidth > 100) mPenWidth = 1;
+
+        // 펜 굵기 및 색 설정
+        penWidthView.setPaintStrokeColor(mPaintColor);
+        penWidthView.setPaintStrokeWidth(mPenWidth);
+        seekBarPenWidth.setProgress(mPenWidth);
 
         radioButtonFirstSwatchColor.setOnClickListener(this);
         radioButtonSecondSwatchColor.setOnClickListener(this);
@@ -111,7 +126,10 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
                 penWidthView.setPaintStrokeWidth(progress);
 
                 mPenWidth = progress;
-                if (mPenWidth < 1) mPenWidth = 1;
+                if (mPenWidth < 1 || mPenWidth > 100) mPenWidth = 1;
+
+                // save picked width
+                mSharedPref.edit().putInt(TAG_PEN_WIDTH, mPenWidth).apply();
 
                 if (mOnColorPickerListener != null)
                     mOnColorPickerListener.onSelectedPenWidth(mPenWidth);
@@ -149,22 +167,65 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
 
         if (id == R.id.radioButtonFirstSwatchColor) {
             mPaintColor = radioButtonFirstSwatchColor.getBackgroundColor();
+
+            // save picked color
+            mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
+
+            // 펜 굵기 부분에 색상 적용
+            penWidthView.setPaintStrokeColor(mPaintColor);
+
+            if (mOnColorPickerListener != null)
+                mOnColorPickerListener.onSelectedPenColor(mPaintColor);
         }
         else if (id == R.id.radioButtonSecondSwatchColor) {
             mPaintColor = radioButtonSecondSwatchColor.getBackgroundColor();
+
+            // save picked color
+            mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
+
+            // 펜 굵기 부분에 색상 적용
+            penWidthView.setPaintStrokeColor(mPaintColor);
+
+            if (mOnColorPickerListener != null)
+                mOnColorPickerListener.onSelectedPenColor(mPaintColor);
         }
         else if (id == R.id.radioButtonThirdSwatchColor) {
             mPaintColor = radioButtonThirdSwatchColor.getBackgroundColor();
+
+            // save picked color
+            mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
+
+            // 펜 굵기 부분에 색상 적용
+            penWidthView.setPaintStrokeColor(mPaintColor);
+
+            if (mOnColorPickerListener != null)
+                mOnColorPickerListener.onSelectedPenColor(mPaintColor);
         }
         else if (id == R.id.radioButtonPickerColor) {
             mPaintColor = colorPickerView.getColor();
+
+            // save picked color
+            mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
+
+            // 펜 굵기 부분에 색상 적용
+            penWidthView.setPaintStrokeColor(mPaintColor);
+
+            if (mOnColorPickerListener != null)
+                mOnColorPickerListener.onSelectedPenColor(mPaintColor);
         }
     }
 
     @Override
     public void onColorChanged(int newColor) {
+        radioButtonPickerColor.setChecked(true);
         radioButtonPickerColor.setBackgroundColor(newColor);
         mPaintColor = newColor;
+
+        // save picked color
+        mSharedPref.edit().putInt(TAG_PEN_COLOR, newColor).apply();
+
+        // 펜 굵기 부분에 색상 적용
+        penWidthView.setPaintStrokeColor(newColor);
 
         if (mOnColorPickerListener != null)
             mOnColorPickerListener.onSelectedPenColor(newColor);

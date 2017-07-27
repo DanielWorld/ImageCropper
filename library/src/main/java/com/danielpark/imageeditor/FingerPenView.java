@@ -1,10 +1,12 @@
 package com.danielpark.imageeditor;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.DrawInfo;
 import com.danielpark.imagecropper.util.ConvertUtil;
+import com.danielpark.imageeditor.colorpicker.ColorPickerDialogFragment;
 
 import java.util.ArrayList;
 
@@ -29,7 +32,9 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
 
     private float mX, mY;
 
-    private int penColor = Color.BLUE, penWidth = 5, eraserColor = Color.WHITE, eraserWidth = 10;
+    private SharedPreferences mSharedPref;
+
+    private int penColor = Color.BLUE, penWidth = 5;
 
     private Paint drawPaint;
     private Path drawPath;
@@ -48,6 +53,8 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
 
     public FingerPenView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         setOnTouchListener(mTouchListener);
     }
@@ -71,10 +78,13 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
             this.mPenMode = editorMode;
 
             if (editorMode == EditorMode.PEN) {
-                setPenPaint(penColor, penWidth);
+                setPenPaint(
+                        mSharedPref.getInt(ColorPickerDialogFragment.TAG_PEN_COLOR, penColor),
+                        mSharedPref.getInt(ColorPickerDialogFragment.TAG_PEN_WIDTH, penWidth)
+                );
             }
             else if (editorMode == EditorMode.ERASER) {
-                setEraserPaint(eraserColor, eraserWidth);
+                setEraserPaint(Color.WHITE, 10);
             }
         }
     }
@@ -84,8 +94,10 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
         if (this.mPenMode == EditorMode.PEN) {
             this.penColor = penColor;
 
-            if (drawPaint != null)
-                drawPaint.setColor(penColor);
+            setPenPaint(
+                    penColor,
+                    mSharedPref.getInt(ColorPickerDialogFragment.TAG_PEN_WIDTH, penWidth)
+            );
         }
     }
 
@@ -94,28 +106,10 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
         if (this.mPenMode == EditorMode.PEN) {
             this.penWidth = penWidth;
 
-            if (drawPaint != null)
-                drawPaint.setStrokeWidth(ConvertUtil.convertDpToPixel(penWidth));
-        }
-    }
-
-    @Override
-    public void setEraserColor(int eraserColor) {
-        if (this.mPenMode == EditorMode.ERASER) {
-            this.eraserColor = eraserColor;
-
-            if (drawPaint != null)
-                drawPaint.setColor(eraserColor);
-        }
-    }
-
-    @Override
-    public void setEraserWidth(int eraserWidth) {
-        if (this.mPenMode == EditorMode.ERASER) {
-            this.eraserWidth = eraserWidth;
-
-            if (drawPaint != null)
-                drawPaint.setStrokeWidth(ConvertUtil.convertDpToPixel(eraserWidth));
+            setPenPaint(
+                    mSharedPref.getInt(ColorPickerDialogFragment.TAG_PEN_COLOR, penColor),
+                    penWidth
+            );
         }
     }
 

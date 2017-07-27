@@ -387,34 +387,6 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     }
 
     @Override
-    public void setEraserColor(int eraserColor) {
-        if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
-
-        for (int index = 0; index < mEditorPanelPage.get(mCurrentPanelPageIndex).getChildCount(); index++) {
-            View childView = mEditorPanelPage.get(mCurrentPanelPageIndex).getChildAt(index);
-
-            if (childView instanceof FingerPenView) {
-                ((FingerPenView) childView).setEraserColor(eraserColor);
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void setEraserWidth(int eraserWidth) {
-        if (mEditorMode != EditorMode.PEN && mEditorMode != EditorMode.ERASER) return;
-
-        for (int index = 0; index < mEditorPanelPage.get(mCurrentPanelPageIndex).getChildCount(); index++) {
-            View childView = mEditorPanelPage.get(mCurrentPanelPageIndex).getChildAt(index);
-
-            if (childView instanceof FingerPenView) {
-                ((FingerPenView) childView).setEraserWidth(eraserWidth);
-                break;
-            }
-        }
-    }
-
-    @Override
     public void setUndoRedoListener(OnUndoRedoStateChangeListener listener) {
         mOnUndoRedoStateChangeListener = listener;
     }

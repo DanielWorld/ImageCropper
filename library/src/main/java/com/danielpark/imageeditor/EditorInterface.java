@@ -63,10 +63,6 @@ public interface EditorInterface {
 
     void setPenWidth(int penWidth);
 
-    void setEraserColor(int eraserColor);
-
-    void setEraserWidth(int eraserWidth);
-
     /**
      * When Undo or Redo state has changed, notify to observer <br>
      *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>

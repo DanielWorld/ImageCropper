@@ -67,8 +67,13 @@ public class PenWidthView extends View {
         super.onDraw(canvas);
     }
 
-    public void setPaint(Paint paint) {
-        this._paint = paint;
+//    public void setPaint(Paint paint) {
+//        this._paint = paint;
+//    }
+
+    public void setPaintStrokeColor(int color) {
+        _paint.setColor(color);
+        invalidate();
     }
 
     public void setPaintStrokeWidth(int width) {
