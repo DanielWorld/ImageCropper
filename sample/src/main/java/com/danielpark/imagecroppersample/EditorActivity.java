@@ -12,6 +12,7 @@ import com.danielpark.imagecroppersample.databinding.ActivityEditorBinding;
 import com.danielpark.imageeditor.EditorMode;
 import com.danielpark.imageeditor.OnEditorModeStateChangeListener;
 import com.danielpark.imageeditor.OnPanelPageStateChangeListener;
+import com.danielpark.imageeditor.colorpicker.ColorPickerDialogFragment;
 
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
@@ -121,12 +122,22 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorPanelView.setEditorMode(EditorMode.EDIT);
                 break;
             case R.id.pen:
-//                if (v.isSelected()) {
+                if (v.isSelected()) {
 //                    // Daniel (2017-07-26 17:50:44): show Color picker
-//                } else {
-//                    v.setSelected(true);
+                    ColorPickerDialogFragment colorPickerDialogFragment
+                            = ColorPickerDialogFragment.newInstance();
+                    colorPickerDialogFragment.setOnColorPickerListener(new ColorPickerDialogFragment.OnColorPickerListener() {
+                        @Override
+                        public void onSelectedColor(int newColor) {
+                            // TODO: Pen or Eraser Setting!
+                        }
+                    });
+                    colorPickerDialogFragment.show(getSupportFragmentManager(), "");
+                    v.setSelected(false);
+                } else {
+                    v.setSelected(true);
                     binding.editorPanelView.setEditorMode(EditorMode.PEN);
-//                }
+                }
                 break;
             case R.id.eraser:
                 binding.editorPanelView.setEditorMode(EditorMode.ERASER);
