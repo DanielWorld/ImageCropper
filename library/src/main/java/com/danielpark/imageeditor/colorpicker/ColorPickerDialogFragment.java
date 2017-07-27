@@ -112,6 +112,9 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
 
                 mPenWidth = progress;
                 if (mPenWidth < 1) mPenWidth = 1;
+
+                if (mOnColorPickerListener != null)
+                    mOnColorPickerListener.onSelectedPenWidth(mPenWidth);
             }
 
             @Override
@@ -164,13 +167,15 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
         mPaintColor = newColor;
 
         if (mOnColorPickerListener != null)
-            mOnColorPickerListener.onSelectedColor(newColor);
+            mOnColorPickerListener.onSelectedPenColor(newColor);
     }
 
     private OnColorPickerListener mOnColorPickerListener;
 
     public interface OnColorPickerListener {
-        void onSelectedColor(int newColor);
+        void onSelectedPenColor(int newColor);
+
+        void onSelectedPenWidth(int newWidth);
     }
 
     public void setOnColorPickerListener(OnColorPickerListener listener) {

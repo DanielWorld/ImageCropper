@@ -29,6 +29,8 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
 
     private float mX, mY;
 
+    private int penColor = Color.BLUE, penWidth = 5, eraserColor = Color.WHITE, eraserWidth = 10;
+
     private Paint drawPaint;
     private Path drawPath;
     private final ArrayList<DrawInfo> arrayDrawInfo = new ArrayList<>();
@@ -69,11 +71,51 @@ public class FingerPenView extends ImageView implements FingerPenInterface{
             this.mPenMode = editorMode;
 
             if (editorMode == EditorMode.PEN) {
-                setPenPaint(Color.BLUE, 5);
+                setPenPaint(penColor, penWidth);
             }
             else if (editorMode == EditorMode.ERASER) {
-                setEraserPaint(Color.WHITE, 10);
+                setEraserPaint(eraserColor, eraserWidth);
             }
+        }
+    }
+
+    @Override
+    public void setPenColor(int penColor) {
+        if (this.mPenMode == EditorMode.PEN) {
+            this.penColor = penColor;
+
+            if (drawPaint != null)
+                drawPaint.setColor(penColor);
+        }
+    }
+
+    @Override
+    public void setPenWidth(int penWidth) {
+        if (this.mPenMode == EditorMode.PEN) {
+            this.penWidth = penWidth;
+
+            if (drawPaint != null)
+                drawPaint.setStrokeWidth(ConvertUtil.convertDpToPixel(penWidth));
+        }
+    }
+
+    @Override
+    public void setEraserColor(int eraserColor) {
+        if (this.mPenMode == EditorMode.ERASER) {
+            this.eraserColor = eraserColor;
+
+            if (drawPaint != null)
+                drawPaint.setColor(eraserColor);
+        }
+    }
+
+    @Override
+    public void setEraserWidth(int eraserWidth) {
+        if (this.mPenMode == EditorMode.ERASER) {
+            this.eraserWidth = eraserWidth;
+
+            if (drawPaint != null)
+                drawPaint.setStrokeWidth(ConvertUtil.convertDpToPixel(eraserWidth));
         }
     }
 

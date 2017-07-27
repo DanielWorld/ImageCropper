@@ -128,8 +128,13 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                             = ColorPickerDialogFragment.newInstance();
                     colorPickerDialogFragment.setOnColorPickerListener(new ColorPickerDialogFragment.OnColorPickerListener() {
                         @Override
-                        public void onSelectedColor(int newColor) {
-                            // TODO: Pen or Eraser Setting!
+                        public void onSelectedPenColor(int newColor) {
+                            binding.editorPanelView.setPenColor(newColor);
+                        }
+
+                        @Override
+                        public void onSelectedPenWidth(int newWidth) {
+                            binding.editorPanelView.setPenWidth(newWidth);
                         }
                     });
                     colorPickerDialogFragment.show(getSupportFragmentManager(), "");

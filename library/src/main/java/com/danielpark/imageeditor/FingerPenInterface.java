@@ -17,6 +17,14 @@ public interface FingerPenInterface {
      */
     void setEditorMode(EditorMode editorMode);
 
+    void setPenColor(int penColor);
+
+    void setPenWidth(int penWidth);
+
+    void setEraserColor(int eraserColor);
+
+    void setEraserWidth(int eraserWidth);
+
     /**
      * Undo the mRectanglePath (It only works when Crop mode is NONE)
      */
