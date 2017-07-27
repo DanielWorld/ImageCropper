@@ -32,8 +32,6 @@ public class PenWidthView extends View {
 
     public void init() {
         _context = getContext();
-//		int w = _context.getResources().getDisplayMetrics().widthPixels; // 단말기 가로 해상도 구하기
-//		int h = _context.getResources().getDisplayMetrics().heightPixels;
 
         _path = new Path();
         _paint = new Paint();
@@ -50,13 +48,13 @@ public class PenWidthView extends View {
 
 
     /**
-     * px을 dp로 변환
+     * Convert px to dp
      * @param px
      * @return dp
      */
     public float getPxToDp(int px) {
-        float density = 0.0f;
-        density = _context.getResources().getDisplayMetrics().density; // 화면의 밀도를 구한다.
+//        float density = 0.0f;
+//        density = _context.getResources().getDisplayMetrics().density;
         DisplayMetrics metrics = _context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, metrics);
     }

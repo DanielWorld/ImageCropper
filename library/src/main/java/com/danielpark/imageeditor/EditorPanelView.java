@@ -154,8 +154,6 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     @Override
     public void deleteImage() {
-
-        // TODO: 현재는 manipulated 된 것을 모두 삭제처리
         for (int index = mEditorPanelPage.get(mCurrentPanelPageIndex).getChildCount() - 1; index >= 0; index--) {
             if (index < 0) return;
 
@@ -197,7 +195,7 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
         // Animation effect
         if (mEditorPanelPage.size() > 1) {
             Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_left);
-            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);
 
             // When you add page from first page.
             if (mCurrentPanelPageIndex != mEditorPanelPage.size() - 1) {
@@ -229,7 +227,7 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
         if (mEditorPanelPage.size() > 1) {
             Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_right);
             animation.setAnimationListener(prevAnimationListener);
-            mEditorPanelPage.get(mCurrentPanelPageIndex + 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+            mEditorPanelPage.get(mCurrentPanelPageIndex + 1).startAnimation(animation);
 
             Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_left);
             mEditorPanelPage.get(mCurrentPanelPageIndex).startAnimation(animation2);
@@ -255,7 +253,7 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
         if (mEditorPanelPage.size() > 1) {
             Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.exit_slide_left);
             animation.setAnimationListener(nextAnimationListener);
-            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);  // 현재 보이는 DrawView 를 exit
+            mEditorPanelPage.get(mCurrentPanelPageIndex - 1).startAnimation(animation);
 
             Animation animation2 = AnimationUtils.loadAnimation(getContext(), R.anim.enter_slide_right);
             mEditorPanelPage.get(mCurrentPanelPageIndex).startAnimation(animation2);

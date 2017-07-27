@@ -76,8 +76,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         colorPickerView.setOnColorChangedListener(this);
-        // 색 초기 설정.
-        mPaintColor = mSharedPref.getInt(TAG_PEN_COLOR, Color.parseColor("#000000")); // default 검정색.
+
+        mPaintColor = mSharedPref.getInt(TAG_PEN_COLOR, Color.parseColor("#000000")); // default color = black.
         colorPickerView.setColor(mPaintColor);
 
         radioButtonFirstSwatchColor.setBackgroundColor(Color.parseColor("#ff4958"));
@@ -105,11 +105,11 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             radioButtonThirdSwatchColor.setChecked(false);
         //---------------------------------------------------------------------------------
 
-        // 펜 굵기 크기 불러오기
+        // Load pen width size
         mPenWidth = mSharedPref.getInt(TAG_PEN_WIDTH, 1);
         if (mPenWidth < 1 || mPenWidth > 100) mPenWidth = 1;
 
-        // 펜 굵기 및 색 설정
+        // Set pen width and color
         penWidthView.setPaintStrokeColor(mPaintColor);
         penWidthView.setPaintStrokeWidth(mPenWidth);
         seekBarPenWidth.setProgress(mPenWidth);
@@ -171,7 +171,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             // save picked color
             mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
 
-            // 펜 굵기 부분에 색상 적용
+            // apply color to pen stroke
             penWidthView.setPaintStrokeColor(mPaintColor);
 
             if (mOnColorPickerListener != null)
@@ -183,7 +183,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             // save picked color
             mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
 
-            // 펜 굵기 부분에 색상 적용
+            // apply color to pen stroke
             penWidthView.setPaintStrokeColor(mPaintColor);
 
             if (mOnColorPickerListener != null)
@@ -195,7 +195,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             // save picked color
             mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
 
-            // 펜 굵기 부분에 색상 적용
+            // apply color to pen stroke
             penWidthView.setPaintStrokeColor(mPaintColor);
 
             if (mOnColorPickerListener != null)
@@ -207,7 +207,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
             // save picked color
             mSharedPref.edit().putInt(TAG_PEN_COLOR, mPaintColor).apply();
 
-            // 펜 굵기 부분에 색상 적용
+            // apply color to pen stroke
             penWidthView.setPaintStrokeColor(mPaintColor);
 
             if (mOnColorPickerListener != null)
@@ -224,7 +224,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements View.On
         // save picked color
         mSharedPref.edit().putInt(TAG_PEN_COLOR, newColor).apply();
 
-        // 펜 굵기 부분에 색상 적용
+        // apply color to pen stroke
         penWidthView.setPaintStrokeColor(newColor);
 
         if (mOnColorPickerListener != null)

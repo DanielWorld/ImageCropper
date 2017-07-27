@@ -41,24 +41,24 @@ public class ColorPickerView extends View {
     private float PALETTE_CIRCLE_TRACKER_RADIUS = 5f;
     private float RECTANGLE_TRACKER_OFFSET = 2f;
     private OnColorChangedListener _colorChangedListener;
-    private Paint mSatValPaint;  // 사각 gradient paint
-    private Paint mSatValTrackerPaint;  // 사각 위치표시 paint
-    private Paint mHuePaint;  // 막대 gradient paint
-    private Paint mHueAlphaTrackerPaint;  // 막대 위치표시 paint
-    private Paint mBorderPaint; // 테두리 paint
+    private Paint mSatValPaint;  // Rect gradient paint
+    private Paint mSatValTrackerPaint;  // Rect position paint
+    private Paint mHuePaint;  // Bar gradient paint
+    private Paint mHueAlphaTrackerPaint;  // Bar position paint
+    private Paint mBorderPaint; // outline paint
     private Shader mValShader;
     private Shader mSatShader;
     private Shader mHueShader;
     private BitmapCache mSatValBackgroundCache;
     private int mAlpha = 0xff;
-    private float mHue = 29f;  // mDrawingRect y 위치값
-    private float mSat = 1.0f;  // mSatValRect circle x 위치값
-    private float mVal = 1.0f;  // mSatValRect circle y 위치값
+    private float mHue = 29f;  // mDrawingRect y position value
+    private float mSat = 1.0f;  // mSatValRect circle x position value
+    private float mVal = 1.0f;  // mSatValRect circle y position value
     private int mSliderTrackerColor = 0xFFBDBDBD;
     private int mBorderColor = 0xFF6E6E6E;
     private boolean mShowAlphaPanel = false;
     private int mDrawingOffset;
-    private RectF mDrawingRect;  // mHueRect 위치 표시 rect
+    private RectF mDrawingRect;  // mHueRect position rect
     private RectF mSatValRect;
     private RectF mHueRect;
     private Point mStartTouchPoint = null;
@@ -129,8 +129,8 @@ public class ColorPickerView extends View {
             return;
         }
 
-        drawSatValPanel(canvas); // 사각
-        drawHuePanel(canvas);   // 막대
+        drawSatValPanel(canvas); // Rect
+        drawHuePanel(canvas);   // Bar
         Log.d("mHue value ", "  :   " + mHue);
     }
 
