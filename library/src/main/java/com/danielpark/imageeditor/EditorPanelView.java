@@ -1,8 +1,10 @@
 package com.danielpark.imageeditor;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,8 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
     private int mCurrentPanelPageIndex = -1;
 
+    private @ColorInt int mBackgroundPanelColor;
+
     // panel pages list
     private final ArrayList<RelativeLayout> mEditorPanelPage = new ArrayList<>();
 
@@ -59,11 +63,15 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     public EditorPanelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-//        setBackgroundColor(Color.parseColor("#FFFFFF"));    // Set background color
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EditorPanelView, defStyleAttr, 0);
+        mBackgroundPanelColor = typedArray.getColor(R.styleable.EditorPanelView_backgroundPanelColor,
+                Color.parseColor("#FFFFFF"));
 
         initRootPanelPage();
 
         addPanelPage();
+
+        typedArray.recycle();
     }
 
     private void initRootPanelPage() {
@@ -183,7 +191,8 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
         // Add first page
         RelativeLayout panelPage = new RelativeLayout(getContext());
         panelPage.setLayoutParams(layoutParams);
-        panelPage.setBackgroundColor(Color.parseColor("#772611"));    // Set background color);
+        panelPage.setBackgroundColor(mBackgroundPanelColor);
+//        panelPage.setBackgroundColor(Color.parseColor("#FFFFFF"));    // Set background color);
 //        panelPage.setOnTouchListener(mTouchListener);
 
         mEditorPanelPage.add(panelPage);
