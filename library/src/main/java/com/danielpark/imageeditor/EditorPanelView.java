@@ -420,13 +420,13 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
 
         if (mEditorPanelPage.isEmpty()) return fileList;
 
-        // TODO: 이미지 가져올 시 기기별 제한 필요 (TODO!!)
+        // TODO: Before getting image, make sure to set limit image's size according to devices (TODO!!)
         for (RelativeLayout rl : mEditorPanelPage) {
             rl.setDrawingCacheEnabled(true);
             rl.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-            // Daniel (2017-08-07 11:17:20): 해당 view bitmap cache 를 recycle 처리할 경우, 해당 view 가 속한 Fragment 는 destroy 후 재생성해서 사용해야 한다.
+            // Daniel (2017-08-07 13:50:03): Once you recycle view's drawing cache bitmap, you cannot use this view again! Make sure to recreate Fragment which contains this view
             fileList.add(saveFile(rl.getDrawingCache(), true));
-            // TODO: Recycle 처리를 할 경우 해당 view 사용 못함
+            // TODO: Once you recycle view's drawing cache bitmap, you cannot use this view again!
 //            fileList.add(saveFile(rl.getDrawingCache(), false));
         }
 
