@@ -13,7 +13,13 @@ import android.widget.RelativeLayout;
 import com.danielpark.imagecropper.R;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Unlike {@link com.danielpark.imagecropper.CropperImageView}, it is used for editing image
@@ -400,6 +406,25 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     }
 
     @Override
+    public ArrayList<File> getEditedFiles() {
+        final ArrayList<File> fileList = new ArrayList<>();
+
+        if (mEditorPanelPage.isEmpty()) return fileList;
+
+        // TODO: 이미지 가져올 시 기기별 제한 필요 (TODO!!)
+        for (RelativeLayout rl : mEditorPanelPage) {
+            rl.setDrawingCacheEnabled(true);
+            rl.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+            // Daniel (2017-08-07 11:17:20): 해당 view bitmap cache 를 recycle 처리할 경우, 해당 view 가 속한 Fragment 는 destroy 후 재생성해서 사용해야 한다.
+            fileList.add(saveFile(rl.getDrawingCache(), true));
+            // TODO: Recycle 처리를 할 경우 해당 view 사용 못함
+//            fileList.add(saveFile(rl.getDrawingCache(), false));
+        }
+
+        return fileList;
+    }
+
+    @Override
     public void setUndoRedoListener(OnUndoRedoStateChangeListener listener) {
         mOnUndoRedoStateChangeListener = listener;
     }
@@ -412,6 +437,50 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
     @Override
     public void setOnPanelPageStateChangeListener(OnPanelPageStateChangeListener listener) {
         mOnPanelPageStateChangeListener = listener;
+    }
+
+    private File saveFile(Bitmap bitmap, boolean shouldRecycle) {
+        File dstFile = null;
+
+        OutputStream output = null;
+
+        // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
+//            final File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Bapul/");
+        // Daniel (2017-01-20 12:07:43): Use cache directory instead
+        final File filePath = getContext().getExternalCacheDir();
+
+        if (filePath != null && !filePath.exists()) {
+            filePath.mkdirs();
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS")
+                .format(new Date());
+
+        dstFile = new File(filePath, "CropperLibrary_" + timeStamp + "_.jpg");
+        try {
+            dstFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            output = new FileOutputStream(dstFile);
+
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 95, output);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
+
+            output.flush();
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (shouldRecycle && bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+        }
+
+        return dstFile;
     }
 
     /**

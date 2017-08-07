@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
@@ -13,6 +14,8 @@ import com.danielpark.imageeditor.EditorMode;
 import com.danielpark.imageeditor.OnEditorModeStateChangeListener;
 import com.danielpark.imageeditor.OnPanelPageStateChangeListener;
 import com.danielpark.imageeditor.colorpicker.ColorPickerDialogFragment;
+
+import java.io.File;
 
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
@@ -116,7 +119,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 binding.editorPanelView.nextPanelPage();
                 break;
             case R.id.done:
-
+                for (File f : binding.editorPanelView.getEditedFiles()) {
+                    Log.d("ImageCropperLibrary", f.getAbsolutePath());
+                }
                 break;
             case R.id.edit:
                 binding.editorPanelView.setEditorMode(EditorMode.EDIT);

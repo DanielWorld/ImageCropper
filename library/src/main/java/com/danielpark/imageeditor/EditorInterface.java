@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import com.danielpark.imagecropper.CropperImageView;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 
+import java.io.File;
+import java.util.ArrayList;
+
 /**
  * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
@@ -68,6 +71,8 @@ public interface EditorInterface {
     void setPenColor(int penColor);
 
     void setPenWidth(int penWidth);
+
+    ArrayList<File> getEditedFiles();
 
     /**
      * When Undo or Redo state has changed, notify to observer <br>
