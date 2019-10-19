@@ -11,6 +11,8 @@ packages/
 .classpath
 .springBeans
 .DS_Store
+gradlew
+gradlew.bat
 
 
 # NuGet Packages Directory
