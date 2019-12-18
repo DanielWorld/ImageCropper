@@ -16,7 +16,7 @@ buildscript {
 dependencies {
     ...
     // Daniel (2016-06-23 14:37:35): Added Image Cropper
-    compile 'com.danielworld:image-crop-library:1.1.9'
+    compile 'com.danielworld:image-crop-library:2.0.2'
 }
 </pre>
 
