@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
+import com.danielpark.imagecropper.util.Logger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -328,14 +330,14 @@ public class BitmapUtil {
 				inSampleSize *= 2;
 			}
 
-			Log.d("OKAY", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
+			Logger.INSTANCE.d("OKAY", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
 		}
 
-		Log.d("OKAY", "width : " + width);
-		Log.d("OKAY", "height : " + height);
-		Log.d("OKAY", "reqWidth : " + reqWidth);
-		Log.d("OKAY", "reqHeight : " + reqHeight);
-		Log.d("OKAY", "inSampleSize : " + inSampleSize);
+		Logger.INSTANCE.d("OKAY", "width : " + width);
+		Logger.INSTANCE.d("OKAY", "height : " + height);
+		Logger.INSTANCE.d("OKAY", "reqWidth : " + reqWidth);
+		Logger.INSTANCE.d("OKAY", "reqHeight : " + reqHeight);
+		Logger.INSTANCE.d("OKAY", "inSampleSize : " + inSampleSize);
 
 		return inSampleSize;
 	}
