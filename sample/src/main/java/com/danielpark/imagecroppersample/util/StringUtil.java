@@ -3,7 +3,6 @@ package com.danielpark.imagecroppersample.util;
 /**
  * String 관련 유틸리티
  * <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-01-23.
  */
 public class StringUtil {

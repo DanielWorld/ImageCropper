@@ -1,10 +1,11 @@
 package com.danielpark.imageeditor;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ import java.util.Date;
  * <br>
  *     1. EditorImageView is actually ViewGroup, it manages lots of other images...
  * <br><br>
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 
@@ -448,6 +448,7 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
         mOnPanelPageStateChangeListener = listener;
     }
 
+    @SuppressLint("WrongThread")
     private File saveFile(Bitmap bitmap, boolean shouldRecycle) {
         File dstFile = null;
 
@@ -476,6 +477,7 @@ public class EditorPanelView extends RelativeLayout implements EditorInterface{
             output = new FileOutputStream(dstFile);
 
 //                bitmap.compress(Bitmap.CompressFormat.PNG, 95, output);
+            // TODO: @namgyu.park (2019-12-18) : You can execute bitmap compress on UI thread. Make sure to fix later.
             bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output);
 
             output.flush();

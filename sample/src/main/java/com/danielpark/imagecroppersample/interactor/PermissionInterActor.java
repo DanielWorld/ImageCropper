@@ -6,11 +6,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 
 /**
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-25.
  */
 public class PermissionInterActor {

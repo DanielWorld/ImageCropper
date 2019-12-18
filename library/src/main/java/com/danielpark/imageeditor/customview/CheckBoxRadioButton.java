@@ -1,5 +1,6 @@
 package com.danielpark.imageeditor.customview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
@@ -12,10 +13,10 @@ import android.widget.RadioButton;
 import com.danielpark.imagecropper.R;
 
 /**
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-27.
  */
 
+@SuppressLint("AppCompatCustomView")
 public class CheckBoxRadioButton extends RadioButton {
 
     private Drawable mDrawable;

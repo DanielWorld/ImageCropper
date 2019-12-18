@@ -7,7 +7,6 @@ import com.danielpark.imagecroppersample.interactor.PermissionInterActor;
 import com.danielpark.imagecroppersample.presenter.MainPresenter;
 
 /**
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-25.
  */
 public class MainPresenterImpl extends PresenterImpl implements MainPresenter, PermissionInterActor.OnFinishedListener {

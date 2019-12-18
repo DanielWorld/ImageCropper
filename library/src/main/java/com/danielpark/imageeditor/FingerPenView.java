@@ -1,5 +1,6 @@
 package com.danielpark.imageeditor;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -22,10 +23,10 @@ import java.util.ArrayList;
 /**
  * This is for pen / eraser view
  * <br><br>
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 
+@SuppressLint("AppCompatCustomView")
 public class FingerPenView extends ImageView implements FingerPenInterface{
 
     private EditorMode mPenMode = EditorMode.NONE;      // Editor mode

@@ -7,7 +7,6 @@ package com.danielpark.imageeditor;
  *     <b> PEN : </b> Pen mode <br>
  *     <b> ERASER : </b> Eraser mode <br>
  * <br><br>
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 

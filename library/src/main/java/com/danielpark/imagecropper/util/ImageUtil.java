@@ -4,7 +4,6 @@ import android.media.ExifInterface;
 import android.widget.ImageView;
 
 /**
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-03-31.
  */
 public class ImageUtil {

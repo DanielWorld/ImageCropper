@@ -1,10 +1,10 @@
 package com.danielpark.imagecroppersample;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -18,7 +18,6 @@ import com.danielpark.imageeditor.colorpicker.ColorPickerDialogFragment;
 import java.io.File;
 
 /**
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 

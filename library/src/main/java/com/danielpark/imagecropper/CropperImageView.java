@@ -1,5 +1,6 @@
 package com.danielpark.imagecropper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,7 +18,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,9 +43,9 @@ import java.util.Set;
 
 
 /**
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-21.
  */
+@SuppressLint("AppCompatCustomView")
 public class CropperImageView extends ImageView implements CropperInterface{
 
     Paint mPaint = new Paint();
@@ -122,7 +122,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         }
 
         for (int i = 0; i < cropButton.length; i++) {
-            cropButton[i] = getResources().getDrawable(R.drawable.post_question_crop_ic_indicator);
+            cropButton[i] = getResources().getDrawable(R.drawable.crop_ic_indicator);
         }
 
         controlBtnSize = ConvertUtil.convertDpToPixel(20);  // Daniel (2016-06-22 16:26:13): set Control button size
@@ -605,7 +605,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
 
             if (mShapeMode == ShapeMode.RECTANGLE) {
                 canvas.clipPath(mRectanglePath, Region.Op.DIFFERENCE);
-                canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
+                canvas.drawColor(getResources().getColor(R.color.crop_image_cover));
 
                 mPaint.setColor(Color.WHITE);
                 mPaint.setStyle(Paint.Style.STROKE);
@@ -628,7 +628,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
                 mCirclePath.addCircle(mCropRect.centerX(), mCropRect.centerY(), Math.min(mCropRect.width() / 2, mCropRect.height() / 2), Path.Direction.CW);
 
                 canvas.clipPath(mCirclePath, Region.Op.DIFFERENCE);
-                canvas.drawColor(getResources().getColor(R.color.bapul_color_image_cover));
+                canvas.drawColor(getResources().getColor(R.color.crop_image_cover));
 
                 mPaint.setColor(Color.WHITE);
                 mPaint.setStyle(Paint.Style.STROKE);
@@ -1757,7 +1757,8 @@ public class CropperImageView extends ImageView implements CropperInterface{
 		}
 	}
 
-	private File saveFile(Bitmap bitmap, boolean shouldRecycle) {
+	@SuppressLint("WrongThread")
+    private File saveFile(Bitmap bitmap, boolean shouldRecycle) {
         OutputStream output = null;
 
         // Daniel (2016-06-24 11:52:55): if dstFile is invalid, we create our own file and return it to user!
@@ -1784,6 +1785,7 @@ public class CropperImageView extends ImageView implements CropperInterface{
         try {
             output = new FileOutputStream(dstFile);
 
+            // TODO: @namgyu.park (2019-12-18) : You can execute bitmap compress on UI thread. Make sure to fix later.
             if (mCropExtension == CropExtension.png)
                 bitmap.compress(Bitmap.CompressFormat.PNG, 95, output);
             else

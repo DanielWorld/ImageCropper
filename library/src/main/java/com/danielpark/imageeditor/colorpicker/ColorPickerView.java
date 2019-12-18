@@ -19,7 +19,6 @@ import android.view.View;
 /**
  * https://code.google.com/p/color-picker-view/
  * <br><br>
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-27.
  */
 

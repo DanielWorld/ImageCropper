@@ -8,7 +8,6 @@ package com.danielpark.imagecropper;
  *     <b> CROP_STRETCH : </b> Crop but stretch image
  *
  * <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-24.
  */
 public enum CropMode {

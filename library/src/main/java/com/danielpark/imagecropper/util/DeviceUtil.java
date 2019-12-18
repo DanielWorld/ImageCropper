@@ -7,7 +7,6 @@ import android.view.WindowManager;
 /**
  * Utility for Device
  * <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-01-12.
  */
 public class DeviceUtil {

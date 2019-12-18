@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 
@@ -77,7 +76,7 @@ public interface EditorInterface {
     /**
      * When Undo or Redo state has changed, notify to observer <br>
      *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>
-     *         because it becomes null when {@link CropperImageView#onDetachedFromWindow()}
+     *         because it becomes null when CropperImageView.onDetachedFromWindow() was called.
      * @param listener
      */
     void setUndoRedoListener(OnUndoRedoStateChangeListener listener);

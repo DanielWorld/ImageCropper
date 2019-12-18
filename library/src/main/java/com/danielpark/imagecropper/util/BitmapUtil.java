@@ -13,7 +13,6 @@ import java.io.InputStream;
 /**
  * Daniel (2016-01-14 11:52:16): Utility to get efficient Bitmap
  * <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-01-14.
  */
 public class BitmapUtil {

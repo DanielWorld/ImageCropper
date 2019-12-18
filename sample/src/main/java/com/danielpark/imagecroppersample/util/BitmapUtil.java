@@ -26,7 +26,6 @@ import java.io.InputStream;
 /**
  * Daniel (2016-01-14 11:52:16): 비트맵을 효율적으로 가져오기 위한 유틸리티
  * <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-01-14.
  */
 public class BitmapUtil {

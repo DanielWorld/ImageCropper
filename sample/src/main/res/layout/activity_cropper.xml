@@ -157,7 +157,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="mode"
-        android:background="@color/bapul_color_image_cover"
+        android:background="@color/crop_image_cover"
         android:textColor="#ffffff"
         android:textSize="15sp"
         android:textStyle="bold"

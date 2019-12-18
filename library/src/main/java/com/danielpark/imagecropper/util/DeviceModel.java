@@ -10,7 +10,6 @@ import com.danielpark.imagecropper.CropperImageView;
  *     in this case, library calls twice when setBitmap <br>
  *         If you guys know anything, help us out!
  *     <br><br>
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-07-01.
  */
 public class DeviceModel {

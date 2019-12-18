@@ -1,5 +1,6 @@
 package com.danielpark.imageeditor;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,10 +23,10 @@ import com.danielpark.imagecropper.util.ConvertUtil;
 /**
  * This is embed image view in {@link EditorPanelView}
  * <br><br>
- * Copyright (c) 2014-2017 daniel@bapul.net
  * Created by Daniel Park on 2017-07-26.
  */
 
+@SuppressLint("AppCompatCustomView")
 public class FingerImageView extends ImageView {
 
     private final int DEP;  // Border outline's valid field

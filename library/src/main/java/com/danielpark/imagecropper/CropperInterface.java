@@ -9,7 +9,6 @@ import com.danielpark.imagecropper.model.CropSetting;
 import java.io.File;
 
 /**
- * Copyright (c) 2014-2016 daniel@bapul.net
  * Created by Daniel Park on 2016-06-23.
  */
 public interface CropperInterface {
@@ -132,7 +131,7 @@ public interface CropperInterface {
     /**
      * When Undo or Redo state has changed, notify to observer <br>
      *     BEWARE ! {@link OnUndoRedoStateChangeListener} should be applied to {@link CropperImageView} for each one by one <br>
-     *         because it becomes null when {@link CropperImageView#onDetachedFromWindow()}
+     *         because it becomes null when CropperImageView.onDetachedFromWindow() was called.
      * @param listener
      */
     void setUndoRedoListener(OnUndoRedoStateChangeListener listener);
