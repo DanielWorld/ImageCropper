@@ -10,21 +10,16 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.danielpark.imagecropper.ControlMode;
 import com.danielpark.imagecropper.CropExtension;
@@ -39,6 +34,10 @@ import com.danielpark.imagecropper.util.Logger;
 import com.danielpark.imagecroppersample.presenter.MainPresenter;
 import com.danielpark.imagecroppersample.presenterimpl.MainPresenterImpl;
 import com.danielpark.imagecroppersample.util.ImageUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class CropperActivity extends AppCompatActivity implements MainPresenter.View, View.OnClickListener, OnUndoRedoStateChangeListener, OnThumbnailChangeListener {
 
@@ -62,21 +61,21 @@ public class CropperActivity extends AppCompatActivity implements MainPresenter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cropper);
 
-        modeTitle = (TextView) findViewById(R.id.modeTitle);
-        iv = (CropperImageView) findViewById(R.id.imageView1);
-        btnDone = (TextView) findViewById(R.id.btnConfirm);
-        btnCamera = (ImageView) findViewById(R.id.takeCamera);
-        btnRotate = (ImageView) findViewById(R.id.rotateClockwise);
-        btnChangeMode = (TextView) findViewById(R.id.modeChanger);
-        btnReRotate = (ImageView) findViewById(R.id.rotateCountClockwise);
-        btnUndo = (ImageView) findViewById(R.id.undo);
-        btnRedo = (ImageView) findViewById(R.id.redo);
-        shapeChanger = (TextView) findViewById(R.id.shapeChanger);
-        thumbnailView = (ImageView) findViewById(R.id.thumbnailView);
-        cropShape = (TextView) findViewById(R.id.cropShape);
-        extension = (TextView) findViewById(R.id.extension);
+        modeTitle = findViewById(R.id.modeTitle);
+        iv = findViewById(R.id.imageView1);
+        btnDone = findViewById(R.id.btnConfirm);
+        btnCamera = findViewById(R.id.takeCamera);
+        btnRotate = findViewById(R.id.rotateClockwise);
+        btnChangeMode = findViewById(R.id.modeChanger);
+        btnReRotate = findViewById(R.id.rotateCountClockwise);
+        btnUndo = findViewById(R.id.undo);
+        btnRedo = findViewById(R.id.redo);
+        shapeChanger = findViewById(R.id.shapeChanger);
+        thumbnailView = findViewById(R.id.thumbnailView);
+        cropShape = findViewById(R.id.cropShape);
+        extension = findViewById(R.id.extension);
 
-        result = (CropperImageView) findViewById(R.id.result);
+        result = findViewById(R.id.result);
 
         presenter = new MainPresenterImpl(this, this);
         presenter.initViews();
