@@ -1,1 +1,4 @@
 include ':sample', ':library'
+
+include ':logger'
+project(':logger').projectDir = new File('../Logger/module')

@@ -14,11 +14,10 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
-import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
-import com.danielpark.imagecropper.util.Logger;
+import com.danielworld.logger.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

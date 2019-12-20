@@ -3,8 +3,9 @@ package com.danielpark.imagecropper.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.Display;
+
+import com.danielworld.logger.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

@@ -38,8 +38,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    // Daniel (2016-06-23 14:37:35): Image Cropper 추가
     implementation project(':library')
-//    compile 'com.danielworld:image-crop-library:1.2.10'
+    implementation project(':logger')
+//    compile 'com.danielworld:image-crop-library:2.0.2'
 }
 
