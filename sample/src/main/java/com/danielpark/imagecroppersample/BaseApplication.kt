@@ -23,7 +23,7 @@ class BaseApplication : Application() {
                             // Strict mode's disk violation is too heavy. skip it.
                             .permitDiskReads()
                             .penaltyLog()
-                            .penaltyDeath()
+//                            .penaltyDeath()
                             .build()
             )
 
@@ -32,7 +32,7 @@ class BaseApplication : Application() {
                     StrictMode.VmPolicy.Builder()
                             .detectAll()
                             .penaltyLog()
-                            .penaltyDeath()
+//                            .penaltyDeath()
                             .build()
             )
         }
