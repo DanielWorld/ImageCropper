@@ -14,6 +14,7 @@ apply plugin: 'com.android.library'
 // http://sunghwanjo94.blogspot.kr/2015/07/jcenter.html
 // https://github.com/novoda/bintray-release
 // $ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+// https://dl.bintray.com/danielworld/maven/
 apply plugin: 'com.novoda.bintray-release'
 
 ext {
@@ -59,10 +60,6 @@ android {
 repositories {
     jcenter()
     mavenCentral()
-    // TODO: Daniel (2019-12-29) : Make sure to remove it once library is registered to jCenter
-    maven {
-        url 'https://dl.bintray.com/danielworld/maven/'
-    }
 }
 
 dependencies {
