@@ -3,7 +3,6 @@
 It crops image using multiple mode (Crop mode, Crop-Strecth mode, Crop-Shrink mode)
 Also, you can use pen or eraser to decorate Image. <br>
 
-=======
 ## Gradle build
 build.gradle
 <pre>
