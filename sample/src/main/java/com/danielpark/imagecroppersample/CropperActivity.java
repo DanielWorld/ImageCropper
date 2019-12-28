@@ -30,9 +30,9 @@ import com.danielpark.imagecropper.UtilMode;
 import com.danielpark.imagecropper.listener.OnThumbnailChangeListener;
 import com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener;
 import com.danielpark.imagecropper.model.CropSetting;
+import com.danielpark.imagecropper.util.ImageUtil;
 import com.danielpark.imagecroppersample.presenter.MainPresenter;
 import com.danielpark.imagecroppersample.presenterimpl.MainPresenterImpl;
-import com.danielpark.imagecroppersample.util.ImageUtil;
 import com.danielworld.logger.Logger;
 
 import java.io.File;
@@ -353,7 +353,7 @@ public class CropperActivity extends AppCompatActivity implements MainPresenter.
                 ExifInterface exif = new ExifInterface(file.getAbsolutePath());
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                 degree = ImageUtil.exifToDegrees(rotation);
-                Logger.INSTANCE.d("OKAY", "file exif degree : " + degree);
+                Logger.d("OKAY", "file exif degree : " + degree);
             } catch (Exception e) {
                 e.printStackTrace();
             }

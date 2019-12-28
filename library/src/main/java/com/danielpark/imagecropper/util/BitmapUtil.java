@@ -310,14 +310,14 @@ public class BitmapUtil {
 				inSampleSize *= 2;
 			}
 
-			Logger.INSTANCE.d("BitmapUtil", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
+			Logger.d("BitmapUtil", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
 		}
 
-		Logger.INSTANCE.d("BitmapUtil", "width : " + width);
-		Logger.INSTANCE.d("BitmapUtil", "height : " + height);
-		Logger.INSTANCE.d("BitmapUtil", "reqWidth : " + reqWidth);
-		Logger.INSTANCE.d("BitmapUtil", "reqHeight : " + reqHeight);
-		Logger.INSTANCE.d("BitmapUtil", "inSampleSize : " + inSampleSize);
+		Logger.d("BitmapUtil", "width : " + width);
+		Logger.d("BitmapUtil", "height : " + height);
+		Logger.d("BitmapUtil", "reqWidth : " + reqWidth);
+		Logger.d("BitmapUtil", "reqHeight : " + reqHeight);
+		Logger.d("BitmapUtil", "inSampleSize : " + inSampleSize);
 
 		return inSampleSize;
 	}
