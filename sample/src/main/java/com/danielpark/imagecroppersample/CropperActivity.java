@@ -93,6 +93,9 @@ public class CropperActivity extends AppCompatActivity implements MainPresenter.
                 .setCropInsetRatio(20f)
                 .build();
 
+        // update view text
+        shapeChanger.setText(ControlMode.FREE.name());
+
         iv.setCropSetting(cropSetting);
 
         // Daniel (2017-04-18 14:10:13): simulate IllegalArgument Exception
