@@ -15,11 +15,16 @@ apply plugin: 'com.android.library'
 // https://github.com/novoda/bintray-release
 // $ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
 apply plugin: 'com.novoda.bintray-release'
+
+ext {
+    versionCode = 5
+    versionName = '2.0.3'
+}
 publish {
     userOrg = 'danielworld'
     groupId = 'com.danielworld'
     artifactId = 'image-crop-library'
-    publishVersion = '2.0.2'
+    publishVersion = project.ext.versionName
     desc = 'A cropper library for image that modifies all shape'
     website = 'https://github.com/DanielWorld/ImageCropper'
     issueTracker = "${website}/issues"
@@ -33,8 +38,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 2
-        versionName "2.0.2"
+        versionCode project.ext.versionCode
+        versionName project.ext.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
