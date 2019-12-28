@@ -16,7 +16,13 @@ buildscript {
 dependencies {
     ...
     // Daniel (2016-06-23 14:37:35): Added Image Cropper
-    compile 'com.danielworld:image-crop-library:2.0.2'
+    implementation 'com.danielworld:image-crop-library:2.0.2'
+    
+    // For logging cropper
+    implementation 'com.danielworld:logger:1.0.2'
+    
+    // For Cropper view
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 }
 </pre>
 
