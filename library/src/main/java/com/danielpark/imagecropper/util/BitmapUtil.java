@@ -310,14 +310,14 @@ public class BitmapUtil {
 				inSampleSize *= 2;
 			}
 
-			Logger.INSTANCE.d("OKAY", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
+			Logger.INSTANCE.d("BitmapUtil", "ratio : " + ((float) ((height / inSampleSize) * (width / inSampleSize)) / (float)(reqHeight * reqWidth)));
 		}
 
-		Logger.INSTANCE.d("OKAY", "width : " + width);
-		Logger.INSTANCE.d("OKAY", "height : " + height);
-		Logger.INSTANCE.d("OKAY", "reqWidth : " + reqWidth);
-		Logger.INSTANCE.d("OKAY", "reqHeight : " + reqHeight);
-		Logger.INSTANCE.d("OKAY", "inSampleSize : " + inSampleSize);
+		Logger.INSTANCE.d("BitmapUtil", "width : " + width);
+		Logger.INSTANCE.d("BitmapUtil", "height : " + height);
+		Logger.INSTANCE.d("BitmapUtil", "reqWidth : " + reqWidth);
+		Logger.INSTANCE.d("BitmapUtil", "reqHeight : " + reqHeight);
+		Logger.INSTANCE.d("BitmapUtil", "inSampleSize : " + inSampleSize);
 
 		return inSampleSize;
 	}

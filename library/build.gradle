@@ -56,6 +56,10 @@ android {
 repositories {
     jcenter()
     mavenCentral()
+    // TODO: Daniel (2019-12-29) : Make sure to remove it once library is registered to jCenter
+    maven {
+        url 'https://dl.bintray.com/danielworld/maven/'
+    }
 }
 
 dependencies {
@@ -63,8 +67,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
-
-    implementation project(':logger')
+    implementation 'com.danielworld:logger:1.0.2'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
