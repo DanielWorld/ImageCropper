@@ -18,7 +18,7 @@ dependencies {
     implementation 'com.danielworld:image-crop-library:2.0.3'
     
     // For logging cropper
-    implementation 'com.danielworld:logger:1.0.3'
+    implementation 'com.danielworld:logger:1.0.4'
     
     // For Cropper view
     implementation 'androidx.appcompat:appcompat:1.1.0'
