@@ -9,7 +9,7 @@ import java.util.Random;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * Created by Daniel on 2016-12-23.
+ * Created by Namgyu Park on 2016-12-23.
  */
 
 public class CalculationUtilTest {

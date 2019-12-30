@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2017 DanielWorld.
+ * @Author Namgyu Park
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.danielpark.imagecropper;
 
 /**
@@ -5,7 +21,7 @@ package com.danielpark.imagecropper;
  *     <b> jpg : </b> more efficient for small bitmap or thumbnail <br>
  *     <b> png : </b> lossless quality. And it represents transparent image <br>
  * <br><br>
- * Created by Daniel on 2017-07-13.
+ * Created by Namgyu Park on 2017-07-13.
  */
 
 public enum CropExtension {

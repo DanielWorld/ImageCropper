@@ -1,5 +1,5 @@
 ImageCropper
-Copyright (c) 2016-2019 Daniel Park.
+Copyright (c) 2016-2019 DanielWorld.
 
 The ImageCropper project contains subcomponents with separate copyright notices and license terms.
 Your use of the source code for these subcomponents is subject to the terms and conditions of the following licenses.
@@ -29,7 +29,8 @@ Logger (https://github.com/DanielWorld/Logger)
 =======================================================================
 
 /*
- * Copyright (c) 2019 Daniel Park.
+ * Copyright (c) 2019 DanielWorld.
+ * @Author Namgyu Park
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
