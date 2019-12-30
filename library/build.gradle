@@ -18,8 +18,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
 ext {
-    versionCode = 5
-    versionName = '2.0.3'
+    versionCode = 6
+    versionName = '2.0.4'
 }
 publish {
     userOrg = 'danielworld'
