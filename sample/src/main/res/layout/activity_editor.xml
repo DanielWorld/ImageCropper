@@ -152,7 +152,7 @@
 
         </LinearLayout>
 
-        <com.danielpark.imageeditor.EditorPanelView
+        <com.danielworld.imageeditor.EditorPanelView
             android:id="@+id/editorPanelView"
             android:layout_below="@+id/topContainer"
             android:layout_above="@+id/bottomContainer"

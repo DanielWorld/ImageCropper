@@ -23,13 +23,13 @@
             android:orientation="horizontal"
             android:paddingTop="2dp">
 
-            <com.danielpark.imageeditor.customview.CheckBoxRadioButton
+            <com.danielworld.imageeditor.customview.CheckBoxRadioButton
                 android:id="@+id/radioButtonFirstSwatchColor"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="#ffcc0000" />
 
-            <com.danielpark.imageeditor.customview.CheckBoxRadioButton
+            <com.danielworld.imageeditor.customview.CheckBoxRadioButton
                 android:id="@+id/radioButtonSecondSwatchColor"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -37,7 +37,7 @@
                 android:layout_marginStart="6dp"
                 android:background="#000000" />
 
-            <com.danielpark.imageeditor.customview.CheckBoxRadioButton
+            <com.danielworld.imageeditor.customview.CheckBoxRadioButton
                 android:id="@+id/radioButtonThirdSwatchColor"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -54,7 +54,7 @@
                 android:layout_marginTop="2dp"
                 android:background="#eaeaea" />
 
-            <com.danielpark.imageeditor.customview.CheckBoxRadioButton
+            <com.danielworld.imageeditor.customview.CheckBoxRadioButton
                 android:id="@+id/radioButtonPickerColor"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -62,7 +62,7 @@
         </RadioGroup>
     </LinearLayout>
 
-    <com.danielpark.imageeditor.colorpicker.ColorPickerView
+    <com.danielworld.imageeditor.colorpicker.ColorPickerView
         android:id="@+id/colorPickerView"
         android:layout_width="224dp"
         android:layout_height="150dp" />
@@ -76,7 +76,7 @@
         android:layout_marginTop="2dp"
         android:background="#eaeaea" />
 
-    <com.danielpark.imageeditor.colorpicker.PenWidthView
+    <com.danielworld.imageeditor.colorpicker.PenWidthView
         android:id="@+id/penWidthView"
         android:layout_width="200dp"
         android:layout_height="50dp" />

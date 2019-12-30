@@ -15,40 +15,40 @@
 -keepclasseswithmembers class * {
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
--keepclasseswithmembers interface com.danielpark.imagecropper.CropperInterface {
+-keepclasseswithmembers interface com.danielworld.imagecropper.CropperInterface {
     <methods>;
 }
--keepclasseswithmembers interface com.danielpark.imagecropper.listener.OnUndoRedoStateChangeListener {
+-keepclasseswithmembers interface com.danielworld.imagecropper.listener.OnUndoRedoStateChangeListener {
     <methods>;
 }
--keepclasseswithmembers interface com.danielpark.imagecropper.listener.OnThumbnailChangeListener {
+-keepclasseswithmembers interface com.danielworld.imagecropper.listener.OnThumbnailChangeListener {
     <methods>;
 }
--keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting {
-    public <init>(com.danielpark.imagecropper.model.CropSetting$CropBuilder);
+-keepclasseswithmembers class com.danielworld.imagecropper.model.CropSetting {
+    public <init>(com.danielworld.imagecropper.model.CropSetting$CropBuilder);
 }
--keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting {
+-keepclasseswithmembers class com.danielworld.imagecropper.model.CropSetting {
     <methods>;
 }
--keepclasseswithmembers class com.danielpark.imagecropper.model.CropSetting$CropBuilder {
+-keepclasseswithmembers class com.danielworld.imagecropper.model.CropSetting$CropBuilder {
     <methods>;
 }
--keepclasseswithmembers class com.danielpark.imagecropper.CropperImageView {
+-keepclasseswithmembers class com.danielworld.imagecropper.CropperImageView {
     public *;
 }
--keepclasseswithmembers class com.danielpark.imagecropper.util.CalculationUtil {
+-keepclasseswithmembers class com.danielworld.imagecropper.util.CalculationUtil {
     public *;
 }
--keepclasseswithmembers enum com.danielpark.imagecropper.CropMode {
+-keepclasseswithmembers enum com.danielworld.imagecropper.CropMode {
     *;
 }
--keepclasseswithmembers enum com.danielpark.imagecropper.UtilMode {
+-keepclasseswithmembers enum com.danielworld.imagecropper.UtilMode {
     *;
 }
--keepclasseswithmembers enum com.danielpark.imagecropper.ControlMode {
+-keepclasseswithmembers enum com.danielworld.imagecropper.ControlMode {
     *;
 }
--keepclasseswithmembers enum com.danielpark.imagecropper.ShapeMode {
+-keepclasseswithmembers enum com.danielworld.imagecropper.ShapeMode {
     *;
 }
 

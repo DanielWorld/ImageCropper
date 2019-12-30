@@ -135,7 +135,7 @@
 
     </LinearLayout>
 
-    <com.danielpark.imagecropper.CropperImageView
+    <com.danielworld.imagecropper.CropperImageView
         android:layout_above="@+id/bottomContainer2"
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
@@ -163,7 +163,7 @@
         android:textStyle="bold"
         android:padding="5dp"/>
 
-    <com.danielpark.imagecropper.CropperImageView
+    <com.danielworld.imagecropper.CropperImageView
         android:layout_above="@+id/bottomContainer2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
